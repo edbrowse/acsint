@@ -1490,6 +1490,7 @@ int acs_isalnum(unsigned int uc);
 int acs_isupper(unsigned int uc);
 int acs_islower(unsigned int uc);
 int acs_isvowel(unsigned int uc);
+int acs_wordcase(const unsigned int *s);
 unsigned int acs_tolower(unsigned int uc);
 unsigned int acs_toupper(unsigned int uc);
 // from u umlaut to u

@@ -196,7 +196,7 @@ int acs_isspace(unsigned int c)
 	return 0;
 }
 
-/* this assumes you already know it's alpha */
+// this assumes you already know it's alpha
 int acs_isupper(unsigned int c)
 {
 if(c == 0xdf) return 0;
@@ -204,7 +204,7 @@ if(c&0x20) return 0;
 return 1;
 }
 
-/* this assumes you already know it's alpha */
+// this assumes you already know it's alpha
 int acs_islower(unsigned int c)
 {
 if(c == 0xdf) return 1;
@@ -212,21 +212,41 @@ if(c&0x20) return 1;
 return 0;
 }
 
-/* this assumes you already know it's alpha */
+// this assumes you already know it's alpha
+// 0 lower case, 1 capital word, 2 all caps, 3 upper and lower case
+int acs_wordcase(const unsigned int *s)
+{
+char upcount = 0, lowcount = 0, firstup = 0;
+if(acs_isalpha(*s) && acs_isupper(*s)) firstup = 1;
+while(*s) {
+if(acs_isdigit(*s)) continue;
+if(!acs_isalpha(*s)) return 0;
+if(acs_islower(*s)) lowcount++;
+if(acs_isupper(*s)) upcount++;
+++s;
+}
+if(!upcount) return 0;
+if(firstup && upcount == 1) return 1;
+if(upcount && !lowcount) return 2;
+return 3;
+}
+
+
+// this assumes you already know it's alpha
 unsigned int acs_tolower(unsigned int c)
 {
 if(c == 0xdf) return c;
 return (c | 0x20);
 }
 
-/* this assumes you already know it's alpha */
+// this assumes you already know it's alpha
 unsigned int acs_toupper(unsigned int c)
 {
 // 0xdf works here
 return (c & ~0x20);
 }
 
-/* this assumes you already know it's alpha */
+// this assumes you already know it's alpha
 int acs_isvowel(unsigned int c)
 {
 c = acs_tolower(c);
