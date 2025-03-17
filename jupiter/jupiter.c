@@ -19,6 +19,15 @@ as articulated by the Free Software Foundation.
 #define stringEqual !strcmp
 
 
+/*********************************************************************
+argv[0] is the absolute path of the running program, but only
+if it was invoked by an absolute path. If invoked by jupiter,
+and then down $PATH, then argv[0] is simply jupiter.
+On many systems, $_ holds the absolute path, so let's try that.
+*********************************************************************/
+static const char *program_file;
+static char **argvector;
+
 /* Speech command structure, one instance for each jupiter command. */
 struct cmd {
 	const char *desc; // description
@@ -516,7 +525,6 @@ For instance, ^G beep if the character doesn't correspond
 to a boolean mode in the system.
 *********************************************************************/
 
-static char **argvector;
 static char soundsOn = 1; // sounds on, over all */
 static char clickTTY = 1; // clicks accompany tty output
 static char autoRead = 1; // read new text automatically
@@ -1213,12 +1221,10 @@ acs_buzz();
 acs_sy_close();
 acs_close();
 usleep(700000);
-/* We should really capture the absolute path of the running program,
- * and feed it to execv.  Not sure how to do that,
- * so I'm just using execvp instead.
- * Hope it gloms onto the correct executable. */
+if(program_file && strchr(program_file, '/'))
+	execv(program_file, argvector);
 execvp("jupiter", argvector);
-/* should never get here */
+// should never get here
 puts("\7\7\7");
 exit(1);
 
@@ -1492,17 +1498,17 @@ So now I don't set that bit, so I can use all three talkers.
 {"esp", ACS_SY_STYLE_ESPEAKUP},
 {0, 0}};
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 int i, port, onusb = 0;
 char serialdev[20];
 char *cmd = NULL;
 int lastrow, lastcol;
 
-/* remember the arg vector, before we start marching along. */
+// remember the arg vector, before we start marching along.
 argvector = argv;
 ++argv, --argc;
+program_file = getenv("_");
 
 selectLanguage();
 o = outwords + acs_lang;
@@ -1515,7 +1521,7 @@ exit(1);
 while(argc) {
 if(argc && stringEqual(argv[0], "-d")) {
 /* it should be safe to chdir, but not to close std{in,out,err}. Reload prints stuff there. */
-daemon(0, 1);
+daemon(1, 1);
 /* make this the leader of its process group,
  * so the child process, a software synth, dies when it does. */
 setsid();
