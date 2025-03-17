@@ -852,6 +852,11 @@ The former is read as Mike, and the latter as November.
 An accented letter is downshifted to its unaccented version, then read as a nato word in that language.
 Thus &#243; in Portuguese is read as Oscar.
 
+<p>
+If the character is nonascii, its unicode value is read in hex format.
+If you have set x1f600 to grin in your config file, it is read as grin by characters, by words, or in continuous reading,
+but asword tells you that it is code 1f600.
+
 <P><DT>word:
 <DD>
 Read the current word.
@@ -860,6 +865,8 @@ The cursor is left at the end of the word.
 To aid in pronuncibility, spaces are inserted at letter-digit or case boundaries.
 Thus RedGreen3Blue is pronounced "red green 3 blue".
 This is usually what you want.
+
+<p>
 If the word is capitalized, cap is prepended, as in cap Saturday.
 allcap indicates the entire word is in upper case, and mixcap indicates a mix of upper and lower case.
 This can save time;
