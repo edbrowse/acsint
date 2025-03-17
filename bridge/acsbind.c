@@ -218,12 +218,14 @@ int acs_wordcase(const unsigned int *s)
 {
 char upcount = 0, lowcount = 0, firstup = 0;
 if(acs_isalpha(*s) && acs_isupper(*s)) firstup = 1;
-while(*s) {
+for(; *s; ++s) {
 if(acs_isdigit(*s)) continue;
+// apostrophe ccan be in a word, that's ok.
+// Do we have to check for higher unicode apostrophes?
+if(*s == '\'') continue;
 if(!acs_isalpha(*s)) return 0;
 if(acs_islower(*s)) lowcount++;
 if(acs_isupper(*s)) upcount++;
-++s;
 }
 if(!upcount) return 0;
 if(firstup && upcount == 1) return 1;

@@ -1010,12 +1010,16 @@ acs_getsentence(tp_in->buf+1, WORDLEN, tp_in->offset+1, gsprop);
 acs_rb->cursor += tp_in->offset[tp_in->len] - 1;
 acs_cursorset();
 tp_oneSymbol = 1;
+char wordcase = acs_wordcase(tp_in->buf + 1);
 char saveLiteral = tp_readLiteral;
 tp_readLiteral = 1;
 prepTTS();
 tp_readLiteral = saveLiteral;
 tp_oneSymbol = 0;
 acs_rb = 0;
+if(wordcase == 1) acs_say_string_n("cap ");
+if(wordcase == 2) acs_say_string_n("allcap ");
+if(wordcase == 3) acs_say_string_n("mixcap ");
 		acs_say_string_uc(tp_out->buf+1);
 break;
 
