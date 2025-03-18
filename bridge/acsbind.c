@@ -140,7 +140,6 @@ int acs_isalpha(unsigned int c)
 	if(c < 0x80 && isalpha(c)) return 1; // ascii letter
 if(c > 0xff || c < 0xc0) return 0; // out of range
 if(c == 0xd7 || c == 0xf7) return 0; // times divide
-if(c == 0xde) return 0; // sharp
 return 1;
 }
 
@@ -200,7 +199,6 @@ return 3;
 // this assumes you already know it's alpha
 unsigned int acs_tolower(unsigned int c)
 {
-if(c == 0xdd) return 0xfe;
 if(c == 0xdf) return c;
 return (c | 0x20);
 }
@@ -208,8 +206,7 @@ return (c | 0x20);
 // this assumes you already know it's alpha
 unsigned int acs_toupper(unsigned int c)
 {
-if(c == 0xfe) return 0xdd;
-if(c >= 0xfd) return c; // no counterpart
+if(c >= 0xff) return c; // no counterpart
 // 0xdf works here
 return (c & ~0x20);
 }
@@ -593,8 +590,70 @@ static const struct uc_name english_uc[] = {
 {0xbd, "one half"},
 {0xbe, "three fourths"},
 {0xbf, "question up"},
+{0xc0, "cap a grave"},
+{0xc1, "cap a acute"},
+{0xc2, "cap a circumflex"},
+{0xc3, "cap a tilde"},
+{0xc4, "cap a diaeresis"},
+{0xc5, "cap a ring above"},
+{0xc6, "cap ae ligature"},
+{0xc7, "cap c cedilla"},
+{0xc8, "cap e grave"},
+{0xc9, "cap e acute"},
+{0xca, "cap e circumflex"},
+{0xcb, "cap e diaeresis"},
+{0xcc, "cap i grave"},
+{0xcd, "cap i acute"},
+{0xce, "cap i circumflex"},
+{0xcf, "cap i diaeresis"},
+{0xd0, "cap eth"},
+{0xd1, "cap n tilde"},
+{0xd2, "cap o grave"},
+{0xd3, "cap o acute"},
+{0xd4, "cap o circumflex"},
+{0xd5, "cap o tilde"},
+{0xd6, "cap o diaeresis"},
 {0xd7, "times"},
+{0xd8, "cap o stroke"},
+{0xd9, "cap u grave"},
+{0xda, "cap u acute"},
+{0xdb, "cap u circumflex"},
+{0xdc, "cap u diaeresis"},
+{0xdd, "cap y acute"},
+{0xde, "cap thorn"},
+{0xdf, "s zet"},
+{0xe0, "a grave"},
+{0xe1, "a acute"},
+{0xe2, "a circumflex"},
+{0xe3, "a tilde"},
+{0xe4, "a diaeresis"},
+{0xe5, "a ring above"},
+{0xe6, "ae ligature"},
+{0xe7, "c cedilla"},
+{0xe8, "e grave"},
+{0xe9, "e acute"},
+{0xea, "e circumflex"},
+{0xeb, "e diaeresis"},
+{0xec, "i grave"},
+{0xed, "i acute"},
+{0xee, "i circumflex"},
+{0xef, "i diaeresis"},
+{0xf0, "eth"},
+{0xf1, "n tilde"},
+{0xf2, "o grave"},
+{0xf3, "o acute"},
+{0xf4, "o circumflex"},
+{0xf5, "o tilde"},
+{0xf6, "o diaeresis"},
 {0xf7, "divided by"},
+{0xf8, "o stroke"},
+{0xf9, "u grave"},
+{0xfa, "u acute"},
+{0xfb, "u circumflex"},
+{0xfc, "u diaeresis"},
+{0xfd, "y acute"},
+{0xfe, "thorn"},
+{0xff, "y diaeresis"},
 {0x113, "backquote"},
 {0, 0}
 };
