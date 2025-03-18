@@ -759,10 +759,15 @@ Thus screen mode and linear mode have the same look&amp;feel.
 <P><DT>sword:
 <DD>
 Place the cursor at the start of the current word.
-A word is a sequence of alphanumerics (in your language), and at most one apostrophe,
-or one unicode that is equivalent to an apostrophe, such as 0x99.
-Thus ni&ntilde;o looks like one word in Spanish, but three words in English.
-As mentioned earlier, Jupiter uses $LANG to determine your language.
+A word is a sequence of alphanumerics, as per the iso8859-1 page,
+and at most one apostrophe,
+or one unicode that is equivalent to an apostrophe, such as 0x201d.
+Thus ni&ntilde;o looks like one word, no matter your language setting.
+After all, an English speaker might encounter this while reading an article about climate change,
+thus it should be one word.
+The same for café, and so on.
+
+<p>
 Hello3world is one word in any language.
 Many variables in computer programming, or in math, are a mix of letters and numbers,
 and it is convenient to treat these as compound words.
@@ -849,8 +854,6 @@ This is the same as char,
 but a letter is read as a word, using the nato alphabet.
 This is used to distinguish between similar sounding letters such as m and n.
 The former is read as Mike, and the latter as November.
-An accented letter is downshifted to its unaccented version, then read as a nato word in that language.
-Thus &#243; in Portuguese is read as Oscar.
 
 <p>
 If the character is nonascii, its unicode value is read in hex format.

@@ -617,20 +617,19 @@ copy_t:
 		strcpy((char*)shortPhrase, t);
 		if(sayit) acs_say_string(shortPhrase);
 		return;
-	} /* control character */
+}
 
 if(asword != 2 || c < 0x80) {
 t = (char*)acs_getpunc(c);
 if(t) goto copy_t;
 }
 
-if(acs_isalpha(c) && asword == 2) {
-c = acs_unaccent(c);
-t = ow->natoWords[c-'a'];
+if( c < 0x80 && acs_isalpha(c) && asword == 2) {
+t = ow->natoWords[acs_tolower(c)-'a'];
 goto copy_t;
 }
 
-if(acs_isalnum(c)) {
+if(c < 0x80 && acs_isalnum(c)) {
 	if(sayit) {
 if(acs_isupper(c) && asword == 1)
 acs_say_string_n(ow->capWord);

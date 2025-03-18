@@ -137,47 +137,11 @@ return l;
 
 int acs_isalpha(unsigned int c)
 {
-	if(c < 0x80 && isalpha(c)) return 1;
-
-	switch(acs_lang) {
-	case ACS_LANG_DE:
-		if(c == 0xdf) return 1;
-		c |= 0x20;
-		if(c == 0xe4 || c == 0xfc || c == 0xf6) return 1;
-		break;
-
-	case ACS_LANG_PT_BR:
-		c |= 0x20;
-		if( c == 0xe0 || c == 0xe1 || c == 0xe2 || c == 0xe3 || c == 0xe7) return 1;
-		if(c == 0xe9 || c == 0xea || c == 0xed) return 1;
-		if(c == 0xf3 || c == 0xf4 || c == 0xf5 || c == 0xfa || c == 0xfc) return 1;
-		break;
-
-	case ACS_LANG_FR:
-		c |= 0x20;
-		if(c == 0xe0 || c == 0xe1 || c == 0xe2 || c == 0xe6 || c == 0xe7 || c == 0xe8) return 1;
-		if(c == 0xe9 || c == 0xea || c == 0xeb || c == 0xee || c == 0xef ) return 1;
-		if(c == 0xf4 || c == 0xf9 || c == 0xfb || c == 0xfc ) return 1;
-		break;
-
-	case ACS_LANG_SK:
-		if (c >= 0x010c && c <= 0x010f) return 1; // letters c and d with caron
-		if (c >= 0x0154 && c <= 0x0165) return 1; // letters r s t with caron and r with acute
-		if (c == 0x011a || c == 0x011b) return 1; // letter e with caron
-		if (c == 0x013d || c == 0x013e) return 1; // letter l with caron
-		if (c == 0x0139 || c == 0x013a) return 1; // letter l with acute
-		if (c == 0x0147 || c == 0x0148) return 1; // letter n with caron
-		if (c == 0x016e || c == 0x016f) return 1; // letter u with ring above
-		if (c == 0x017d || c == 0x017e) return 1; // letter z with caron
-		c |= 0x20;
-		if(c == 0xe1 || c == 0xe4 || c == 0xe9) return 1; // letters a with acute a with diaeresis e with acute
-		if(c == 0xed || c == 0xf3 || c == 0xfa) return 1; // letters i o u with acute
-		if(c == 0xfd || c == 0xf4) return 1; // letters y with acute o with caret
-		break;
-
-	}
-
-	return 0;
+	if(c < 0x80 && isalpha(c)) return 1; // ascii letter
+if(c > 0xff || c < 0xc0) return 0; // out of range
+if(c == 0xd7 || c == 0xf7) return 0; // times divide
+if(c == 0xde) return 0; // sharp
+return 1;
 }
 
 int acs_isdigit(unsigned int c)
@@ -199,7 +163,7 @@ int acs_isspace(unsigned int c)
 // this assumes you already know it's alpha
 int acs_isupper(unsigned int c)
 {
-if(c == 0xdf) return 0;
+if(c == 0xdf) return 0; // German ss
 if(c&0x20) return 0;
 return 1;
 }
@@ -207,12 +171,12 @@ return 1;
 // this assumes you already know it's alpha
 int acs_islower(unsigned int c)
 {
-if(c == 0xdf) return 1;
+if(c == 0xdf) return 1; // German ss
 if(c&0x20) return 1;
 return 0;
 }
 
-// this assumes you already know it's alpha
+// this assumes you already know it's a word
 // 0 lower case, 1 capital word, 2 all caps, 3 upper and lower case
 int acs_wordcase(const unsigned int *s)
 {
@@ -233,10 +197,10 @@ if(upcount && !lowcount) return 2;
 return 3;
 }
 
-
 // this assumes you already know it's alpha
 unsigned int acs_tolower(unsigned int c)
 {
+if(c == 0xdd) return 0xfe;
 if(c == 0xdf) return c;
 return (c | 0x20);
 }
@@ -244,6 +208,8 @@ return (c | 0x20);
 // this assumes you already know it's alpha
 unsigned int acs_toupper(unsigned int c)
 {
+if(c == 0xfe) return 0xdd;
+if(c >= 0xfd) return c; // no counterpart
 // 0xdf works here
 return (c & ~0x20);
 }
@@ -252,26 +218,15 @@ return (c & ~0x20);
 int acs_isvowel(unsigned int c)
 {
 c = acs_tolower(c);
-// english
+// english, not clear if y should be included
 if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'y')
+// iso8859-1
+if(c == 0xfe) return 0; // th
+if(c == 0xe7) return 0; // c cedilla
 return 1;
-
-// latin 1
-if(c >= 0xc0 && c < 0x100) {
-static const unsigned char wv[] = {
-1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,
-1,0,1,1,1,1,1,0,1,1,1,1,1,0,0,0,
-1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,
-1,0,1,1,1,1,1,0,1,1,1,1,1,0,0,1,
-};
-return wv[c-0xc0];
 }
 
-// higher voweles not yet implemented
-return 0;
-}
-
-/* Turn unicode into lower case ascii, as best we can. */
+// Turn unicode into lower case ascii, as best we can.
 #define UnknownChar '~'
 char acs_unaccent(unsigned int c)
 {
