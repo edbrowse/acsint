@@ -655,6 +655,56 @@ static const struct uc_name english_uc[] = {
 {0xfe, "thorn"},
 {0xff, "y diaeresis"},
 {0x113, "backquote"},
+// Greek letters
+{0x391, "cap alpha"},
+{0x392, "cap beta"},
+{0x393, "cap gamma"},
+{0x394, "cap delta"},
+{0x395, "cap epsilon"},
+{0x396, "cap zaita"},
+{0x397, "cap aita"},
+{0x398, "cap thaita"},
+{0x399, "cap iota"},
+{0x39a, "cap kappa"},
+{0x39b, "cap lambda"},
+{0x39c, "cap mew"},
+{0x39d, "cap new"},
+{0x39e, "cap ksie"},
+{0x39f, "cap omikrohn"},
+{0x3a0, "cap pie"},
+{0x3a1, "cap row"},
+{0x3a3, "cap sigma"},
+{0x3a4, "cap toue"},
+{0x3a5, "cap upsilon"},
+{0x3a6, "cap fie"},
+{0x3a7, "cap kie"},
+{0x3a8, "cap psie"},
+{0x3a9, "cap omega"},
+{0x3b1, "alpha"},
+{0x3b2, "beta"},
+{0x3b3, "gamma"},
+{0x3b4, "delta"},
+{0x3b5, "epsilon"},
+{0x3b6, "zaita"},
+{0x3b7, "aita"},
+{0x3b8, "thaita"},
+{0x3b9, "iota"},
+{0x3ba, "kappa"},
+{0x3bb, "lambda"},
+{0x3bc, "mew"},
+{0x3bd, "new"},
+{0x3be, "ksie"},
+{0x3bf, "omikron"},
+{0x3c0, "pie"},
+{0x3c1, "row"},
+{0x3c2, "sigma f"},
+{0x3c3, "sigma"},
+{0x3c4, "toue"},
+{0x3c5, "upsilon"},
+{0x3c6, "fie"},
+{0x3c7, "kie"},
+{0x3c8, "psie"},
+{0x3c9, "omega"},
 {0, 0}
 };
 
@@ -1456,7 +1506,7 @@ skipWhite(&t);
 if(!*t) return -8;
 if(p_uc <= ' ') return -9;
 if(p_uc >= 0x7fffffff) return -9;
-if(acs_isalnum(p_uc)) return -9;
+if(p_uc < 0x80 && acs_isalnum(p_uc)) return -9;
 acs_setpunc(p_uc, t);
 return 0;
 }
