@@ -117,7 +117,12 @@ void acs_write_mix(int fd, const unsigned int *s, int len)
 static unsigned char buf[256];
 uni_p = buf;
 while(len--) {
+if(acs_style == ACS_SY_STYLE_DOUBLE) {
+// doubletalk knows nothing about utf8. Perhaps other synths as well.
+*uni_p++ = acs_unaccent(*s++);
+} else {
 uni_1(*s++);
+}
 if(uni_p - buf < 250) continue;
 write(fd, buf, uni_p - buf);
 uni_p = buf;
