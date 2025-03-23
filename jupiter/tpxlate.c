@@ -121,10 +121,10 @@ static const struct OUTWORDS outwords[6] = {
 
 // nato standard alphabet
 {"alpha", "bravo", "charlie", "delta", "echo",
-"foxtrot", "golf", "hotell", "india", "juliet",
+"foxtrot", "golf", "hotel", "india", "juliett",
 "killo", "liema", "mike", "november", "oscar",
 "papa", "quebec", "romeo", "sierra", "tango",
-"uniform", "victor", "whisky", "x ray", "yankee", "zulu"},
+"uniform", "victor", "whiskey", "x ray", "yankee", "zulu"},
 // 2 letter words
 "adahalamanasatauawaxhalamapaedehelemenbedehemereweyeidifinisithipiofohonorowoxozcodogohojolonosotouhumunupusbymy",
 // 3 letter words
