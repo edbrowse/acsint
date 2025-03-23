@@ -842,11 +842,12 @@ The symbol ! might be read as exclamation point,
 but you may prefer the shorter word bang.
 Finally a higher unicode is spoken as directed by your config file,
 or it is simply said as the word code followed by the unicode in hex.
-If you do math, for instance, you may want to set the pronunciations of the Greek letters and the math symbols in your config file.
+If you do math, for instance, you may want to set the pronunciations of the math symbols in your config file.
 
-<P><DT>capchar:
-<DD>
-This is the same as char, but a capital X is read as "cap X", rather than simply x.
+<p>
+Capital X is read as "cap X", rather than simply x.
+I use to have a separate command for this, capchar, and that is still supported for legacy reasons,
+but now char is the same as capchar, just as the word command always indicates the capitalization of the word.
 
 <P><DT>asword:
 <DD>
@@ -871,6 +872,7 @@ This is usually what you want.
 
 <p>
 If the word is capitalized, cap is prepended, as in cap Saturday.
+This is consistent with the char command.
 allcap indicates the entire word is in upper case, and mixcap indicates a mix of upper and lower case.
 This can save time;
 you thence don't need to look letter by letter.

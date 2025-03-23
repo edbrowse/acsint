@@ -57,7 +57,7 @@ static const struct cmd speechcommands[] = {
 	{"next row","nrow",1,3},
 	{"reed the current karecter as a nato word","asword",1,3},
 	{"reed the current karecter","char",1,3},
-	{"read capital x as cap x","capchar",1,3},
+	{"reed the current karecter","capchar",1,3},
 	{"current cohllumm number","colnum",1,3},
 	{"reed the current word","word",1,3},
 	{"start reeding","read",1,3},
@@ -980,8 +980,7 @@ acs_endline();
 
 /* read character, or cap character, or word for character */
 	case 15: asword = 2; goto letter;
-case 17: asword = 1; /* fall through */
-	case 16:
+case 16: case 17: asword = 1; /* fall through */
 letter:
 acs_cursorsync();
 		speakChar(acs_getc(), 1, soundsOn, asword);
