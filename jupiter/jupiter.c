@@ -55,14 +55,14 @@ static const struct cmd speechcommands[] = {
 	{"forward one character","for",1,3},
 	{"preivious row","prow",1,3},
 	{"next row","nrow",1,3},
-	{"reed the current karecter as a nato word","asword",1,3},
-	{"reed the current karecter","char",1,3},
-	{"reed the current karecter","capchar",1,3},
+	{"reed the current character as a nato word","asword",1,3},
+	{"reed the current character","char",1,3},
+	{"reed the current character","capchar",1,3},
 	{"current cohllumm number","colnum",1,3},
 	{"reed the current word","word",1,3},
 	{"start reeding","read",1,3},
 	{"stop speaking","shutup",0,0,1},
-	{"pass next karecter through","bypass",0,0,1},
+	{"pass next character through","bypass",0,0,1},
 	{"clear bighnary mode","clmode",0,0,0,1},
 	{"set bighnary mode","stmode",0,0,0,1},
 	{"toggle bighnary mode","toggle",0,0,0,1},
@@ -90,6 +90,7 @@ static const struct cmd speechcommands[] = {
 	{"dump buffer","dump",0,0,1},
 	{"suspend the adapter","suspend",0,0,1},
 	{"chromatic scale","step",0,0,0,2},
+	{"char plus asword","casw",1,3},
 	{0,""}
 };
 
@@ -850,7 +851,7 @@ static void runSpeechCommand(int input, const char *cmdlist)
 static 	char lasttext[SUPPORTLEN]; /* supporting text */
 	char support; /* supporting character */
 	int i, n;
-	int asword, quiet, rc, gsprop;
+	int asword, asword2, quiet, rc, gsprop;
 	unsigned int c;
 	char cmd;
 const char *t;
@@ -874,7 +875,7 @@ goto error_bell;
 	cmdp = &speechcommands[cmd];
 acs_log("cmd %s\n", cmdp->brief);
 if(cmdp->cact) ctrack = 0;
-asword = 0;
+asword = asword2 = 0;
 
 if(suspended && cmd != CMD_SUSPEND)
 return;
@@ -983,8 +984,16 @@ acs_endline();
 case 16: case 17: asword = 1; /* fall through */
 letter:
 acs_cursorsync();
-		speakChar(acs_getc(), 1, soundsOn, asword);
-		break;
+		speakChar(c = acs_getc(), 1, soundsOn, asword);
+if(!asword2) break;
+if(c < 0x80) {
+if(c < 'A' || c > 'Z' && c < 'a' || c > 'z') break;
+asword2 = 0, asword = 2;
+goto letter;
+}
+if(!acs_getpunc(c)) break;
+asword2 = 0, asword = 2;
+goto letter;
 
 	case 18: /* read column number */
 		acs_cursorsync();
@@ -1276,6 +1285,10 @@ etcjup(suptext);
 if(access(jfile, 4)) goto error_bell;
 chromscale(jfile);
 break;
+
+case 50: // char plus asword
+asword2 = 1;
+goto letter;
 
 	default:
 	error_bell:
