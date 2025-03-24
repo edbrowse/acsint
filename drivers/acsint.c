@@ -884,7 +884,7 @@ static void post4echo(int keytype, struct keyboard_notifier_param *param)
 			key = padnumbers[key - KEY_KP7], ss = 0;
 	}
 
-	if (key > KEY_SPACE)
+	if (key >= sizeof(lowercode) - 1)
 		return;
 
 	keychar = (ss & ACS_SS_SHIFT) ? uppercode[key] : lowercode[key];
@@ -909,7 +909,7 @@ static void post4echo(int keytype, struct keyboard_notifier_param *param)
 	if (nkeypending == MAXKEYPENDING)
 		dropKeysPending(1);
 	kp = keystack + nkeypending;
-	kp->unicode = keychar;
+	kp->unicode = (unsigned char)keychar;
 	kp->when = jiffies;
 	kp->keytype = keytype;
 	++nkeypending;
