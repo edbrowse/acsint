@@ -49,6 +49,7 @@ my %keywords = (
 "greater"=>">",
 "less"=>"<",
 "numbersign"=>"#",
+"sterling"=>"\\243",
 "percent"=>"%",
 "period"=>".",
 "question"=>"?",
@@ -65,6 +66,11 @@ while(<>) {
 chomp;
 s/\t/ /g;
 s/  */ /g;
+my $upset = 0;
+if(/^shift /) {
+$upset = 1;
+s/^shift //;
+}
 next unless /^keycode/;
 s/^keycode *//;
 next unless /=/;
@@ -89,11 +95,13 @@ my $l = $_;
 $l =~ s/.*=//;
 my $u = "";
 my ($lv, $uv);
+$l =~ s/:.*// if $upset;
 if($l =~ /:/) {
 $u = $l;
 $l =~ s/:.*//;
 $u =~ s/.*://;
 }
+$u = $l, $l = "" if $upset;
 if(length $l == 1) {
 $low[$k] = $l;
 } elsif(length $l > 1) {
