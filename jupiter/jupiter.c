@@ -1287,7 +1287,7 @@ chromscale(jfile);
 break;
 
 case 50: // char plus asword
-asword2 = 1;
+asword = asword2 = 1;
 goto letter;
 
 	default:
