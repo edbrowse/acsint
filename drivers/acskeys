@@ -2,29 +2,11 @@
 
 # use dumpkeys to determine the keyboard layout of your system.
 # Generate the strings lowercode and uppercode as used in acsint.c
-# the approach is dumpkeys | sed | perl
-# the sed actions are all -e commands.
 # The perl program is in a -e string, which is fine except the one place
 # I really want to print an apostrophe, and that's where I get the goofy
 # "'"'"'"
 
 dumpkeys |
-sed \
--e 's/\t/ /g' -e 's/  */ /g' \
--e '/^keycode/!d' -e 's/^keycode *//' \
- -e '/=/!d' -e 's/ *= */=/' \
--e 's/\+//g' \
--e 's/ *$//' \
--e 's/ /|/' -e 's/ .*//' \
--e '/=nul$/d' -e '/=nul|nul$/d' \
--e '/=F[0-9][0-9]*$/d' -e '/=F[0-9][0-9]*|F[0-9][0-9]*$/d' \
--e '/=Alt$/d' -e '/=Shift$/d' -e '/=Control$/d' \
--e '/=Pause$/d' -e '/=Scroll_Lock$/d' -e '/=Num_Lock$/d' \
--e '/=Last_Console$/d' \
--e '/=Left$/d' -e '/=Right$/d' -e '/=Up$/d' -e '/=Down$/d' \
--e '/=Break$/d' -e '/=Find$/d' -e '/=Select$/d' -e '/=Insert$/d' \
--e '/=Help$/d' -e '/=Prior$/d' -e '/=Next$/d' -e '/=Remove$/d' \
--e '/=KP_/d' |
 perl -e '
 my %keywords = (
 "escape"=>"\\033",
@@ -81,6 +63,22 @@ $up[$i] = $low[$i] = " ";
 }
 while(<>) {
 chomp;
+s/\t/ /g;
+s/  */ /g;
+next unless /^keycode/;
+s/^keycode *//;
+next unless /=/;
+s/ *= */=/;
+s/\+//g;
+s/ *$//;
+s/ /:/;
+s/ .*//;
+next if /=nul$/;
+next if /=nul:nul$/;
+next if /=F[0-9][0-9]*$/;
+next if /=F[0-9][0-9]*:F[0-9][0-9]*$/;
+next if /=(Alt|Shift|Control|Pause|Scroll_Lock|Num_Lock|Last_Console|Left|Right|Up|Down|Break|Find|Select|Insert|Help|Prior|Next|Remove)$/;
+next if /=KP_/;
 my $k = $_;
 $k =~ s/=.*//;
 if($k >= $limit) {
@@ -91,10 +89,10 @@ my $l = $_;
 $l =~ s/.*=//;
 my $u = "";
 my ($lv, $uv);
-if($l =~ /\|/) {
+if($l =~ /:/) {
 $u = $l;
-$l =~ s/\|.*//;
-$u =~ s/.*\|//;
+$l =~ s/:.*//;
+$u =~ s/.*://;
 }
 if(length $l == 1) {
 $low[$k] = $l;
