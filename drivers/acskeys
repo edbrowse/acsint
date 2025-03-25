@@ -1,13 +1,8 @@
-#!/bin/sh
+#!/usr/bin/perl
 
 # use dumpkeys to determine the keyboard layout of your system.
-# Generate the strings lowercode and uppercode as used in acsint.c
-# The perl program is in a -e string, which is fine except the one place
-# I really want to print an apostrophe, and that's where I get the goofy
-# "'"'"'"
+# Generate the strings lowercode and uppercode as used in acsint.c.
 
-dumpkeys |
-perl -e '
 my %keywords = (
 "escape"=>"\\033",
 "tab"=>"\\t",
@@ -29,7 +24,7 @@ my %keywords = (
 "braceright"=>"}",
 "bracketleft"=>"[",
 "bracketright"=>"]",
-"apostrophe"=>"'"'"'",
+"apostrophe"=>"'",
 "quotedbl"=>"\\\"",
 "plus"=>"+",
 "minus"=>"-",
@@ -57,12 +52,15 @@ my %keywords = (
 "slash"=>"/",
 "underscore"=>"_",
 );
+
 my (@up, @low);
 my $limit = 120;
 for(my $i=0; $i<$limit; ++$i) {
 $up[$i] = $low[$i] = " ";
 }
-while(<>) {
+
+open FH, "dumpkeys|";
+while(<FH>) {
 chomp;
 s/\t/ /g;
 s/  */ /g;
@@ -85,12 +83,15 @@ next if /=F[0-9][0-9]*$/;
 next if /=F[0-9][0-9]*:F[0-9][0-9]*$/;
 next if /=(Alt|Shift|Control|Pause|Scroll_Lock|Num_Lock|Last_Console|Left|Right|Up|Down|Break|Find|Select|Insert|Help|Prior|Next|Remove)$/;
 next if /=KP_/;
+
+# the key code
 my $k = $_;
 $k =~ s/=.*//;
 if($k >= $limit) {
 print "Skipping code $k\n";
 next;
 }
+
 my $l = $_;
 $l =~ s/.*=//;
 my $u = "";
@@ -115,6 +116,8 @@ $uv = $keywords{lc $u};
 $up[$k] = $uv if(length $uv);
 }
 }
+close FH;
+
 print "        static const char lowercode[] =\n";
 print "\"";
 for(my $i=0; $i<$limit; ++$i) {
@@ -126,4 +129,4 @@ print "\"";
 for(my $i=0; $i<$limit; ++$i) {
 print $up[$i];
 }
-print "\";\n";'
+print "\";\n";
