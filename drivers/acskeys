@@ -59,11 +59,17 @@ for(my $i=0; $i<$limit; ++$i) {
 $up[$i] = $low[$i] = " ";
 }
 
+if($#ARGV >= 0) {
+open FH, $ARGV[0];
+} else {
 open FH, "dumpkeys|";
+}
 while(<FH>) {
 chomp;
 s/\t/ /g;
 s/  */ /g;
+s/^ //g;
+s/ *$//;
 my $upset = 0;
 if(/^shift /) {
 $upset = 1;
@@ -74,7 +80,6 @@ s/^keycode *//;
 next unless /=/;
 s/ *= */=/;
 s/\+//g;
-s/ *$//;
 s/ /:/;
 s/ .*//;
 next if /=nul$/;
