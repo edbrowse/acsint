@@ -21,7 +21,7 @@ as articulated by the Free Software Foundation.
 
 /*********************************************************************
 argv[0] is the absolute path of the running program, but only
-if it was invoked by an absolute path. If invoked by jupiter,
+if it was invoked with an absolute path. If invoked as jupiter,
 and then down $PATH, then argv[0] is simply jupiter.
 On many systems, $_ holds the absolute path, so let's try that.
 *********************************************************************/
@@ -1233,9 +1233,9 @@ acs_buzz();
 acs_sy_close();
 acs_close();
 usleep(700000);
-if(program_file && strchr(program_file, '/'))
+if(strchr(program_file, '/'))
 	execv(program_file, argvector);
-execvp("jupiter", argvector);
+execvp(program_file, argvector);
 // should never get here
 puts("\7\7\7");
 exit(1);
@@ -1525,6 +1525,8 @@ int lastrow, lastcol;
 argvector = argv;
 ++argv, --argc;
 program_file = getenv("_");
+if (!program_file)
+	program_file = *argvector;
 
 selectLanguage();
 o = outwords + acs_lang;
