@@ -1393,7 +1393,7 @@ acs_shutup();
 acs_rb = 0;
 goRead = 0;
 }
-if(echoMode && echo == 1 && c < 256 && isprint(c)) {
+if(echoMode && echo == 1 && c > 0x20) {
 interrupt();
 speakChar(c, 1, soundsOn, 0);
 }
