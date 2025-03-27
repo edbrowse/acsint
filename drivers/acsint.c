@@ -239,7 +239,7 @@ static void tty_pushstring(const char *cp, int len)
 	tty_insert_flip_string(&d->port, cp, len);
 	tty_flip_buffer_push(&d->port);
 #endif
-}				/* tty_pushstring */
+}
 
 /* File operations for /dev/acsint. */
 
@@ -449,7 +449,7 @@ static ssize_t device_read(struct file *file, char *buf, size_t len,
 
 	*offset += bytes_read;
 	return bytes_read;
-}				/* device_read */
+}
 
 static ssize_t device_write(struct file *file, const char *buf, size_t len,
 			    loff_t * offset)
@@ -682,7 +682,7 @@ static ssize_t device_write(struct file *file, const char *buf, size_t len,
 	bytes_write = p - buf;
 	*offset += bytes_write;
 	return bytes_write;
-}				/* device_write */
+}
 
 static unsigned int device_poll(struct file *fp, poll_table * pt)
 {
@@ -744,7 +744,7 @@ static void dropKeysPending(int mark)
 	nkeypending -= mark;
 	if (!nkeypending)
 		flushInKeyBuffer();
-}				/* dropKeysPending */
+}
 
 /* char is displayed on screen; is it echo? */
 /* This is run from within a spinlock */
@@ -817,29 +817,67 @@ static int isEcho(unsigned int c)
 
 	flushInKeyBuffer();
 	return 0;
-}				/* isEcho */
+}
 
-/* Post a keystroke on to the pending log, to watch for echo.
- * This is based on key code and shift state.
- * I wanted to base it on KBD_UNICODE, but my system doesn't throw those events.
- * See the sample code in keystroke().
- * Meantime this will have to do.
- * But it assumes ascii, and a qwerty keyboard.
- * Let me know if there's a better way. */
+        static const char lowercode_s[] =
+" \0331234567890-=\177\tqwertyuiop[]\r asdfghjkl;'` \\zxcvbnm,./                                <                                 ";
+        static const char uppercode_s[] =
+"  !@#$%^&*()_+\177 QWERTYUIOP{}\r ASDFGHJKL:\"~ |ZXCVBNM<>?                                >                                 ";
+        static const char raltcode_s[] =
+"                                                                                                                        ";
+#define KEYCODELIMIT 120
+static unsigned int lowercode_uni[KEYCODELIMIT+1];
+static unsigned int uppercode_uni[KEYCODELIMIT+1];
+static unsigned int raltcode_uni[KEYCODELIMIT+1];
+
+static void string2uni(const unsigned char *s, unsigned int *t)
+{
+	unsigned char c, d, e;
+	while((c = *s)) {
+// ascii first
+		if(!(c&0x80)) { *t++ = c, ++s; continue; }
+		if((c&0xc0) != 0xc0 || (c&0xf0) == 0xf0) {
+// invalid or larger unicode than I expected
+			*t++ = ' ', ++s;
+			while((*s&0xc0) == 0x80) ++s;
+			continue;
+		}
+		d = s[1];
+		if((c&0xe0) == 0xc0) {
+			c &= 0x1f;
+			*t++ = ((unsigned int)c<<6) | (d&0x3f);
+			s += 2;
+			continue;
+		}
+		c &= 0xf;
+		d &= 0x3f;
+		e = (s[2]&0x3f);
+		*t++ = ((unsigned int)c << 12) | ((unsigned int)d << 6) | e;
+		s += 3;
+	}
+	*t = 0;
+}
+
+/*********************************************************************
+Post a keystroke on to the pending log, to watch for echo.
+This is based on key code and shift state.
+I wanted to base it on KBD_UNICODE, but my system doesn't throw those events
+through the notifier. So this approach will have to do.
+Since I am translating codes, I have to know what each keystroke becomes.
+I have to do the same thing the kernel is doing.
+The tool keycodes, in this directory, tries to build the arrays for us.
+This isn't a very good method, there ought to be a way to see
+what the kernel is doing directly, I'm in the kernel after all,
+but I don't know how to do that.
+*********************************************************************/
+
 static void post4echo(int keytype, struct keyboard_notifier_param *param)
 {
 	int key = param->value;
 	int ss = param->shift & 0xf;
 	int leds = param->ledstate;
-	char keychar;
+	unsigned keyvalue;
 	struct keyhold *kp;	/* key pointer */
-
-        static const char lowercode[] =
-" \0331234567890-=\177\tqwertyuiop[]\r asdfghjkl;'` \\zxcvbnm,./                                <               \254       \243         ";
-        static const char uppercode[] =
-"  !@#$%^&*()_+\177 QWERTYUIOP{}\r ASDFGHJKL:\"~ |ZXCVBNM<>?                                >                                 ";
-        static const char raltcode[] =
-"                                                                                                                        ";
 
 	if (keytype == KBD_UNICODE) {
 		spin_lock_irq(&acslock);
@@ -858,14 +896,14 @@ static void post4echo(int keytype, struct keyboard_notifier_param *param)
 		return;
 	}
 
-/* KEYSYM not yet implemented */
+// KEYSYM not yet implemented
 	if (keytype != KBD_KEYCODE)
 		return;
 
 	if (key == KEY_KPENTER)
 		key = KEY_ENTER;
 
-/* pull keycode down to numbers if numlock numpad keys are hit */
+// pull keycode down to numbers if numlock numpad keys are hit
 	if (leds & K_NUMLOCK && (ss & ACS_SS_ALT) == 0) {
 		static const int padnumbers[] = {
 			KEY_7, KEY_8, KEY_9, 0,
@@ -886,42 +924,40 @@ static void post4echo(int keytype, struct keyboard_notifier_param *param)
 			key = padnumbers[key - KEY_KP7], ss = 0;
 	}
 
-	if (key >= sizeof(lowercode) - 1)
+	if (key >= KEYCODELIMIT)
 		return;
-	keychar = ' ';
+	keyvalue = ' ';
 	if(ss  ==  ACS_SS_RALT)
-		keychar = raltcode[key];
+		keyvalue = raltcode_uni[key];
 	if(ss  ==  ACS_SS_SHIFT)
-		keychar = uppercode[key];
+		keyvalue = uppercode_uni[key];
 	if(ss  ==  0)
-		keychar = lowercode[key];
-	if (keychar == ' ' && key != KEY_SPACE)
+		keyvalue = lowercode_uni[key];
+	if (keyvalue == ' ' && key != KEY_SPACE)
 		return;
 
-	if (keychar == '\r')
+	if (keyvalue == '\r')
 		ss = 0;
 
-/* don't know how to echo alt keys */
-	if (ss & ACS_SS_ALT)
-		return;
+	if(keyvalue < 0x80) {
+// control letters
+		if (ss & ACS_SS_CTRL && isalpha(keyvalue))
+			keyvalue = (keyvalue | 0x20) - ('a' - 1);
 
-/* control letters */
-	if (ss & ACS_SS_CTRL && isalpha(keychar))
-		keychar = (keychar | 0x20) - ('a' - 1);
-
-	if (leds & K_CAPSLOCK && isalpha(keychar))
-		keychar ^= 0x20;
+		if (leds & K_CAPSLOCK && isalpha(keyvalue))
+			keyvalue ^= 0x20;
+	}
 
 	spin_lock_irq(&acslock);
 	if (nkeypending == MAXKEYPENDING)
 		dropKeysPending(1);
 	kp = keystack + nkeypending;
-	kp->unicode = (unsigned char)keychar;
+	kp->unicode = keyvalue;
 	kp->when = jiffies;
 	kp->keytype = keytype;
 	++nkeypending;
 	spin_unlock_irq(&acslock);
-}				/* post4echo */
+}
 
 /* Push a character onto the tty log.
  * Called from the vt notifyer and from my printk console. */
@@ -971,7 +1007,7 @@ static void pushlog(unsigned int c, int mino, bool from_vt)
 	}
 
 	spin_unlock_irq(&acslock);
-}				/* pushlog */
+}
 
 /*
  * We need a console to capture printk() text
@@ -1044,7 +1080,7 @@ vt_out(struct notifier_block *this_nb, unsigned long type, void *data)
 	}			/* switch */
 
 	return NOTIFY_DONE;
-}				/* vt_out */
+}
 
 static struct notifier_block nb_vt = {
 	.notifier_call = vt_out,
@@ -1168,7 +1204,7 @@ event:
 
 done:
 	return NOTIFY_DONE;
-}				/* keystroke */
+}
 
 static struct notifier_block nb_key = {
 	.notifier_call = keystroke,
@@ -1183,6 +1219,9 @@ static int __init acsint_init(void)
 
 	in_use = false;
 	clear_keys();
+	string2uni((const unsigned char *)lowercode_s, lowercode_uni);
+	string2uni((const unsigned char *)uppercode_s, uppercode_uni);
+	string2uni((const unsigned char *)raltcode_s, raltcode_uni);
 
 	if (major == 0)
 		rc = misc_register(&acsint_dev);

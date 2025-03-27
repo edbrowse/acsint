@@ -50,20 +50,22 @@ my %keywords = (
 "semicolon"=>";",
 "slash"=>"/",
 "underscore"=>"_",
-"sterling"=>"\\243",
-"notsign"=>"\\254",
-"mu"=>"\\265",
-"ssharp"=>"\\337",
-"ae"=>"\\346",
-"eth"=>"\\360",
-"thorn"=>"\\376",
-"onequarter"=>"\\274",
-"onehalf"=>"\\275",
-"threequarters"=>"\\276",
-"bullet"=>"\\267",
+"sterling"=>"£",
+"euro"=>"€",
+"notsign"=>"¬",
+"mu"=>"µ",
+"ssharp"=>"ß",
+"ae"=>"æ",
+"eth"=>"ð",
+"thorn"=>"þ",
+"onequarter"=>"¼",
+"onehalf"=>"½",
+"threequarters"=>"¾",
+"bullet"=>"·",
 );
 
 my (@up, @low, @ralt);
+# WARNING! If you increase this limit you have to change acsint.c
 my $limit = 120;
 for(my $i=0; $i<$limit; ++$i) {
 $up[$i] = $low[$i] = $ralt[$i] = " ";
@@ -145,19 +147,19 @@ $ralt[$k] = $av if(length $av);
 }
 close FH;
 
-print "        static const char lowercode[] =\n";
+print "        static const char lowercode_s[] =\n";
 print "\"";
 for(my $i=0; $i<$limit; ++$i) {
 print $low[$i];
 }
 print "\";\n";
-print "        static const char uppercode[] =\n";
+print "        static const char uppercode_s[] =\n";
 print "\"";
 for(my $i=0; $i<$limit; ++$i) {
 print $up[$i];
 }
 print "\";\n";
-print "        static const char raltcode[] =\n";
+print "        static const char raltcode_s[] =\n";
 print "\"";
 for(my $i=0; $i<$limit; ++$i) {
 print $ralt[$i];
