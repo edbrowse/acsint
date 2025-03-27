@@ -834,10 +834,12 @@ static void post4echo(int keytype, struct keyboard_notifier_param *param)
 	char keychar;
 	struct keyhold *kp;	/* key pointer */
 
-	static const char lowercode[] =
-	    " \0331234567890-=\177\tqwertyuiop[]\r asdfghjkl;'` \\zxcvbnm,./    ";
-	static const char uppercode[] =
-	    " \033!@#$%^&*()_+\177\tQWERTYUIOP{}\r ASDFGHJKL:\"~ |ZXCVBNM<>?    ";
+        static const char lowercode[] =
+" \0331234567890-=\177\tqwertyuiop[]\r asdfghjkl;'` \\zxcvbnm,./                                <               \254       \243         ";
+        static const char uppercode[] =
+"  !@#$%^&*()_+\177 QWERTYUIOP{}\r ASDFGHJKL:\"~ |ZXCVBNM<>?                                >                                 ";
+        static const char raltcode[] =
+"                                                                                                                        ";
 
 	if (keytype == KBD_UNICODE) {
 		spin_lock_irq(&acslock);
@@ -886,8 +888,13 @@ static void post4echo(int keytype, struct keyboard_notifier_param *param)
 
 	if (key >= sizeof(lowercode) - 1)
 		return;
-
-	keychar = (ss & ACS_SS_SHIFT) ? uppercode[key] : lowercode[key];
+	keychar = ' ';
+	if(ss  ==  ACS_SS_RALT)
+		keychar = raltcode[key];
+	if(ss  ==  ACS_SS_SHIFT)
+		keychar = uppercode[key];
+	if(ss  ==  0)
+		keychar = lowercode[key];
 	if (keychar == ' ' && key != KEY_SPACE)
 		return;
 

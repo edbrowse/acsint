@@ -52,7 +52,7 @@ enum acs_command {
 
 /* Symbolic constants for the shift states are derived from keyboard.h,
  * but I turn them into bits for you.
- * This makes it easier to ddescribe modified key chords such as alt control X.
+ * This makes it easier to describe modified key chords such as alt control X.
  * Just or things together. */
 #define ACS_SS_SHIFT (1<<KG_SHIFT)
 #define ACS_SS_RALT (1<<KG_ALTGR)
