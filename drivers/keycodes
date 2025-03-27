@@ -57,16 +57,16 @@ my %keywords = (
 "ae"=>"\\346",
 "eth"=>"\\360",
 "thorn"=>"\\376",
-"onequarter"=>"274",
-"onehalf"=>"275",
-"threequarters"=>"276",
+"onequarter"=>"\\274",
+"onehalf"=>"\\275",
+"threequarters"=>"\\276",
 "bullet"=>"\\267",
 );
 
-my (@up, @low);
+my (@up, @low, @ralt);
 my $limit = 120;
 for(my $i=0; $i<$limit; ++$i) {
-$up[$i] = $low[$i] = " ";
+$up[$i] = $low[$i] = $ralt[$i] = " ";
 }
 
 if($#ARGV >= 0) {
@@ -81,9 +81,13 @@ s/  */ /g;
 s/^ //g;
 s/ *$//;
 my $upset = 0;
+my $altset = 0;
 if(/^shift /) {
 $upset = 1;
 s/^shift //;
+} elsif(/^altgr /) {
+$altset = 1;
+s/^altgr //;
 }
 next unless /^keycode/;
 s/^keycode *//;
@@ -110,14 +114,16 @@ next;
 my $l = $_;
 $l =~ s/.*=//;
 my $u = "";
-my ($lv, $uv);
-$l =~ s/:.*// if $upset;
+my $ra = "";
+my ($lv, $uv, $av);
+$l =~ s/:.*// if $upset|$altset;
 if($l =~ /:/) {
 $u = $l;
 $l =~ s/:.*//;
 $u =~ s/.*://;
 }
 $u = $l, $l = "" if $upset;
+$ra = $l, $l = "" if $altset;
 if(length $l == 1) {
 $low[$k] = $l;
 } elsif(length $l > 1) {
@@ -129,6 +135,12 @@ $up[$k] = $u;
 } elsif(length $u > 1) {
 $uv = $keywords{lc $u};
 $up[$k] = $uv if(length $uv);
+}
+if(length $ra == 1) {
+$ralt[$k] = $ra;
+} elsif(length $ra > 1) {
+$av = $keywords{lc $ra};
+$ralt[$k] = $av if(length $av);
 }
 }
 close FH;
@@ -143,5 +155,11 @@ print "        static const char uppercode[] =\n";
 print "\"";
 for(my $i=0; $i<$limit; ++$i) {
 print $up[$i];
+}
+print "\";\n";
+print "        static const char raltcode[] =\n";
+print "\"";
+for(my $i=0; $i<$limit; ++$i) {
+print $ralt[$i];
 }
 print "\";\n";
