@@ -52,6 +52,7 @@ my %keywords = (
 "underscore"=>"_",
 "sterling"=>"£",
 "euro"=>"€",
+"cent"=>"¢",
 "notsign"=>"¬",
 "mu"=>"µ",
 "ssharp"=>"ß",
@@ -62,6 +63,8 @@ my %keywords = (
 "onehalf"=>"½",
 "threequarters"=>"¾",
 "bullet"=>"·",
+"left_double_quotation_mark"=>"“",
+"right_double_quotation_mark"=>"”",
 );
 
 my (@up, @low, @ralt);
@@ -117,7 +120,7 @@ my $l = $_;
 $l =~ s/.*=//;
 my $u = "";
 my $ra = "";
-my ($lv, $uv, $av);
+my $w;
 $l =~ s/:.*// if $upset|$altset;
 if($l =~ /:/) {
 $u = $l;
@@ -129,20 +132,22 @@ $ra = $l, $l = "" if $altset;
 if(length $l == 1) {
 $low[$k] = $l;
 } elsif(length $l > 1) {
-$lv = $keywords{lc $l};
-$low[$k] = $lv if(length $lv);
+$w = $keywords{lc $l};
+$low[$k] = $w if(length $w);
 }
 if(length $u == 1) {
 $up[$k] = $u;
 } elsif(length $u > 1) {
-$uv = $keywords{lc $u};
-$up[$k] = $uv if(length $uv);
+$w = $keywords{lc $u};
+$up[$k] = $w if(length $w);
 }
 if(length $ra == 1) {
 $ralt[$k] = $ra;
+#} elsif($ra =~ /^u[0-9a-f]+$/i) {
+#$ralt[$k] = chr hex substr $ra, 1;
 } elsif(length $ra > 1) {
-$av = $keywords{lc $ra};
-$ralt[$k] = $av if(length $av);
+$w = $keywords{lc $ra};
+$ralt[$k] = $w if(length $w);
 }
 }
 close FH;
