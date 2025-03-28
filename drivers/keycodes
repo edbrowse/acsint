@@ -3,6 +3,8 @@
 # use dumpkeys to determine the keyboard layout of your system.
 # Generate the strings lowercode and uppercode as used in acsint.c.
 
+use Encode;
+
 my %keywords = (
 "escape"=>"\\033",
 "tab"=>"\\t",
@@ -131,20 +133,24 @@ $u = $l, $l = "" if $upset;
 $ra = $l, $l = "" if $altset;
 if(length $l == 1) {
 $low[$k] = $l;
+} elsif($l =~ /^u[0-9a-f]+$/i) {
+$low[$k] = encode "utf8", chr hex substr $l, 1;
 } elsif(length $l > 1) {
 $w = $keywords{lc $l};
 $low[$k] = $w if(length $w);
 }
 if(length $u == 1) {
 $up[$k] = $u;
+} elsif($u =~ /^u[0-9a-f]+$/i) {
+$up[$k] = encode "utf8", chr hex substr $u, 1;
 } elsif(length $u > 1) {
 $w = $keywords{lc $u};
 $up[$k] = $w if(length $w);
 }
 if(length $ra == 1) {
 $ralt[$k] = $ra;
-#} elsif($ra =~ /^u[0-9a-f]+$/i) {
-#$ralt[$k] = chr hex substr $ra, 1;
+} elsif($ra =~ /^u[0-9a-f]+$/i) {
+$ralt[$k] = encode "utf8", chr hex substr $ra, 1;
 } elsif(length $ra > 1) {
 $w = $keywords{lc $ra};
 $ralt[$k] = $w if(length $w);
