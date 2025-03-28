@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+
+# Configure acsint.c to your keyboard layout.
+# This is necessary for echo mode.
+# Don't just run this automatically; run keycodes first, and see if the
+# resulting strings seem sane to you. If they do, then run keyconfigure,
+# and then make modules.
+
+open KC, "keycodes|";
+my @newarrays = <KC>;
+close KC;
+if($#newarrays != 5) {
+print "Output from keycodes is not 6 lines as expected";
+exit 1;
+}
+
+open inf, "acsint.in";
+open outf, ">acsint.c";
+my $through = 1;
+while(<inf>) {
+if(/static const char lowercode/) {
+$through = 0;
+foreach my $i (0..$#newarrays) {
+print outf $newarrays[$i];
+}
+}
+$through = 1 if /#define KEYCODELIMIT/;
+print outf if $through;
+}
+close inf;
+close outf;

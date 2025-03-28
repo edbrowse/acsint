@@ -819,11 +819,11 @@ static int isEcho(unsigned int c)
 	return 0;
 }
 
-        static const char lowercode_s[] =
+static const char lowercode_s[] =
 " \0331234567890-=\177\tqwertyuiop[]\r asdfghjkl;'` \\zxcvbnm,./                                <                                 ";
-        static const char uppercode_s[] =
+static const char uppercode_s[] =
 "  !@#$%^&*()_+\177 QWERTYUIOP{}\r ASDFGHJKL:\"~ |ZXCVBNM<>?                                >                                 ";
-        static const char raltcode_s[] =
+static const char raltcode_s[] =
 "                                                                                                                        ";
 #define KEYCODELIMIT 120
 static unsigned int lowercode_uni[KEYCODELIMIT+1];
