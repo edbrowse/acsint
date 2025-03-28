@@ -1395,7 +1395,7 @@ goRead = 0;
 }
 if(echoMode && echo == 1 && c >= 0x20) {
 interrupt();
-speakChar(c, 1, soundsOn, 0);
+speakChar(c, 1, soundsOn, 1);
 }
 
 goRead2 = (echo == 0);
