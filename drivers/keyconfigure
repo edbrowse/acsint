@@ -6,7 +6,10 @@
 # resulting strings seem sane to you. If they do, then run keyconfigure,
 # and then make modules.
 
-open KC, "keycodes|";
+if(!open KC, "keycodes|") {
+print "could not execute keycodes\n";
+exit 1;
+}
 my @newarrays = <KC>;
 close KC;
 if($#newarrays != 5) {
@@ -20,9 +23,7 @@ my $through = 1;
 while(<inf>) {
 if(/static const char lowercode/) {
 $through = 0;
-foreach my $i (0..$#newarrays) {
-print outf $newarrays[$i];
-}
+print outf @newarrays;
 }
 $through = 1 if /#define KEYCODELIMIT/;
 print outf if $through;
