@@ -6,7 +6,9 @@
 # resulting strings seem sane to you. If they do, then run keyconfigure,
 # and then make modules.
 
-if(!open KC, "keycodes|") {
+# In case . isn't in your PATH, and this only makes sense
+# in the drivers directory anyways.
+if(!open KC, "./keycodes|") {
 print "could not execute keycodes\n";
 exit 1;
 }
