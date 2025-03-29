@@ -6,10 +6,10 @@
 use Encode;
 
 my %keywords = (
-"escape"=>"\\033",
-"tab"=>"\\t",
-"return"=>"\\r",
-"delete"=>"\\177",
+"Escape"=>"\\033",
+"Tab"=>"\\t",
+"Return"=>"\\r",
+"Delete"=>"\\177",
 "exclam"=>"!",
 "quotedbl"=>'\\"',
 "numbersign"=>"#",
@@ -87,39 +87,39 @@ my %keywords = (
 "onehalf"=>"½",
 "threequarters"=>"¾",
 "questiondown"=>"¿",
-"agrave"=>"À",
-"aacute"=>"Á",
-"acircumflex"=>"Â",
-"atilde"=>"Ã",
-"adiaeresis"=>"Ä",
-"aring"=>"Å",
-"ae"=>"Æ",
-"ccedilla"=>"Ç",
-"egrave"=>"È",
-"eacute"=>"É",
-"ecircumflex"=>"Ê",
-"ediaeresis"=>"Ë",
-"igrave"=>"Ì",
-"iacute"=>"Í",
-"icircumflex"=>"Î",
-"idiaeresis"=>"Ï",
-"eth"=>"Ð",
-"ntilde"=>"Ñ",
-"ograve"=>"Ò",
-"oacute"=>"Ó",
-"ocircumflex"=>"Ô",
-"otilde"=>"Õ",
-"odiaeresis"=>"Ö",
+"Agrave"=>"À",
+"Aacute"=>"Á",
+"Acircumflex"=>"Â",
+"Atilde"=>"Ã",
+"Adiaeresis"=>"Ä",
+"Aring"=>"Å",
+"AE"=>"Æ",
+"Ccedilla"=>"Ç",
+"Egrave"=>"È",
+"Eacute"=>"É",
+"Ecircumflex"=>"Ê",
+"Ediaeresis"=>"Ë",
+"Igrave"=>"ì",
+"Iacute"=>"Í",
+"Icircumflex"=>"Î",
+"Idiaeresis"=>"Ï",
+"ETH"=>"Ð",
+"Ntilde"=>"Ñ",
+"Ograve"=>"Ò",
+"Oacute"=>"Ó",
+"Ocircumflex"=>"Ô",
+"Otilde"=>"Õ",
+"Odiaeresis"=>"Ö",
 "multiply"=>"×",
 "multiplication"=>"×",
-"ooblique"=>"Ø",
-"oslash"=>"Ø",
-"ugrave"=>"Ù",
-"uacute"=>"Ú",
-"ucircumflex"=>"Û",
-"udiaeresis"=>"Ü",
-"yacute"=>"Ý",
-"thorn"=>"Þ",
+"Ooblique"=>"Ø",
+"Oslash"=>"Ø",
+"Ugrave"=>"Ù",
+"Uacute"=>"Ú",
+"Ucircumflex"=>"Û",
+"Udiaeresis"=>"Ü",
+"Yacute"=>"Ý",
+"THORN"=>"Þ",
 "ssharp"=>"ß",
 "agrave"=>"à",
 "aacute"=>"á",
@@ -231,7 +231,7 @@ $low[$k] = $l;
 } elsif($l =~ /^u[0-9a-f]+$/i) {
 $low[$k] = encode "utf8", chr hex substr $l, 1;
 } elsif(length $l > 1) {
-$w = $keywords{lc $l};
+$w = $keywords{$l};
 $low[$k] = $w if(length $w);
 }
 if(length $u == 1) {
@@ -239,7 +239,7 @@ $up[$k] = $u;
 } elsif($u =~ /^u[0-9a-f]+$/i) {
 $up[$k] = encode "utf8", chr hex substr $u, 1;
 } elsif(length $u > 1) {
-$w = $keywords{lc $u};
+$w = $keywords{$u};
 $up[$k] = $w if(length $w);
 }
 if(length $ra == 1) {
@@ -247,7 +247,7 @@ $ralt[$k] = $ra;
 } elsif($ra =~ /^u[0-9a-f]+$/i) {
 $ralt[$k] = encode "utf8", chr hex substr $ra, 1;
 } elsif(length $ra > 1) {
-$w = $keywords{lc $ra};
+$w = $keywords{$ra};
 $ralt[$k] = $w if(length $w);
 }
 }
