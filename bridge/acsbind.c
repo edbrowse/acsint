@@ -334,7 +334,7 @@ unsigned char c;
 const char *u;
 
 	static const unsigned char numpad[] = {
-KEY_KPASTERISK, KEY_KPPLUS, 0, KEY_KPMINUS, KEY_KPDOT, KEY_KPSLASH,
+KEY_KPASTERISK, KEY_KPPLUS, KEY_KPENTER, KEY_KPMINUS, KEY_KPDOT, KEY_KPSLASH,
 KEY_KP0, KEY_KP1, KEY_KP2, KEY_KP3, KEY_KP4,
 KEY_KP5, KEY_KP6, KEY_KP7, KEY_KP8, KEY_KP9};
 
@@ -402,10 +402,12 @@ else key += KEY_F11 - 11;
 goto done;
 }
 
-if(s[0] == '#' && s[1] && strchr("*+.-/0123456789", s[1])) {
+if(s[0] == '#' && s[1] && strchr("*+e-./0123456789", s[1])) {
 c = (unsigned char) *++s;
 ++s;
-		key = numpad[c-'*'];
+// A lucky fluke that these line up in the ascii table, except for e
+if(c == 'e') key = KEY_KPENTER;
+else key = numpad[c-'*'];
 goto done;
 }
 
@@ -1388,7 +1390,7 @@ skipWhite(&s);
 // comment line starts with #, except for ## space or# digit
 if(s[0] == '#') {
 if(!s[1]) return 0;
-if(!strchr("1234567890.+-*/", s[1])) return 0;
+if(!strchr("1234567890.+-e*/", s[1])) return 0;
 }
 
 mkcode = acs_ascii2mkcode(s, &s);
