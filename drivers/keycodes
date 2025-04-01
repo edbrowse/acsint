@@ -176,7 +176,7 @@ my %keywords = (
 
 my (@up, @low, @ralt);
 # WARNING! If you increase this limit you have to change acsint.c
-my $limit = 120;
+my $limit = 240;
 for(my $i=0; $i<$limit; ++$i) {
 $up[$i] = $low[$i] = $ralt[$i] = " ";
 }

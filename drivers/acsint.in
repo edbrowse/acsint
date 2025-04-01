@@ -825,7 +825,7 @@ static const char uppercode_s[] =
 "  !@#$%^&*()_+\177 QWERTYUIOP{}\r ASDFGHJKL:\"~ |ZXCVBNM<>?                                >                                 ";
 static const char raltcode_s[] =
 "                                                                                                                        ";
-#define KEYCODELIMIT 120
+#define KEYCODELIMIT 240
 static unsigned int lowercode_uni[KEYCODELIMIT+1];
 static unsigned int uppercode_uni[KEYCODELIMIT+1];
 static unsigned int raltcode_uni[KEYCODELIMIT+1];
