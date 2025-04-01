@@ -386,15 +386,18 @@ if((s[0] == 'r' || s[0] == 'R') && s[1] == '@') { ss|= ACS_SS_RALT; s += 2; cont
 break;
 }
 
+if((s[0] == 'k' || s[0] == 'K') && isdigit((unsigned char)s[1])) {
+++s;
+key = strtol(s, (char**)&s, 10);
+c = (unsigned char)s[0];
+if(key <= 0 || key > 240) goto error;
+goto done;
+}
+
 if((s[0] == 'f' || s[0] == 'F') && isdigit((unsigned char)s[1])) {
 ++s;
-key = 0;
+key = strtol(s, (char**)&s, 10);
 c = (unsigned char)s[0];
-while(isdigit(c)) {
-key = 10*key + c - '0';
-++s;
-c = (unsigned char)s[0];
-}
 if(key <= 0 || key > 12) goto error;
 // the real keycode
 if(key <= 10) key += KEY_F1-1;
