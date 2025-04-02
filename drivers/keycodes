@@ -147,6 +147,7 @@ my %keywords = (
 "odiaeresis"=>"ö",
 "division"=>"÷",
 "oslash"=>"ø",
+"ooblique"=>"ø",
 "ostroke"=>"ø",
 "ugrave"=>"ù",
 "uacute"=>"ú",
@@ -155,6 +156,8 @@ my %keywords = (
 "yacute"=>"ý",
 "thorn"=>"þ",
 "ydiaeresis"=>"ÿ",
+"trademark"=>"™",
+"idotless"=>"ı",
 "dead_grave"=>"Ѐ",
 "dead_acute"=>"Ё",
 "dead_circumflex"=>"Ђ",
@@ -162,23 +165,87 @@ my %keywords = (
 "dead_diaeresis"=>"Є",
 "dead_cedilla"=>"Ѕ",
 "euro"=>"€",
+"leftquote"=>"‘",
+"rightquote"=>"’",
+"single_low_9_quotation_mark"=>"‚",
 "left_double_quotation_mark"=>"“",
 "right_double_quotation_mark"=>"”",
+"double_low_9_quotation_mark"=>"„",
+"ENG"=>"Ŋ",
+"eng"=>"ŋ",
 "Dstroke"=>"Đ",
+"Dslash"=>"Đ",
 "dstroke"=>"đ",
+"dslash"=>"đ",
 "Hstroke"=>"Ħ",
+"Hslash"=>"Ħ",
 "hstroke"=>"ħ",
+"hslash"=>"ħ",
 "Lstroke"=>"Ł",
+"Lslash"=>"Ł",
 "lstroke"=>"ł",
+"lslash"=>"ł",
 "Tstroke"=>"Ŧ",
+"Tslash"=>"Ŧ",
 "tstroke"=>"ŧ",
+"tslash"=>"ŧ",
+#Greek letters
+"Alpha"=>"Α",
+"Beta"=>"Β",
+"Gamma"=>"Γ",
+"Delta"=>"Δ",
+"Epsilon"=>"Ε",
+"Zeta"=>"Ζ",
+"Eta"=>"Η",
+"Theta"=>"Θ",
+"Iota"=>"Ι",
+"Kappa"=>"Κ",
+"Lamda"=>"Λ",
+"Mu"=>"Μ",
+"Nu"=>"Ν",
+"Xi"=>"Ξ",
+"Omicron"=>"Ο",
+"Pi"=>"Π",
+"Rho"=>"Ρ",
+"Sigma"=>"Σ",
+"Tau"=>"Τ",
+"Upsilon"=>"Υ",
+"Fi"=>"Φ",
+"Ki"=>"Χ",
+"psi"=>"Ψ",
+"Omega"=>"Ω",
+"alpha"=>"α",
+"beta"=>"β",
+"gamma"=>"γ",
+"delta"=>"δ",
+"epsilon"=>"ε",
+"zeta"=>"ζ",
+"eta"=>"η",
+"theta"=>"θ",
+"iota"=>"ι",
+"kappa"=>"κ",
+"lamda"=>"λ",
+#  skipping mu because that is micro earlier, don't know the symbol for μ
+"nu"=>"ν",
+"xi"=>"ξ",
+"omicron"=>"ο",
+"pi"=>"π",
+"rho"=>"ρ",
+"sigma f"=>"ς",
+"sigma"=>"σ",
+"tau"=>"τ",
+"upsilon"=>"υ",
+"fi"=>"φ",
+"ki"=>"χ",
+"psi"=>"ψ",
+"omega"=>"ω",
 );
 
-my (@up, @low, @ralt);
+my (@up, @low, @ralt, @upralt);
 # WARNING! If you increase this limit you have to change acsint.c
 my $limit = 240;
 for(my $i=0; $i<$limit; ++$i) {
-$up[$i] = $low[$i] = $ralt[$i] = " ";
+$up[$i] = $low[$i] = $ralt[$i] = $upralt[$i] = " ";
 }
 
 if($#ARGV >= 0) {
@@ -194,7 +261,11 @@ s/^ //g;
 s/ *$//;
 my $upset = 0;
 my $altset = 0;
-if(/^shift /) {
+my $upalt = 0;
+if(/^shift altgr /) {
+$upalt = 1;
+s/^shift altgr //;
+} elsif(/^shift /) {
 $upset = 1;
 s/^shift //;
 } elsif(/^altgr /) {
@@ -210,6 +281,7 @@ s/ /:/;
 s/ .*//;
 next if /=nul$/;
 next if /=nul:nul$/;
+next if /=VoidSymbol$/;
 next if /=F[0-9][0-9]*$/;
 next if /=F[0-9][0-9]*:F[0-9][0-9]*$/;
 next if /=KP_/;
@@ -227,8 +299,9 @@ my $l = $_;
 $l =~ s/.*=//;
 my $u = "";
 my $ra = "";
+my $ura = "";
 my $w;
-$l =~ s/:.*// if $upset|$altset;
+$l =~ s/:.*// if $upset|$altset|$upalt;
 if($l =~ /:/) {
 $u = $l;
 $l =~ s/:.*//;
@@ -236,6 +309,8 @@ $u =~ s/.*://;
 }
 $u = $l, $l = "" if $upset;
 $ra = $l, $l = "" if $altset;
+$ura = $l, $l = "" if $upalt;
+
 if(length $l == 1) {
 $low[$k] = $l;
 } elsif($l =~ /^u[0-9a-f]+$/i) {
@@ -244,6 +319,7 @@ $low[$k] = encode "utf8", chr hex substr $l, 1;
 $w = $keywords{$l};
 $low[$k] = $w if(length $w);
 }
+
 if(length $u == 1) {
 $up[$k] = $u;
 } elsif($u =~ /^u[0-9a-f]+$/i) {
@@ -252,6 +328,7 @@ $up[$k] = encode "utf8", chr hex substr $u, 1;
 $w = $keywords{$u};
 $up[$k] = $w if(length $w);
 }
+
 if(length $ra == 1) {
 $ralt[$k] = $ra;
 } elsif($ra =~ /^u[0-9a-f]+$/i) {
@@ -260,6 +337,16 @@ $ralt[$k] = encode "utf8", chr hex substr $ra, 1;
 $w = $keywords{$ra};
 $ralt[$k] = $w if(length $w);
 }
+
+if(length $ura == 1) {
+$upralt[$k] = $ura;
+} elsif($ura =~ /^u[0-9a-f]+$/i) {
+$upralt[$k] = encode "utf8", chr hex substr $ura, 1;
+} elsif(length $ura > 1) {
+$w = $keywords{$ura};
+$upralt[$k] = $w if(length $w);
+}
+
 }
 close FH;
 
@@ -281,3 +368,11 @@ for(my $i=0; $i<$limit; ++$i) {
 print $ralt[$i];
 }
 print "\";\n";
+print "static const char upraltcode_s[] =\n";
+print "\"";
+for(my $i=0; $i<$limit; ++$i) {
+print $upralt[$i];
+}
+print "\";\n";
+
+exit 0;
