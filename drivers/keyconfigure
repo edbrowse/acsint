@@ -14,8 +14,8 @@ exit 1;
 }
 my @newarrays = <KC>;
 close KC;
-if($#newarrays != 5) {
-print "Output from keycodes is not 6 lines as expected";
+if($#newarrays != 7) {
+print "Output from keycodes is not 8 lines as expected";
 exit 1;
 }
 

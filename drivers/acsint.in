@@ -825,10 +825,13 @@ static const char uppercode_s[] =
 "  !@#$%^&*()_+\177 QWERTYUIOP{}\r ASDFGHJKL:\"~ |ZXCVBNM<>?                                >                                 ";
 static const char raltcode_s[] =
 "                                                                                                                        ";
+static const char upraltcode_s[] =
+"                                                                                                                        ";
 #define KEYCODELIMIT 240
 static unsigned int lowercode_uni[KEYCODELIMIT+1];
 static unsigned int uppercode_uni[KEYCODELIMIT+1];
 static unsigned int raltcode_uni[KEYCODELIMIT+1];
+static unsigned int upraltcode_uni[KEYCODELIMIT+1];
 
 static void string2uni(const unsigned char *s, unsigned int *t)
 {
@@ -1222,6 +1225,7 @@ static int __init acsint_init(void)
 	string2uni((const unsigned char *)lowercode_s, lowercode_uni);
 	string2uni((const unsigned char *)uppercode_s, uppercode_uni);
 	string2uni((const unsigned char *)raltcode_s, raltcode_uni);
+	string2uni((const unsigned char *)upraltcode_s, upraltcode_uni);
 
 	if (major == 0)
 		rc = misc_register(&acsint_dev);
