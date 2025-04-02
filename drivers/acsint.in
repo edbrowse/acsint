@@ -932,6 +932,8 @@ static void post4echo(int keytype, struct keyboard_notifier_param *param)
 	keyvalue = ' ';
 	if(ss  ==  ACS_SS_RALT)
 		keyvalue = raltcode_uni[key];
+	if(ss  ==  (ACS_SS_RALT|ACS_SS_SHIFT))
+		keyvalue = upraltcode_uni[key];
 	if(ss  ==  ACS_SS_SHIFT)
 		keyvalue = uppercode_uni[key];
 	if(ss  ==  0)
