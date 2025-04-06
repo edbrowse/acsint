@@ -1524,6 +1524,7 @@ if(			(g == '0' && e == 't') ||
 		goto success;
 	} /* comma formatted number */
 
+#if 0
 	/* read 19980502, when part of a filename. */
 	if(end-start == 8 && start[6] <= '3' && start[4] <= '1' &&
 	((start[0] == '1' && start[1] == '9') || (start[0] == '2' && start[1] == '0'))) {
@@ -1539,6 +1540,7 @@ if(			(g == '0' && e == 't') ||
 			goto success;
 		} /* number part of a larger token */
 	} /* 19yymmdd */
+#endif
 
 	/* If you wanted me to read thousands and millions,
 	 * you should have used commas. */
