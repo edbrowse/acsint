@@ -662,6 +662,7 @@ case ACS_SY_STYLE_DOUBLE:
 case ACS_SY_STYLE_ESPEAKUP:
 n = 9*n + 10;
 doublestring[1] = '0' + n/10;
+doublestring[2] = '0' + n%10;
 ss_writeString(doublestring);
 break;
 
