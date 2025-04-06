@@ -648,6 +648,7 @@ return 0;
 int acs_setpitch(int n)
 {
 static char doublestring[] = "\01xxp";
+static char espeakupstring[] = "\01xp";
 static const short tohurtz[] = {
 66, 80, 98, 120, 144, 170, 200, 240, 290, 340};
 static char decstring[] = "[:dv ap xxx]";
@@ -659,11 +660,15 @@ if(n < 0 || n > 9) return -1;
 
 switch(acs_style) {
 case ACS_SY_STYLE_DOUBLE:
-case ACS_SY_STYLE_ESPEAKUP:
 n = 9*n + 10;
 doublestring[1] = '0' + n/10;
 doublestring[2] = '0' + n%10;
 ss_writeString(doublestring);
+break;
+
+case ACS_SY_STYLE_ESPEAKUP:
+espeakupstring[1] = '0' + n;
+ss_writeString(espeakupstring);
 break;
 
 case ACS_SY_STYLE_DECEXP: case ACS_SY_STYLE_DECPC:
@@ -673,7 +678,7 @@ ss_writeString(decstring);
 break;
 
 case ACS_SY_STYLE_BNS:
-/* BNS pitch is 01 through 63.  An increment of 6, giving levels from 6 .. 60
+/* BNS pitch is 01 through 63.  An increment of 6, giving levels from 6 . 60
 should work well. */
 sprintf(bnsstring, "\x05%02dP", (n+1) * 6);
 ss_writeString(bnsstring);

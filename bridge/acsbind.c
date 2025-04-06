@@ -548,7 +548,7 @@ static const struct uc_name english_uc[] = {
 {'+', "plus"},
 {',', "comma"},
 {'-', "dash"},
-{'.', "period"},
+{'.', "dot"},
 {'/', "slash"},
 {':', "colen"},
 {';', "semi"},
@@ -677,8 +677,8 @@ static const struct uc_name english_uc[] = {
 {0x166, "cap t stroke"},
 {0x167, "t stroke"},
 {0x17f, "long s"},
-{0x2b9, "prime"},
-{0x2ba, "double prime"},
+{0x2b9, "prime modifier"},
+{0x2ba, "double prime modifier"},
 // Greek letters
 {0x391, "cap alpha"},
 {0x392, "cap beta"},
@@ -752,6 +752,12 @@ static const struct uc_name english_uc[] = {
 {0x2032, "prime"},
 {0x2033, "double prime"},
 {0x2034, "triple prime"},
+{0x2039, "left single angle quote"},
+{0x203a, "right single angle quote"},
+{0x203c, "double bang"},
+{0x203d, "interrobang"},
+{0x2044, "fraction slash"},
+{0x2057, "quadruple prime"},
 {0x20ac, "euro"},
 {0x2122, "trademark"},
 {0x215b, "one eighth"},
@@ -762,6 +768,8 @@ static const struct uc_name english_uc[] = {
 {0x2191, "up arrow"},
 {0x2192, "right arrow"},
 {0x2193, "down arrow"},
+{0x300a, "left double angle bracket"},
+{0x300b, "right double angle bracket"},
 {0, 0}
 };
 
