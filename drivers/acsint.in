@@ -223,25 +223,24 @@ DECLARE_WAIT_QUEUE_HEAD(wq);
 static bool in_use;		/* only one process opens this device at a time */
 static int last_fgc;		/* last fg_console */
 
-/* Push characters onto the input queue of the foreground tty.
- * This is for macros, or cut&paste. */
+// Push characters onto the input queue of the foreground tty.
+// This is for macros, or copy&paste.
 static void tty_pushstring(const char *cp, int len)
 {
 	struct vc_data *d = vc_cons[fg_console].d;
+	unsigned char *m;
 
 	if (!d)
 		return;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 11)
-	tty_insert_flip_string(d->port.tty, cp, len);
-	tty_flip_buffer_push(d->port.tty);
-#else
-	tty_insert_flip_string(&d->port, cp, len);
-	tty_flip_buffer_push(&d->port);
-#endif
+	if(tty_prepare_flip_string(&d->port, &m, len) != len)
+		return;
+	if(!copy_from_user(m, cp, len))
+// if not all the bytes are copied what should we do? We already made room.
+		tty_flip_buffer_push(&d->port);
 }
 
-/* File operations for /dev/acsint. */
+// File operations for /dev/acsint.
 
 static int device_open(struct inode *inode, struct file *file)
 {
