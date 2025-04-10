@@ -553,7 +553,7 @@ static const struct uc_name english_uc[] = {
 {':', "colen"},
 {';', "semi"},
 {'<', "less"},
-{'=', "eequals"},
+{'=', "equals"},
 {'>', "greater"},
 {'?', "question"},
 {'@', "at"},

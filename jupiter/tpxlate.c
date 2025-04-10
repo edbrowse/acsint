@@ -1488,7 +1488,6 @@ if(			(g == '0' && e == 't') ||
 		if(e == '-' && acs_isalnum(end[1])) comma = start;
 		if(end - start > 19) comma = start; /* I don't do trillions */
 		/* int foo[] = {237,485,193,221}; */
-		if(tp_readLiteral && end - start > 7) comma = start;
 	}
 
 	/* Bad comma arrangement?  Read each component. */
@@ -1523,24 +1522,6 @@ if(			(g == '0' && e == 't') ||
 		if(zeroflag && appendIdigit(0)) goto overflow;
 		goto success;
 	} /* comma formatted number */
-
-#if 0
-	/* read 19980502, when part of a filename. */
-	if(end-start == 8 && start[6] <= '3' && start[4] <= '1' &&
-	((start[0] == '1' && start[1] == '9') || (start[0] == '2' && start[1] == '0'))) {
-		if(acs_isalpha(d) || acs_isalpha(e) ||
-		(d == '.' && acs_isalnum(start[-2])) ||
-		(e == '.' && acs_isalnum(end[1]))) {
-			i = atoiLength(start, 4);
-			if(appendYear(i)) goto overflow;
-			i = atoiLength(start+4, 2);
-			if(appendOX(i)) goto overflow;
-			i = atoiLength(start+6, 2);
-			if(appendOX(i)) goto overflow;
-			goto success;
-		} /* number part of a larger token */
-	} /* 19yymmdd */
-#endif
 
 	/* If you wanted me to read thousands and millions,
 	 * you should have used commas. */
