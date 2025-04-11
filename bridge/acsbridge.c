@@ -1102,6 +1102,7 @@ static void putback(int n)
 	}
 }
 
+#define isApostrophe(c) ((c) == '\'' || (c) == 0x2019)
 // start of word (actually token/symbol)
 int acs_startword(void)
 {
@@ -1129,7 +1130,7 @@ if(!c) return 0;
 	apos = apos1 = 0;
 	do {
 		c = acs_getc();
-		if(c == '\'') {
+		if(isApostrophe(c)) {
 			if(apos1) break;
 			apos = apos1 = 1;
 			continue;
@@ -1167,7 +1168,7 @@ if(!c) return 0;
 	apos = apos1 = 0;
 	do {
 		c = acs_getc();
-		if(c == '\'') {
+		if(isApostrophe(c)) {
 			if(apos1) break;
 			 apos = apos1 = 1;
 			continue;
