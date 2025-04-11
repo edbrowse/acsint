@@ -34,6 +34,7 @@ char tp_acronUpper = 1; /* acronym letters in upper case? */
 char tp_acronDelim = ' ';
 char tp_oneSymbol; /* read one symbol - not a sentence */
 char tp_readLiteral = 1; // read each punctuation mark
+char tp_numStyle = 2;
 /* a convenient place to put little phrases to speak */
 char shortPhrase[NEWWORDLEN];
 
@@ -256,7 +257,7 @@ static const struct OUTWORDS outwords[6] = {
 "o",
 {"ten", "eleven", "twelve", "thirteen", "fourteen",
 "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"},
-{"zeroath", "first", "second", "third", "forth",
+{"zeroth", "first", "second", "third", "forth",
 "fifth", "sixth", "seventh", "eighth", "ninth",
 "tenth", "eleventh", "twelvth", "thirteenth", "fourteenth",
 "fifteenth", "sixteenth", "seventeenth", "eighteenth", "nineteenth"},
@@ -754,6 +755,15 @@ static int appendChar(unsigned int c)
 	if(roomCheck(1)) return 1;
 	tp_out->buf[tp_out->len++] = c;
 	return 0;
+}
+
+static int appendAsIs(const unsigned int*s, const unsigned int *end)
+{
+int n = end - s;
+	if(roomCheck(n)) return 1;
+while(s < end)
+	tp_out->buf[tp_out->len++] = *s++;
+return 0;
 }
 
 /* append an isolated char or digit */
@@ -1456,9 +1466,13 @@ if(			(g == '0' && e == 't') ||
 			(g == '3' && (e == 'r' || (end > start+1 && e == 't'))) ||
 			(g > '3' && e == 't')) {
 				end += 2;
-				if(appendOrdinal(i)) goto overflow;
+				if(tp_numStyle) {
+					if(appendOrdinal(i)) goto overflow;
+					goto success;
+				}
+				if(appendAsIs(start, end)) goto overflow;
 				goto success;
-			} /* correct ending for a one-digit number */
+			} // correct ending for a one-digit number
 		} /* ends in st or nd or rd or th */
 	} /* 1 or 2 or 3 digits followed by 2 letters */
 

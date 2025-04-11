@@ -34,6 +34,7 @@ extern char tp_acronUpper; /* acronym letters in upper case? */
 extern char tp_acronDelim;
 extern char tp_oneSymbol; /* read one symbol - not a sentence */
 extern char tp_readLiteral; // read each punctuation mark
+extern char tp_numStyle; // style of reading numbers
 /* a convenient place to put little phrases to speak */
 extern char shortPhrase[NEWWORDLEN];
 
