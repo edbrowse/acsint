@@ -564,6 +564,7 @@ case 's': markleft = 0; p = &screenMode; break;
 	case 'c': p = &cc_buffer; break;
 	case 'd': p = &jdebug; break;
 	case 'l': p = &tp_readLiteral; break;
+	case 'm': p = &tp_numStyle; break;
 case 'i': p = &keyInterrupt; break;
 	default: acs_bell(); return;
 } // switch

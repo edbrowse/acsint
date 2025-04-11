@@ -34,7 +34,7 @@ char tp_acronUpper = 1; /* acronym letters in upper case? */
 char tp_acronDelim = ' ';
 char tp_oneSymbol; /* read one symbol - not a sentence */
 char tp_readLiteral = 1; // read each punctuation mark
-char tp_numStyle = 2;
+char tp_numStyle = 1;
 /* a convenient place to put little phrases to speak */
 char shortPhrase[NEWWORDLEN];
 
@@ -1486,25 +1486,25 @@ if(			(g == '0' && e == 't') ||
 		if(e != nbc) break;
 		if(!acs_isdigit(end[1])) break;
 		if(comma == start) continue;
-		if(!comma) { /* first comma */
+		if(!comma) { // first comma
 			comma = end;
 			if(comma - start > 3) comma = start;
 			continue;
 		}
-		/* subsequent comma */
+		// subsequent comma
 		if(end - comma != 4) comma = start;
 		else comma = end;
-	} /* loop gathering digits and commas */
+	} // loop gathering digits and commas
 	if(comma && end - comma != 4) comma = start;
 
 	if(comma && comma > start) {
 		if(acs_isalpha(e)) comma = start;
 		if(e == '-' && acs_isalnum(end[1])) comma = start;
-		if(end - start > 19) comma = start; /* I don't do trillions */
-		/* int foo[] = {237,485,193,221}; */
+		if(end - start > 19) comma = start; // don't go beyond trillions
+		// 414,237,485,193,221
 	}
 
-	/* Bad comma arrangement?  Read each component. */
+	// Bad comma arrangement?  Read each component.
 	if(comma == start) {
 		for(q=start; q<end; ++q)
 			if(*q == nbc) { end = q; break; }
@@ -1516,9 +1516,13 @@ if(			(g == '0' && e == 't') ||
 
 	if(comma) {
 		zeroflag = oneflag = 1;
+		if(!tp_numStyle) {
+			if(appendAsIs(start, end)) goto overflow;
+			goto success;
+		}
 		while(start < end) { /* procede by groups of 3 */
 			i = 0;
-			do { /* gather the next group of 3 */
+			do { // gather the next group of 3
 				i = 10*i + *start - '0';
 				++start;
 			} while ((end-start) % 4);
@@ -1531,14 +1535,14 @@ if(			(g == '0' && e == 't') ||
 				if(appendString(ow->bigNumbers[i])) goto overflow;
 			}
 			++start;
-		} /* loop over groups of 3 */
+		} // loop over groups of 3
 		if(d == '$') goto money;
 		if(zeroflag && appendIdigit(0)) goto overflow;
 		goto success;
-	} /* comma formatted number */
+	} // comma formatted number
 
-	/* If you wanted me to read thousands and millions,
-	 * you should have used commas. */
+	// If you wanted me to read thousands and millions,
+//* you should have used commas.
 	if(end - start > 4) goto copydigits;
 
 	/* starts with 0, read all the digits */
