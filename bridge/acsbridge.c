@@ -1102,7 +1102,6 @@ static void putback(int n)
 	}
 }
 
-#define isApostrophe(c) ((c) == '\'' || (c) == 0x2019)
 // start of word (actually token/symbol)
 int acs_startword(void)
 {

@@ -1495,6 +1495,7 @@ unsigned int acs_tolower(unsigned int uc);
 unsigned int acs_toupper(unsigned int uc);
 // from u umlaut to u
 char acs_unaccent(unsigned int uc);
+#define isApostrophe(c) (acs_unaccent(c) == '\'')
 
 /* visual cursor coordinates, based at 0,0 */
 extern int acs_vc_nrows, acs_vc_ncols;

@@ -189,8 +189,7 @@ if(acs_isalpha(*s) && acs_isupper(*s)) firstup = 1;
 for(; *s; ++s) {
 if(acs_isdigit(*s)) continue;
 // apostrophe ccan be in a word, that's ok.
-// Do we have to check for higher unicode apostrophes?
-if(*s == '\'') continue;
+if(isApostrophe (*s)) continue;
 if(!acs_isalpha(*s)) return 0;
 if(acs_islower(*s)) lowcount++;
 if(acs_isupper(*s)) upcount++;
@@ -242,7 +241,7 @@ char acs_unaccent(unsigned int c)
 	"`abcdefghijklmno"
 	"pqrstuvwxyz{|}~\177"
 	"..........s....."
-	"..........s....y"
+	".....*...'s....y"
 	" ..............."
 	"................"
 	"aaaaaaa eeeeiiii"
@@ -250,13 +249,11 @@ char acs_unaccent(unsigned int c)
 	"aaaaaaaceeeeiiii"
 	".nooooo.ouuuuy.y";
 static const unsigned int in_c[] = {
-0x95, 0x99, 0x9c, 0x9d, 0x91, 0x92, 0x93, 0x94,
-0xa0, 0xad, 0x96, 0x97, 0x85,
 0x2022, 0x25ba, 0x113, 0x2013, 0x2014,
 0x2018, 0x2019, 0x201c, 0x201d, 0x200e,
 0x2010, 0};
 static const char out_c[] =
-"*'`'`'`' ----**`--`'`' -";
+"**`--`'`' -";
 int i;
 
 if(c < 0x100) return down[c];
