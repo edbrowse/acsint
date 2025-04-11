@@ -1541,6 +1541,11 @@ if(			(g == '0' && e == 't') ||
 		goto success;
 	} // comma formatted number
 
+	if(!tp_numStyle && end - start <= 15) {
+		if(appendAsIs(start, end)) goto overflow;
+		goto success;
+	}
+
 	// If you wanted me to read thousands and millions,
 //* you should have used commas.
 	if(end - start > 4) goto copydigits;
