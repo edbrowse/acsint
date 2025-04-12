@@ -6,6 +6,8 @@
 # resulting strings seem sane to you. If they do, then run keyconfigure,
 # and then make modules.
 
+use Encode;
+
 # In case . isn't in your PATH, and this only makes sense
 # in the drivers directory anyways.
 if(!open KC, "./keycodes|") {
@@ -20,7 +22,16 @@ exit 1;
 }
 
 open layout, ">../bridge/keylayout.c";
-print layout @newarrays;
+# I assume the lower case is all ascii
+print layout $newarrays[0];
+print layout $newarrays[1];
+# I assume upper case is convertable to iso8859-1
+# $o is the octants
+print layout $newarrays[2];
+my $o;
+$o = decode "utf8", $newarrays[3];
+$o = encode "iso-8859-1", $o;
+print layout $o;
 close layout;
 
 open inf, "acsint.in";
