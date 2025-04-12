@@ -9,9 +9,9 @@ at least for the two kernel modules.
 This process has begun, code is indented,
 and other syntax issues have been addressed.
 We will need to keep this in mind as we make more changes.
-I think we should aim for this summer to submit the modules
-for consideration in the staging area.
-It's a goal anyways.
+Some day submit the modules for consideration in the staging area.
+Just before submission, move acsint.h and ttyclicks.h into include/linux,
+and use the include style #include <linux/foo.h>
 
 * ttyclicks.c cannot sleep between clicks unless you patch the kernel.
 The patch is included in this repository, but would not be accepted as is.
@@ -19,23 +19,6 @@ They would ask us to change the notifier system,
 to pass back a new action code like NOTIFY_SLEEP or some such,
 and I'm not sure they would even accept that.
 "It's too intrusive, and nobody else wants it."
-I use to think we get our infrastructure accepted into the linux core first,
-and then submit properly written modules using that structure.
-But it's hard to get changes accepted in the heart of the kernel.
-So now I think you submit functioning modules into staging,
-then say to the community,
-"That's kind of an ugly implementation.
-These things should really be here in the core.
-Here is a patch that fixes it."
-Get your foot in the door first, with a module that is perhaps
-suboptimal, then, when they are stuck with it,
-and they have to maintain it, propose changes to the kernel
-itself that makes the entire system better.
-So with this mindset, I suggest we submit ttyclicks
-without the sleep function; it just spins cpu cycles to do its timing,
-and then, when it is part of the kernel, we point out how silly that is
-and suggest a change to the notifier system.
-The same thoughts apply to the next item.
 
 * Clicks, swoops, and notes should really be handled in keyboard.c,
 along side the existing function kd_mksound().
@@ -45,12 +28,8 @@ and other modules could use them as well.
 This is obviously a better approach,
 a centralized suite of functions that generates sounds
 through the pc speaker or equivalent.
-Obviously better, but we'd have a hard time getting it approved from the get go.
-So again, back to my reverse logic -
-we submit ttyclicks as is, generating its own noises,
-and once it is in staging we point out how silly that design is,
-and submit a patch that moves the sound functions back to keyboard.c
-where they belong.
+Obviously better, but we'd have a hard time getting it approved.
+I've tried.
 
 * ttyclicks makes a quick high beep for echoed capital letters.
 this is ascii, and not international.
@@ -91,29 +70,6 @@ never come up in normal unicode output.
 Passing special unicodes back is of course very kludgy,
 but I don't think we're ready to hack the notifier system at this time,
 which is the right way to do it.
-we'll probably submit version 1 without any sleep at all,
-since they would prefer we take one step at a time.
-
-* Write bridge methods to provide buffered characters in unicode,
-ascii, or iso8859 according to your locale.
-Some of this has begun, e.g. getsentence_uc(),
-and macros can handle utf8, as the read side of the tty expects,
-but there is more work to do here.
-setpunc(), replaceword(), etc.
-These are basically ascii with iso8859-1 shoehorned in if you need it.
-That covers Spanish French German etc, and will do for now.
-
-* The detection of echo in the acsint driver is clunky.
-It doesn't work for unicodes, only ascii,
-and it presupposes a qwerty keyboard.
-If you have another layout like dvorak it won't work at all.
-I tried KBD_KEYSYM and that didn't seem to work at all.
-Catching KBD_UNICODE events looks perfect, but my system doesn't
-throw those events; I have no idea why.
-This is an open issue.
-
-* Same issue applies to acs_keystring() and acs_get1key() in the bridge.
-These assume ascii qwerty, and won't work properly otherwise.
 
 * Maintain a table of row mappings for screen memory.
 Example, since last time you refreshed, row 7 has moved up to row 5.
@@ -130,34 +86,4 @@ telling where each line has moved to since our last refresh.
 When this information passes down to the bridge,
 it can move your reading cursor appropriately,
 and any other markers that are tied to the text in screen memory.
-
-* Fold espeak into the bridge in a seamless fashion.
-That is, set ss_style = SS_STYLE_ESPEAK,
-and then the ss functions:
-ss_shutup
-ss_setvolume
-ss_incspeed
-ss_say_string
-etc will just work.
-This is more complicated than supporting various models over a serial port,
-because it involves function calls to the espeak library,
-a library that I would rather not load if it is not needed.
-This can be done by conditional compilation, perhaps from a configure script
-that defines ACS_ESPEAK as needed.
-Another approach is to build an espeak synthesizer client
-that makes all these espeak calls, but is a separate program.
-It has the same interface as the DoubleTalk, for instance,
-which is easy to program.
-So the bridge would set ss-styel = SS_STYLE_DOUBLE,
-but instead of talking to an external unit over a serial port,
-it talks to an espeak synthesizer over pipes,
-and the espeak synthesizer converts the doubletalk commands into espeak library calls.
-I can't tell, at this point, which approach is better.
-But I do know we need some way for an adapter to use all the ss functions
-in the bridge, even when those functions control espeak or some other software
-synth that is library based, rather than streaming commands
-over a serial port or pipe or socket.
-
-* Just before submission, move acsint.h and ttyclicks.h into include/linux,
-and use the include style #include <linux/foo.h>
 
