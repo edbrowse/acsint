@@ -542,10 +542,8 @@ acs_events();
 return swallow_rc;
 }
 
-const char lowercode[] =
-" \0331234567890-=\b qwertyuiop[]\r asdfghjkl;'` \\zxcvbnm,./    ";
-const char uppercode[] =
-" \033!@#$%^&*()_+\b QWERTYUIOP{}\r ASDFGHJKL:\"~ |ZXCVBNM<>?    ";
+// if this #include doesn't work, run keyconfigure in the drivers directory.
+#include "keylayout.c"
 
 // special handler for keystring()
 static void swallow_key_h(int key, int ss, int leds)
@@ -579,7 +577,7 @@ goto cleanup;
 }
 
 // This only works on a qwerty layout; not sure how to fix this.
-keychar = (ss&ACS_SS_SHIFT) ? uppercode[key] : lowercode[key];
+keychar = (ss&ACS_SS_SHIFT) ? uppercode_s[key] : lowercode_s[key];
 if(keychar == ' ' && key != KEY_SPACE) goto bad;
 if(leds & K_CAPSLOCK && isalpha(keychar))
 keychar ^= 0x20;
@@ -642,7 +640,7 @@ if(acs_get1key(&key, &state)) return -1;
 if(key > KEY_SPACE ||
 state&(ACS_SS_ALT|ACS_SS_CTRL)) return -1;
 // This only works on a qwerty layout; not sure how to fix this.
-keychar = (state&ACS_SS_SHIFT) ? uppercode[key] : lowercode[key];
+keychar = (state&ACS_SS_SHIFT) ? uppercode_s[key] : lowercode_s[key];
 if(!isalnum(keychar)) return -1;
 *p = keychar;
 return 0;

@@ -19,6 +19,10 @@ print "Output from keycodes is not 8 lines as expected";
 exit 1;
 }
 
+open layout, ">../bridge/keylayout.c";
+print layout @newarrays;
+close layout;
+
 open inf, "acsint.in";
 open outf, ">acsint.c";
 my $through = 1;
