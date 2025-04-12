@@ -1420,6 +1420,7 @@ Return 1 on overflow.
 Pass back the updated pointer, just after the input token.
 *********************************************************************/
 
+static char predollar;
 static int expandAlphaNumeric(unsigned int **sp)
 {
 	unsigned int c, d, e, f;
@@ -1437,6 +1438,13 @@ char ndc = " ..,."[acs_lang]; // number decimal character
 
 	c = *start;
 	if(acs_isalpha(c)) goto alphaToken;
+
+if(predollar) {
+// this should only happen when numStyle is 0 and we have seen
+// $ already, and determined that the number following is a monitary amount.
+if(appendChar('$')) goto overflow;
+predollar = 0;
+}
 
 	/* Check for 1st 2nd etc. */
 	d = start[-1];
@@ -1650,11 +1658,11 @@ copydigits:
 	goto possessive;
 
 money:
-	/* Note that 0, as in $0, has not yet been spoken. */
-	/* This allows us to read $0.39 as 39 cents. */
+	// Note that 0, as in $0, has not yet been spoken.
+	// This allows us to read $0.39 as 39 cents.
 	i = -1;
 	/* Check for $4K or $8.5M. */
-	if(!comma) {
+	if(!comma && tp_numStyle) {
 		int moneySuffix = -1;
 		q = end;
 		if(*q == '.') {
@@ -1692,11 +1700,11 @@ money:
 				if(appendMoney(0, 0, -1, q)) goto overflow;
 				end = q;
 				goto success;
-			} /* valid money suffix */
-		} /* letter follows money */
-	} /* no commas in the money number */
+			} // valid money suffix
+		} // letter follows money
+	} // no commas in the money number
 
-	/* determine how many cents are present */
+	// determine how many cents are present
 	i = -1;
 	if(*end == '.' &&
 	acs_isdigit(end[1]) && acs_isdigit(end[2]) &&
@@ -1704,7 +1712,11 @@ money:
 		i = atoiLength(end+1, 2);
 	end += 3;
 	} /* .xx follows */
-	if(appendMoney(zeroflag, oneflag, i, end)) goto overflow;
+	if(tp_numStyle) {
+		if(appendMoney(zeroflag, oneflag, i, end)) goto overflow;
+	} else {
+		if(appendAsIs(start, end)) goto overflow;
+	}
 	goto success;
 
 alphaToken:
@@ -2092,9 +2104,13 @@ do_punct:
 		 * First check for $.39 = 39 cents */
 		if(e == '.' && acs_isdigit(end[1]) && acs_isdigit(end[2]) &&
 		!acs_isalnum(end[3])) {
-			if(appendMoney(1, 0,
-			atoiLength(end+1, 2), end+3)) goto overflow;
 			end += 3;
+			if(tp_numStyle) {
+			if(appendMoney(1, 0,
+			atoiLength(end-2, 2), end+3)) goto overflow;
+			} else {
+		if(appendAsIs(s, end)) goto overflow;
+			}
 			break;
 		}
 		if(!acs_isdigit(e)) goto nomoney;
@@ -2104,6 +2120,7 @@ do_punct:
 		if(len > 3) goto nomoney; // $3456
 		if(len > 1) break; // $34 or $345
 // now looks like $3 and something, could be a parameter
+		if(!tp_numStyle) predollar = 1;
 		if(!tp_readLiteral) break;
 		if(*t == '.' && acs_isdigit(t[1])) break; // $3.5
 		/* Check for comma formatting. */
@@ -2114,6 +2131,7 @@ do_punct:
 		if(!acs_isdigit(t[1])) break;
 // $345,678,digits
 nomoney:
+		predollar = 0;
 		if(tp_readLiteral) goto do_punct;
 		break;
 
