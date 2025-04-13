@@ -579,6 +579,17 @@ and in my brain it almost has the same effect as the corresponding pauses.
 Of course it isn't nearly as funny as Victor Borge's
 Phonetic Punctuation.
 
+<P><DT>Number Processing
+
+<P>
+<DD>
+Jupiter preprocesses numbers so they are pronounced the same way regardless of the synthesizer.
+123 becomes one twenty three, 123,456 becomes one hundred twenty three thousand four hundred fifty six,
+$3.75 becomes three dollars and seventy five cents,
+$8.5 million becomes eight point five million dollars,
+and so on.
+If your synthesizer handles numbers and monitary amounts well, you might not need this feature.
+
 <P><DT>Control Chars
 
 <P>
@@ -908,6 +919,11 @@ For example, the following sequence causes control f5 to toggle screen mode, and
 <p>
 ^f5 toggle s speak "screen on|screen off"
 
+<p>
+If speak is the only command, ^f5 speak, then Jupiter takes input from the keyboard and sends it directly to the synthesizer.
+This can be used as a test,  to see how things are spoken without any preprocessing.
+The same can be accomplished by sending text into /etc/jupiter/fifo, described below, but this can be more convenient.
+
 <P><DT>label:
 <DD>
 This command waits for you to type a letter, then sets a label, using that letter,
@@ -981,6 +997,8 @@ i interrupt speech with any key
 e echo keys as typed
 <br>
 l literal reading of all punctuation marks
+<br>
+m preprocess numbers for a standard pronunciation
 <br>
 c control chars in buffer
 <br>
