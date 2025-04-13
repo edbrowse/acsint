@@ -898,6 +898,16 @@ You can then resume reading at this point if you like.
 Stop reading, but take no other action.
 This leaves the cursor on or near the word you last heard.
 
+<P><DT>speak:
+<DD>
+speak the next string at this point in the command sequence.
+This lets you specify a word or phrase, instead of the default that Jupiter provides.
+If the previous command sets or clears a mode, you can specify two different phrases separated by pipe.
+For example, the following sequence causes control f5 to toggle screen mode, and then say screen on or screen off.
+
+<p>
+^f5 toggle s speak "screen on|screen off"
+
 <P><DT>label:
 <DD>
 This command waits for you to type a letter, then sets a label, using that letter,

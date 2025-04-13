@@ -91,6 +91,7 @@ static const struct cmd speechcommands[] = {
 	{"suspend the adapter","suspend",0,0,1},
 	{"chromatic scale","step",0,0,0,2},
 	{"char plus asword","casw",1,3},
+	{"speak now","speak",0,0,0,2},
 	{0,""}
 };
 
@@ -454,6 +455,7 @@ strcpy(t, s);
 return t;
 }
 
+static char modeValue;
 static void runSpeechCommand(int input, const char *cmdlist);
 static void
 j_configure(const char *my_config, int docolon)
@@ -572,6 +574,7 @@ case 'i': p = &keyInterrupt; break;
 	if(action == 0) *p = 0;
 	if(action == 1) *p = 1;
 	if(action == 2) *p ^= 1;
+	modeValue = *p;
 	if(!quiet) {
 if(soundsOn || c == 'n')
 acs_tone_onoff(*p);
@@ -857,7 +860,9 @@ static 	char lasttext[SUPPORTLEN]; /* supporting text */
 	char cmd;
 const char *t;
 char *cut8;
+char *yn;
 
+modeValue = 1;
 acs_log("runSpeech\n");
 interrupt();
 cmd_resume = 0;
@@ -1052,9 +1057,9 @@ cmd_resume = cmdlist;
 	case 22: acs_bypass(); break;
 
 	/* clear, set, and toggle binary modes */
-	case 23: binmode(0, support, quiet); break;
-	case 24: binmode(1, support, quiet); break;
-	case 25: binmode(2, support, quiet); break;
+	case 23: binmode(0, support, quiet); goto top;
+	case 24: binmode(1, support, quiet); goto top;
+	case 25: binmode(2, support, quiet); goto top;
 
 	case 26: asword = 1; /* search backwards */
 	case 27: /* search forward */
@@ -1291,6 +1296,15 @@ case 50: // char plus asword
 asword = asword2 = 1;
 goto letter;
 
+case 51:
+// separate the yes no strings
+yn = strchr(suptext, '|');
+if(yn) *yn = 0;
+if(modeValue) acs_say_string(suptext);
+else if(yn) acs_say_string(yn + 1);
+if(yn) *yn = '|';
+break;
+
 	default:
 	error_bell:
 if(soundsOn) 		acs_bell();
@@ -1307,6 +1321,7 @@ else acs_say_string(o->endword);
 		return;
 	} /* end switch on function */
 
+modeValue = 1;
 	goto top; /* next command */
 }
 
