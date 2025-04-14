@@ -1218,18 +1218,19 @@ done:
  * This is an ascii match on the unaccented letters. */
 static int stringmatch(const char *s)
 {
-	char x, y;
+	unsigned char x, y;
 	short count = 0;
 
-	if(!(y = *++s)) return 1;
-	y = tolower(y);
+	if(!(y = (unsigned char)*++s)) return 1;
+	if(acs_isalpha(y)) y = acs_unaccent(y);
 
 	while(++count, acs_forward()) {
-		x = acs_unaccent(acs_getc());
+		x = acs_getc();
+		if(acs_isalpha(x)) x = acs_unaccent(x);
 if(x != y) break;
 		if(!(y = (unsigned char)*++s)) return 1;
-y = tolower(y);
-	} /* while matches */
+		if(acs_isalpha(y)) y = acs_unaccent(y);
+	} // while matches
 
 	// put the cursor back
 	putback(-count);
@@ -1252,10 +1253,11 @@ if(!tc) return 0;
 	if(!ok) return 0;
 
 first = (unsigned char) *string;
-first = tolower(first);
+if(acs_isalpha(first)) first = acs_unaccent(first);
 
 	do {
-		c = acs_unaccent(acs_getc());
+		c = acs_getc();
+if(acs_isalpha(c)) c = acs_unaccent(c);
 if(c == first && stringmatch(string)) return 1;
 		ok = back ? acs_back() : acs_forward();
 	} while(ok);
