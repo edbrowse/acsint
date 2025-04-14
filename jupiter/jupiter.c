@@ -58,7 +58,7 @@ static const struct cmd speechcommands[] = {
 	{"reed the current character as a nato word","asword",1,3},
 	{"reed the current character","char",1,3},
 	{"reed the current character","capchar",1,3},
-	{"current cohllumm number","colnum",1,3},
+	{"current column number","colnum",1,3},
 	{"reed the current word","word",1,3},
 	{"start reeding","read",1,3},
 	{"stop speaking","shutup",0,0,1},
@@ -92,6 +92,7 @@ static const struct cmd speechcommands[] = {
 	{"chromatic scale","step",0,0,0,2},
 	{"char plus asword","casw",1,3},
 	{"speak now","speak",0,0,0,2},
+	{"current word length","wordlen",1,3},
 	{0,""}
 };
 
@@ -1303,6 +1304,18 @@ if(yn) *yn = 0;
 if(modeValue) acs_say_string(suptext);
 else if(yn) acs_say_string(yn + 1);
 if(yn) *yn = '|';
+break;
+
+case 52: /* current word length */
+		acs_cursorsync();
+		acs_endword();
+		n = acs_startline();
+		acs_cursorset();
+		n += acs_startword();
+		n -= acs_startline();
+		sprintf(shortPhrase, "%d", n);
+		acs_cursorset();
+		acs_say_string_uc(prepTTSmsg(shortPhrase));
 break;
 
 	default:

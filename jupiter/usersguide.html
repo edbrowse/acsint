@@ -787,6 +787,10 @@ and it is convenient to treat these as compound words.
 <DD>
 Place the cursor at the end of the current word.
 
+<P><DT>wordlen:
+<DD>
+Read the length of the current word.
+
 <P><DT>lspc:
 <DD>
 Move the cursor to the left through spaces,
@@ -829,7 +833,7 @@ This is meant to read the last line of output, just before the prompt.
 In screen mode the cursor is at the start of the second to last line,
 assuming the last line is a prompt.
 
-<P><DT>column:
+<P><DT>colnum:
 <DD>
 Read the current column number.
 The first character in a line is in column 1.
@@ -1366,6 +1370,7 @@ Set the volume and speed of the synthesizer, for example.
 
 <h2> <A NAME=fifo> Jupiter fifo </A> </h2>
 
+<p>
 In unix or linux, a fifo is a virtual file that carries data from one running program to another.
 A particular fifo is used to pass text or instructions from other programs into Jupiter.
 Create the fifo like this.
@@ -1386,14 +1391,18 @@ with no way to interrupt it.
 That's not a great idea.
 You will typically echo small text fragments or synthesizer commands into this channel.
 It is used for debugging, or to verify the behavior of the synthesizer.
+It is also used for alerts.
+A program can send status messages, or a completion message, into the fifo,
+and you will hear it, even if the program is in the background or on another console.
 
 <P>
 If a line begins with two colons,
 then it is interpreted by Jupiter as speech commands.
-An external program could cause Jupiter to jump to the start of the buffer and start reading.
+An external program could cause Jupiter to jump to the start of the buffer and start reading,
+though I don't know why you would do that.
 
 <P>
-echo :: clmode 1 sbuf read > /etc/jupiter/fifo
+echo ':: clmode 1 sbuf read' > /etc/jupiter/fifo
 
 <P>
 Of more interest, perhaps, is the ability to load a config file based on the particular application.

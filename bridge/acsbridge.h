@@ -980,7 +980,7 @@ This is read as dash length 5, see getsentence() below.
 What about the word niño in Spanish?
 I use acs_isalpha() on the unicodes in the buffer,
 to determine what is a letter, so it should work,
-as long as your $LANG reflects your desired language.
+in any Western European language.
 *********************************************************************/
 int acs_startword(void);
 int acs_endword(void);
