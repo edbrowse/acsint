@@ -60,11 +60,13 @@ a:active { color: red; font-size: 1.25em; }
 
 <h2> <A NAME=auth> Author </A> </h2>
 
+<p>
 Karl Dahlke
 <A HREF=mailto:eklhad@gmail.com>eklhad@gmail.com</A>
 
 <h2> <A NAME=copy> Copyright Notice </A> </h2>
 
+<p>
 This program is copyright &copy; Karl Dahlke, 2000-2014.
 It is made available by the author under the terms of the GNU General Public License (GPL),
 as articulated by the Free Software Foundation.
@@ -72,6 +74,7 @@ It may be used for any purpose, and redistributed, provided this copyright notic
 
 <h2> <A NAME=over> Overview </A> </h2>
 
+<p>
 Jupiter is unique among all adapters in that it does not (by default) transform the words or icons on the screen into speech or braille.
 It is not typically used as a screen reader.
 It is capable of reading screen memory
@@ -120,6 +123,7 @@ to manage your parallel sessions.
 
 <h2> <A NAME=lang> Other Languages </A> </h2>
 
+<p>
 The buffer stores tty output in unicode, which is compatible with every language on Earth.
 Thus, in theory, Jupiter could be modified to support any language.
 At present it supports English, German, and Brazilian Portuguese.
@@ -130,6 +134,7 @@ I will do the rest.
 
 <h2> <A NAME=syn> Synthesizers </A> </h2>
 
+<p>
 This adapter, like Speakup or Orca or any other adapter, requires a speech synthesizer.
 There are two flavors.
 An external synthesizer plugs into the serial port on your computer
@@ -215,6 +220,7 @@ You need to killall espeakup to clean things up.
 
 <h2> <A NAME=mod> Modules </A> </h2>
 
+<p>
 Any program can read screen memory from /dev/vcs,
 but how do you get your hands on tty output
 as it is being generated?
@@ -400,6 +406,7 @@ options acsint major=11
 
 <h2> <A NAME=modes> Modes </A> </h2>
 
+<p>
 Jupiter has several modes that are on or off, enabled or disabled.
 Bind these to function or control keys, and you can turn these modes on or off at will.
 Most of these modes are global to all consoles.
@@ -635,6 +642,7 @@ Other modes are changed infrequently, and can be modified by key chords or key s
 
 <h2> <A NAME=cfg> Config Files </A> </h2>
 
+<p>
 At startup, Jupiter reads its key bindings, and loads its replacement dictionary,
 from the file /etc/jupiter/start.cfg.
 This can be changed using the -c option.
@@ -690,6 +698,7 @@ Again these files are taken relative to /etc/jupiter.
 
 <h2> <A NAME=rc> The Reading Cursor and Atomic Commands </A> </h2>
 
+<p>
 The reading cursor is a location in the tty buffer (in linear mode),
 or on screen (in screen mode),
 that corresponds to the letters or words you are reading or would like to read.
@@ -1126,6 +1135,7 @@ Here is a pretty sound.
 
 <h2> <A NAME=vc> The Visual Cursor and Autoread </A> </h2>
 
+<p>
 This section has no meaning in linear mode; it only applies to screen mode.
 
 <P>
@@ -1216,6 +1226,7 @@ then Jupiter can perform autoread as it was programmed to do.
 
 <h2> <A NAME=cfs> Config File Syntax </A> </h2>
 
+<p>
 Each line in a config file is one of the following.
 
 <UL>
@@ -1404,27 +1415,20 @@ though I don't know why you would do that.
 <P>
 echo ':: clmode 1 sbuf read' > /etc/jupiter/fifo
 
-<P>
-Of more interest, perhaps, is the ability to load a config file based on the particular application.
-Consider a bash function like this.
-
-<P>
-function foo() {
-<br>
-echo :: reload foo.speach > /etc/jupiter/fifo
-<br>
-#  run the application with the given arguments
-<br>
-/usr/bin/foo $@
-<br>
-#  return to the standard bash settings
-<br>
-echo :: reload bash.speech > /etc/jupiter/fifo
-<br>
-}
+<p>
+Note there is no security here; I assume you are the only one on your computer.
+If someone else is logged in,
+perhaps by ssh, even temporarily,
+he can
+<p>
+echo :: dump >/etc/jupiter/fifo
+<p>
+and dump your interactive session into a readable file.
+If you were reviewing your credit card numbers, passwords, etc, that is now visible to him.
 
 <h2> <A NAME=sum> Summary </A> </h2>
 
+<p>
 Jupiter is written in three layers.
 The modules (1) provide audio feedback as output is generated,
 and pass keystrokes and tty output back to user space.
