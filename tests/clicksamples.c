@@ -18,10 +18,14 @@ Or, soundcard I/O with libao.  If you have libao installed
 and properly configured, compile with -DUSE_LIBAO, to use the soundcard.
 Nothing is written to stdout in this case.
 apt install libao-dev
+Henceforth that is assumed.
+make clicksamples
 Usage: clicksamples [volume] [speed]
 These are numbers from 1 to 9.
 speed is actually the delay value, so higher speed is slower clicks.
 A good test is clicksamples vol speed <clicksamples.c
+In fact I'll put in a couple of control g bells  just for that purpose.
+I play the high beeps at the end of each run, used by jupiter to indicate a boundary condition.
 *********************************************************************/
 
 #define USE_LIBAO
@@ -38,43 +42,55 @@ fprintf(stderr, "%s\n", msg);
 exit(1);
 }
 
-static short speed = 3, vol = 5, state;
+static short speed = 3, vol = 5, state = 0;
+#define SAMPRATE 11025
+
+// the toggle speaker gives a square wave, but we can do a little better.
+#define SINLENGTH 16
+static const short sinwave[SINLENGTH] =
+{500,691,892,962,1000,962,892,691,500,309,108,38,0,38,108,309,};
 
 static void toggle(void)
 {
-state ^= (1000*vol);
+state ^= 1;
 }
 
 #ifdef USE_LIBAO
 static ao_device *device;
 #endif
 
-static void gen_samples(int numSamples)
+// 4 tenths of a second
+static short samples[SAMPRATE*4/10];
+
+static void playsamples(int numsamples)
 {
-short *buf = malloc(numSamples * sizeof(short));
-int i;
-if(buf == NULL) bailout("Out of memory.  Terminating.");
-for(i = 0; i < numSamples; i++)
-buf[i] = state;
 #ifdef USE_LIBAO
-int success = ao_play(device, (char *) buf, numSamples * sizeof(short));
+int success = ao_play(device, (char *) samples, numsamples * sizeof(short));
 if(!success) bailout("Error writing audio to the soundcard...");
 #else
-fwrite(buf, sizeof(short), numSamples, stdout);
+fwrite(buf, sizeof(short), numsamples, stdout);
 #endif
+}
+
+static void gensamples(int numsamples)
+{
+int i;
+for(i = 0; i < numsamples; i++)
+samples[i] = state * 1000 * vol;
+playsamples(numsamples);
 }
 
 static void click(void)
 {
 toggle();
-gen_samples(3 * speed);
+gensamples(3 * speed);
 toggle();
-gen_samples(9 * speed);
+gensamples(9 * speed);
 }
 
 static void pause(void)
 {
-gen_samples(12 * speed);
+gensamples(12 * speed);
 }
 
 // this one does not change with speed
@@ -83,8 +99,47 @@ static void chirp(void)
 int i;
 for(i = 28; i >= 2; --i) {
 toggle();
-gen_samples(i);
+gensamples(i);
 }
+}
+
+static void playnote(int hz, int duration)
+{
+int i, phase;
+// duration is in jiffies
+if(duration > 40) duration = 40;
+duration = SAMPRATE * duration / 100;
+for(i = 0; i < duration; ++i) {
+phase = (i * hz * 32 / SAMPRATE + 1) / 2;
+phase %= 16;
+samples[i] = sinwave[phase] * vol;
+}
+playsamples(duration);
+}
+
+static void bell(void)
+{
+playnote(1800, 10);
+// need a small pause if there are several bells in a row
+playnote(0, 4);
+}
+
+#define MAXNOTES 20
+
+static void playnotes(const short *notelist)
+{
+int j;
+for(j=0; j<MAXNOTES; ++j) {
+if(!notelist[2*j]) break;
+playnote(notelist[2*j], notelist[2*j+1]);
+}
+}
+
+static int highbeeps(void)
+{
+static const short boundsnd[] = {
+        2800,4,3300,3,0,0       };
+playnotes(boundsnd);
 }
 
 // high unicodes generate one click per byte instead of one click per
@@ -92,6 +147,7 @@ gen_samples(i);
 static void char2click(int ch)
 {
 if(ch == '\n') chirp();
+else if(ch == '\7') bell();
 else if(ch > ' ') click();
 else pause();
 }
@@ -110,7 +166,7 @@ speed = f - '0';
 ao_sample_format fmt;
 fmt.bits = sizeof(short) * 8;
 fmt.channels = 1;
-fmt.rate = 11025;
+fmt.rate = SAMPRATE;
 fmt.byte_format = AO_FMT_NATIVE;
 ao_initialize();
 int driver_id = ao_default_driver_id();
@@ -121,6 +177,7 @@ if(device == NULL) bailout("Error opening audio device.");
 
 while((ch = getchar()) != EOF)
 char2click(ch);
+highbeeps();
 
 #ifdef USE_LIBAO
 ao_close(device);
