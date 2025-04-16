@@ -25,7 +25,8 @@ These are numbers from 1 to 9.
 speed is actually the delay value, so higher speed is slower clicks.
 A good test is clicksamples vol speed <clicksamples.c
 In fact I'll put in a couple of control g bells  just for that purpose.
-I play the high beeps at the end of each run, used by jupiter to indicate a boundary condition.
+I play the jupiter start notes at the start.
+I play the high beeps at the end, used by jupiter to indicate a boundary condition.
 *********************************************************************/
 
 #define USE_LIBAO
@@ -135,11 +136,28 @@ playnote(notelist[2*j], notelist[2*j+1]);
 }
 }
 
+static const short startnotes[] = { 		476,5, 530,5, 596,5, 662,5, 762,5, 858,5, 942,5, 0,0};
+
 static int highbeeps(void)
 {
 static const short boundsnd[] = {
         2800,4,3300,3,0,0       };
 playnotes(boundsnd);
+}
+
+static void playscale(int f1, int f2, int step, int duration)
+{
+while(1) {
+// the native version has resolution of milliseconds, this has to be brought down to jiffies
+playnote(f1, duration/10);
+f1 = f1 * (100+step) / 100;
+if(f1 < f2 && step < 0 || f1 > f2 && step > 0) break;
+}
+}
+
+static void playharp(void)
+{
+playscale(4400,200,-10,40);
 }
 
 // high unicodes generate one click per byte instead of one click per
@@ -175,6 +193,8 @@ device = ao_open_live(driver_id, &fmt, NULL);
 if(device == NULL) bailout("Error opening audio device.");
 #endif
 
+playnotes(startnotes);
+//playharp();
 while((ch = getchar()) != EOF)
 char2click(ch);
 highbeeps();
