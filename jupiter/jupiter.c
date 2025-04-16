@@ -139,6 +139,7 @@ const char *inputword;
 const char *errorword;
 const char *topword;
 const char *bottomword;
+const char *outsideword;
 };
 
 static const struct OUTWORDS const outwords[6] = {
@@ -180,6 +181,7 @@ static const struct OUTWORDS const outwords[6] = {
 "hello there", "reload", "o k",
 "mark", "cut", "mode", "boundary", "input", "error",
 "top", "bottom",
+"outside",
 
 },{ /* German */
 
@@ -216,6 +218,7 @@ static const struct OUTWORDS const outwords[6] = {
 "hallo", "erneut laden", "ok",
 "Markieren", "ausschneiden", "Modus", "Ende", "Kommando", "Fehler",
 "Anfang", "Ende",
+"draussen",
 
 },{ /* Brazilian Portuguese */
 
@@ -252,6 +255,7 @@ static const struct OUTWORDS const outwords[6] = {
 "olá", "recarregar", "o k",
 "marcar", "cortar", "modo", "limite", "inserir", "erro",
 "topo", "fundo",
+"outside",
 
 },{ /* French */
 
@@ -290,6 +294,7 @@ static const struct OUTWORDS const outwords[6] = {
 "bonjour", "rechargement", "o k",
 "marquer", "couper", "mode", "limite", "entrer", "erreur",
 "début", "fin",
+"outside",
 
 },{ /* Slovak */
 "Použitie:  jupiter [-d] [-c súbor] hlas.výstup port\n"
@@ -325,6 +330,7 @@ static const struct OUTWORDS const outwords[6] = {
 "dobrý deň", "načítať znovu", "oukey",
 "mark", "cut", "mode", "boundary", "input", "error",
 "top", "bottom",
+"outside",
 
 /* no more */
 
@@ -1325,7 +1331,8 @@ else acs_say_string(o->errorword);
 		return;
 
 	error_buzz:
-		acs_buzz();
+		if(soundsOn) acs_buzz();
+		else acs_say_string(o->outsideword);
 		return;
 
 	error_bound:
