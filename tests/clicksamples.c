@@ -11,7 +11,7 @@ Anyways, use this program to get an idea of what console output
 will sound like when that module is built and installed.
 This program generates clicks and chirps on stdout.
 Send it some text via stdin, and it'll represent that text with sound.
-Sound parameters: 44100 kHZ, 1 channel, 16-bit signed.
+Sound parameters: 11025 kHZ, 1 channel, 16-bit signed.
 Use tools such as sox to convert to .wav or play on a soundcard.
 Yes, I should probably generate .wav, instead of a headerless stream.
 Or, soundcard I/O with libao.  If you have libao installed
@@ -67,21 +67,21 @@ fwrite(buf, sizeof(short), numSamples, stdout);
 static void click(void)
 {
 toggle();
-gen_samples(8 * speed);
+gen_samples(3 * speed);
 toggle();
-gen_samples(36 * speed);
+gen_samples(9 * speed);
 }
 
 static void pause(void)
 {
-gen_samples(56 * speed);
+gen_samples(12 * speed);
 }
 
 // this one does not change with speed
 static void chirp(void)
 {
 int i;
-for(i = 54; i >= 0; i -= 2) {
+for(i = 28; i >= 2; --i) {
 toggle();
 gen_samples(i);
 }
@@ -110,7 +110,7 @@ speed = f - '0';
 ao_sample_format fmt;
 fmt.bits = sizeof(short) * 8;
 fmt.channels = 1;
-fmt.rate = 44100;
+fmt.rate = 11025;
 fmt.byte_format = AO_FMT_NATIVE;
 ao_initialize();
 int driver_id = ao_default_driver_id();
