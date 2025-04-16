@@ -140,6 +140,7 @@ const char *errorword;
 const char *topword;
 const char *bottomword;
 const char *outsideword;
+const char *overflowword;
 };
 
 static const struct OUTWORDS const outwords[6] = {
@@ -182,6 +183,7 @@ static const struct OUTWORDS const outwords[6] = {
 "mark", "cut", "mode", "boundary", "input", "error",
 "top", "bottom",
 "outside",
+"buffer overflow",
 
 },{ /* German */
 
@@ -219,6 +221,7 @@ static const struct OUTWORDS const outwords[6] = {
 "Markieren", "ausschneiden", "Modus", "Ende", "Kommando", "Fehler",
 "Anfang", "Ende",
 "draussen",
+"buffer overflow",
 
 },{ /* Brazilian Portuguese */
 
@@ -256,6 +259,7 @@ static const struct OUTWORDS const outwords[6] = {
 "marcar", "cortar", "modo", "limite", "inserir", "erro",
 "topo", "fundo",
 "outside",
+"buffer overflow",
 
 },{ /* French */
 
@@ -295,6 +299,7 @@ static const struct OUTWORDS const outwords[6] = {
 "marquer", "couper", "mode", "limite", "entrer", "erreur",
 "début", "fin",
 "outside",
+"buffer overflow",
 
 },{ /* Slovak */
 "Použitie:  jupiter [-d] [-c súbor] hlas.výstup port\n"
@@ -331,6 +336,7 @@ static const struct OUTWORDS const outwords[6] = {
 "mark", "cut", "mode", "boundary", "input", "error",
 "top", "bottom",
 "outside",
+"buffer overflow",
 
 /* no more */
 
@@ -662,8 +668,9 @@ readNextMark = 0;
 }
 
 if(!acs_rb->cursor) {
-/* lots of text has pushed the reading cursor off the edge. */
-acs_buzz();
+// lots of text has pushed the reading cursor off the edge.
+if(soundsOn) acs_buzz();
+else acs_say_string(o->overflowword);
 acs_rb = 0;
 return;
 }
