@@ -24,3 +24,7 @@ acstest : acstest.o
 pipetest : pipetest.o
 
 -include $(SRCS:.c=.d)
+
+clicksamples : clicksamples.c
+	cc clicksamples.c -o clicksamples -lao
+

@@ -10,6 +10,9 @@
  * Anyways, use this program to get an idea of what console output
  * will sound like when that module is built and installed. */
 
+#define USE_LIBAO
+// apt install libao-dev
+
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef USE_LIBAO
