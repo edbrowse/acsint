@@ -13,6 +13,7 @@
 #include <linux/version.h>
 #ifndef CONFIG_I8253_LOCK
 #define NOCLICKS 1
+#warning "NOCLICKS set because toggle speaker seems not to be present"
 #endif
 
 #ifndef NOCLICKS
