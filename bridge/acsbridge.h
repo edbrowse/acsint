@@ -110,8 +110,22 @@ int acs_tty_clicks(int enabled);
 // Alert tones from kernel warning/error messages, on or off.
 int acs_kmsg_tones(int enabled);
 
+/*********************************************************************
+I love everything about the pi, except it has no in-built toggle speaker.
+Here is my attempt to use the sound card instead.
+You need package libao-dev
+If aodev is nonzero then we will use the sound card, instead of
+passing messages up to acsint and then to ttyclicks, to use the speaker.
+*********************************************************************/
+
+#include <ao/ao.h>
+extern ao_device *aodev;
+extern int aovolume, aospeed;
+#define SAMPRATE 11025
+
 // Generate a soft click
 int acs_click(void);
+void acs_pause(void);
 
 // Generate a quick swoop sound, typically used for newline
 int acs_cr(void);

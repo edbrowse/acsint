@@ -249,8 +249,7 @@ acs_tb->v_cursor = 0;
 acs_tb->attribs = 0;
 }
 
-int
-acs_screenmode(int enabled)
+int acs_screenmode(int enabled)
 {
 acs_imark_start = 0;
 screenmode = 0;
@@ -270,8 +269,7 @@ return 0;
 
 static int acs_bufsize(int n);
 
-int
-acs_open(const char *devname)
+int acs_open(const char *devname)
 {
 if(acs_fd >= 0) {
 // already open
@@ -298,8 +296,7 @@ acs_bufsize(TTYLOGSIZE);
 return acs_fd;
 }
 
-int
-acs_close(void)
+int acs_close(void)
 {
 int rc = 0;
 errno = 0;
@@ -311,8 +308,7 @@ acs_fd = -1;
 return rc;
 }
 
-void
-acs_nodecheck(const char *devname)
+void acs_nodecheck(const char *devname)
 {
 int fd, uid;
 int m1, m2;
@@ -345,8 +341,7 @@ mknod(devname, S_IFCHR|0666, makedev(m1, m2));
 
 // Write a command to /dev/acsint.
 
-static int
-acs_write(int n)
+static int acs_write(int n)
 {
 errno = 0;
 if(acs_fd < 0) {
@@ -369,48 +364,127 @@ return acs_write(3);
 
 /* Which sounds are generated automatically? */
 
-int
-acs_sounds(int enabled) 
+int acs_sounds(int enabled) 
 {
 outbuf[0] = ACS_SOUNDS;
 outbuf[1] = enabled;
 return acs_write(2);
 }
 
-int
-acs_tty_clicks(int enabled) 
+int acs_tty_clicks(int enabled) 
 {
 outbuf[0] = ACS_SOUNDS_TTY;
 outbuf[1] = enabled;
 return acs_write(2);
 }
 
-int
-acs_kmsg_tones(int enabled) 
+int acs_kmsg_tones(int enabled) 
 {
 outbuf[0] = ACS_SOUNDS_KMSG;
 outbuf[1] = enabled;
 return acs_write(2);
 }
 
-// Various routines to make sounds through the pc speaker.
+// Various routines to make sounds through the pc speaker,
+// or through the sound card if the speaker is not present.
 
-int
-acs_click(void)
+ao_device *aodev;
+int aovolume = 5, aospeed = 3;
+static int togglestate = 0;
+static void toggle(void)
+{
+togglestate ^= 1;
+}
+
+// the toggle speaker gives a square wave, but we can do better.
+#define SINLENGTH 16
+static const short sinwave[SINLENGTH] =
+{500,691,892,962,1000,962,892,691,500,309,108,38,0,38,108,309,};
+// 4 tenths of a second
+static short samples[SAMPRATE*4/10];
+static void playsamples(int numsamples)
+{
+ao_play(aodev, (char *) samples, numsamples * sizeof(short));
+}
+
+static void gensamples(int numsamples)
+{
+int i;
+for(i = 0; i < numsamples; i++)
+samples[i] = togglestate * 1000 * aovolume;
+playsamples(numsamples);
+}
+
+// click through the sound card
+static void sc_click(void)
+{
+toggle();
+gensamples(3 * aospeed);
+toggle();
+gensamples(9 * aospeed);
+}
+
+void acs_pause(void)
+{
+gensamples(12 * aospeed);
+}
+
+// this one does not change with speed
+static void sc_chirp(void)
+{
+int i;
+for(i = 28; i >= 2; --i) {
+toggle();
+gensamples(i);
+}
+}
+
+static void playnote(int hz, int duration)
+{
+int i, phase;
+// duration is in jiffies
+if(duration > 40) duration = 40;
+duration = SAMPRATE * duration / 100;
+for(i = 0; i < duration; ++i) {
+phase = (i * hz * 32 / SAMPRATE + 1) / 2;
+phase %= 16;
+samples[i] = sinwave[phase] * aovolume;
+}
+playsamples(duration);
+}
+
+static void playnotes(const short *notelist)
+{
+int j;
+for(j=0; j<MAXNOTES; ++j) {
+if(!notelist[2*j]) break;
+playnote(notelist[2*j], notelist[2*j+1]);
+}
+}
+
+static void playscale(int f1, int f2, int step, int duration)
+{
+while(1) {
+// the native version has resolution of milliseconds, this has to be brought down to jiffies
+playnote(f1, duration/10);
+f1 = f1 * (100+step) / 100;
+if(f1 < f2 && step < 0 || f1 > f2 && step > 0) break;
+}
+}
+
+int acs_click(void)
 {
 outbuf[0] = ACS_CLICK;
 return acs_write(1);
 }
 
-int
-acs_cr(void)
+int acs_cr(void)
 {
 outbuf[0] = ACS_CR;
 return acs_write(1);
 }
 
-int
-acs_notes(const short *notelist)
+int acs_notes(const short *notelist)
 {
 int j;
 outbuf[0] = ACS_NOTES;
@@ -465,8 +539,7 @@ static const short boundsnd[] = {
 return acs_notes(boundsnd);
 }
 
-int
-acs_tone_onoff(int enabled)
+int acs_tone_onoff(int enabled)
 {
 static const short offsnd[] = {
 	220,6,0,0	};
@@ -477,8 +550,7 @@ return acs_notes(enabled ? onsnd : offsnd);
 
 // redirect keystrokes for capture, monitor, and bypass
 
-int
-acs_divert(int enabled) 
+int acs_divert(int enabled) 
 {
 outbuf[0] = ACS_DIVERT;
 outbuf[1] = enabled;

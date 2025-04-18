@@ -1252,6 +1252,11 @@ case 45: /* reexec */
 acs_buzz();
 acs_sy_close();
 acs_close();
+// in case the ao system did not set O_CLOEXEC
+if(aodev) {
+ao_close(aodev);
+ao_shutdown();
+}
 usleep(700000);
 if(strchr(program_file, '/'))
 	execv(program_file, argvector);
@@ -1588,6 +1593,26 @@ daemon(1, 1);
 setsid();
 ++argv, --argc;
 continue;
+}
+
+if(argc && argv[0][0] == '-' && argv[0][1] == 'a') {
+char f = argv[0][2];
+if(f >= '1' && f <= '9') {
+aovolume = f - '0';
+if(argv[0][3] == ',' && (f = argv[0][4]) >= '1' && f <= '9')
+aospeed = f - '0';
+}
+ao_sample_format fmt;
+fmt.bits = sizeof(short) * 8;
+fmt.channels = 1;
+fmt.rate = SAMPRATE;
+fmt.byte_format = AO_FMT_NATIVE;
+ao_initialize();
+int driver_id = ao_default_driver_id();
+if(driver_id >= 0)
+aodev = ao_open_live(driver_id, &fmt, NULL);
+if(!aodev) fprintf(stderr, "cannot open audio device for sounds\n");
+++argv, --argc;
 }
 
 if(argc && stringEqual(argv[0], "-c")) {

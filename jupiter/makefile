@@ -25,7 +25,7 @@ OBJS = $(SRCS:.c=.o)
 all : jupiter
 
 jupiter : $(OBJS) $(ACSLIB)
-	cc $(LDFLAGS) -o jupiter $(OBJS) $(ACSLIB)
+	cc $(LDFLAGS) -o jupiter $(OBJS) $(ACSLIB) -lao
 
 clean :
 	rm -f $(OBJS) jupiter
