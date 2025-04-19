@@ -389,7 +389,7 @@ return acs_write(2);
 // or through the sound card if the speaker is not present.
 
 ao_device *aodev;
-int aovolume = 5, aospeed = 3;
+int aovolume = 6, aospeed = 4;
 static int togglestate = 0;
 static void toggle(void)
 {
@@ -474,12 +474,14 @@ if(f1 < f2 && step < 0 || f1 > f2 && step > 0) break;
 
 int acs_click(void)
 {
+if(aodev) { sc_click(); return 1; }
 outbuf[0] = ACS_CLICK;
 return acs_write(1);
 }
 
 int acs_cr(void)
 {
+if(aodev) { sc_chirp(); return 1; }
 outbuf[0] = ACS_CR;
 return acs_write(1);
 }
@@ -487,6 +489,7 @@ return acs_write(1);
 int acs_notes(const short *notelist)
 {
 int j;
+if(aodev) { playnotes(notelist); return 1; }
 outbuf[0] = ACS_NOTES;
 for(j=0; j<MAXNOTES; ++j) {
 if(!notelist[2*j]) break;
@@ -500,6 +503,7 @@ return acs_write(2+3*j);
 
 int acs_scale(int f1, int f2, int step, int duration)
 {
+if(aodev) { playscale(f1, f2, step, duration); return 8; }
 outbuf[0] = ACS_STEPS;
 outbuf[1] = step;
 outbuf[2] = f1;
@@ -515,37 +519,49 @@ int acs_bell(void)
 {
 static const short bellsnd[] = {
         1800,10,0,0     };
-return acs_notes(bellsnd);
+if(!aodev) return acs_notes(bellsnd);
+playnotes(bellsnd);
+// need a small pause if there are several bells in a row
+playnote(0, 4);
+return 1;
 }
 
 int acs_buzz(void)
 {
 static const short buzzsnd[] = {
-        120,20,0,0     };
-return acs_notes(buzzsnd);
+        100,40,0,0     };
+if(!aodev) return acs_notes(buzzsnd);
+playnotes(buzzsnd);
+return 1;
 }
 
 int acs_highcap(void)
 {
 static const short capsnd[] = {
         3000,3,0,0     };
-return acs_notes(capsnd);
+if(!aodev) return acs_notes(capsnd);
+playnotes(capsnd);
+return 1;
 }
 
 int acs_highbeeps(void)
 {
 static const short boundsnd[] = {
         2800,4,3300,3,0,0       };
-return acs_notes(boundsnd);
+if(!aodev) return acs_notes(boundsnd);
+playnotes(boundsnd);
+return 1;
 }
 
 int acs_tone_onoff(int enabled)
 {
 static const short offsnd[] = {
-	220,6,0,0	};
+	140,25,0,0	};
 static const short onsnd[] = {
-	700,12,0,0	};
-return acs_notes(enabled ? onsnd : offsnd);
+	1000,12,-1,5,1000,12,0,0	};
+if(!aodev) return acs_notes(enabled ? onsnd : offsnd);
+playnotes(enabled ? onsnd : offsnd);
+return 1;
 }
 
 // redirect keystrokes for capture, monitor, and bypass
@@ -962,6 +978,33 @@ acs_log("%c", d);
 }
 acs_log("\n");
 }
+
+#if 0
+/*********************************************************************
+This is the code that clicks the tty output, but it's in the wrong place.
+The module should be doing it, but it can't.
+It doesn't even throttle the output.
+So a program cranks out ten K of data, it passes through ttyclicks,
+pours into acsint, fills its buffer, and now here we are reading it,
+clicking each character, plodding along at 1200 baud.
+You hit a key and I don't see it, because I'm reading and clicking, reading and clicking.
+You are locked out until the entire span of data has been read and clicked;
+and what if it's an infinite loop?
+I haven't found away around this, so for now, clickTTY is not implemented.
+*********************************************************************/
+extern char soundsOn, clickTTY;
+if(soundsOn & clickTTY && aodev) {
+// we want clicks but have to run through the sound card
+for(j=0; j<culen; ++j) {
+d = * (int*) (inbuf + i + 4*j);
+if(d == '\07') acs_bell();
+else if(d == '\n') acs_cr();
+else if(d <= ' ') acs_pause();
+else acs_click();
+}
+}
+#endif
+
 if(nr-i < culen*4) break;
 
 // The reprint detector

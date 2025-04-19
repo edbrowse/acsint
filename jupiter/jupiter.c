@@ -149,7 +149,7 @@ static const struct OUTWORDS const outwords[6] = {
 0
 
 },{ /* English */
-"usage:  jupiter [-d] [-c configfile] synthesizer port\n"
+"usage:  jupiter [-d] [-a[volume[,speed]]] [-c configfile] synthesizer port\n"
 "-d is daemon mode, run in background.\n"
 "Synthesizer is: dbe = doubletalk external,\n"
 "dte = dectalk external, dtp = dectalk pc,\n"
@@ -1441,6 +1441,15 @@ acs_shutup();
 acs_rb = 0;
 goRead = 0;
 }
+
+if(soundsOn && aodev && echo) {
+if(c == '\07') acs_bell();
+else if(c == '\n') acs_cr();
+else if(c <= ' ') acs_pause();
+else if(acs_isalpha(c) && acs_isupper(c)) acs_highcap();
+else acs_click();
+}
+
 if(echoMode && echo == 1 && c >= 0x20) {
 interrupt();
 speakChar(c, 1, soundsOn, 1);
