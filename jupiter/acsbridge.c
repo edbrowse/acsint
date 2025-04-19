@@ -433,7 +433,11 @@ gensamples(12 * aospeed);
 static void sc_chirp(void)
 {
 int i;
-for(i = 28; i >= 2; --i) {
+for(i = 16; i >= 8; --i) {
+toggle();
+gensamples(i);
+toggle();
+gensamples(i);
 toggle();
 gensamples(i);
 }
