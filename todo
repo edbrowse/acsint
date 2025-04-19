@@ -87,3 +87,20 @@ When this information passes down to the bridge,
 it can move your reading cursor appropriately,
 and any other markers that are tied to the text in screen memory.
 
+* clickTTY through the audio speaker is not implemented.
+See the comments in acsbridge.c after case ACS_TTY_NEWCHARS.
+Within the acsint module, I could perhaps put a keystroke into the read buffer
+at high priority, so that bridge reads it,
+then stops the clicks for the duration of the reads.
+Or I could spin off a thread to perform these clicks.
+It could have its own buffer of chars to click,
+or just some pointers into the existing tty buffer.
+Any keystroke clears the clicking buffer, or moves the pointer to the end
+of the tty buffer, thus stopping the clicks.
+However, I click for other reasons, so sound generation has to become
+threadsafe, and managing these pointers or the side buffer has to be threadsafe,
+and there is a lot of room for error here,
+which could cause jupiter to crash in an unpredictable and completely
+irreproducible manner.
+Threads are wonderful, but not for the faint of heart.
+
