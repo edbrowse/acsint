@@ -15,10 +15,14 @@ DRIVERPATH = ../drivers
 #	CFLAGS += -I$(DRIVERPATH)
 #	endif
 
+all : jupiter
+
 SRCS = jupiter.c tpxlate.c acsbind.c acsbridge.c acstalk.c
 OBJS = $(SRCS:.c=.o)
 
-all : jupiter
+# headers
+$(OBJS) : acsbridge.h $(DRIVERPATH)/acsint.h
+jupiter.o tpxlate.o : tp.h
 
 jupiter : $(OBJS)
 	cc $(LDFLAGS) -o jupiter $(OBJS) -lao
