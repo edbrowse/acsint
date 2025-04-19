@@ -21,7 +21,7 @@ print "Output from keycodes is not 8 lines as expected";
 exit 1;
 }
 
-open layout, ">../bridge/keylayout.c";
+open layout, ">../jupiter/keylayout.c";
 # I assume the lower case is all ascii
 print layout $newarrays[0];
 print layout $newarrays[1];

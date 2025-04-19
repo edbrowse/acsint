@@ -16,7 +16,7 @@ as articulated by the Free Software Foundation.
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../bridge/acsbridge.h"
+#include "acsbridge.h"
 
 /* WORDLEN comes from acsbridge.h */
 #define NEWWORDLEN 200 /* size of word or number after expansion */

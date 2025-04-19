@@ -3,6 +3,9 @@ based on the acsint / acsbridge system.
 It is modeled after the Jupiter speech adapter that use to live in the kernel,
 but we don't have to be in the kernel any longer!
 
+Type make, that should do the trick.
+Then make install for /usr/local/bin/jupiter
+
 This is a work in progress, well tested for some synthesizers,
 and not even tried on others.
 
@@ -13,44 +16,9 @@ You can exercise the text preprocessor, without running the adapter,
 by running jupiter tts or jupiter ltts
 ltts reads punctuation marks literally, every one of them.
 That may sound like overkill, but that's what I do 99% of the time.
-Perhaps because I'm a programmer - every punctuation mark is important.
+Perhaps because I'm a programmer - every punctuation mark matters.
 Even when I read a story, I'd rather hear the word comma than a pause.
 
 Use jupiter tc to test the syntax of the config file.
 
--d is daemon mode, puts the program in the backgroun.
-
-I have the following near the top of /etc/rc.sysinit
-so my system starts talking as soon as possible, even in single user mode.
-
-#  bring in the acsint device driver,
-#  to carry output and keystrokes into user space.
-#  Yes, you could set this up in udev, but I don't have udev running.
-modprobe acsint
-
-#  Start jupiter speech in daemon mode, doubletalk synthesizer, port ttyS0
-#  The config file is left to its default, /etc/jupiter/start.cfg
-jupiter -d dbe 0
-
-If you're running a soft synth like espeak, you may want something like this.
-jupiter -d esp "|espeakup -V en-us-a 2>/dev/null"
-But first you should set up your sound card,
-load the right module and call alsactl to initialize.
-Normally this is done much later but we need it now,
-or the adapter won't talk.
-Also, mount /sys type sysfs,
-because jupiter looks at the system, through /sys,
-to see if /dev/acsint is correct.
-If it is missing, or its major / minor number is wrong,
-and assuming jupiter runs as root,
-then it recreates /dev/acsint to have the correct major and minor numbers.
-I'm trying to do everything I can to make this work,
-because if it doesn't, the system isn't talking, and you're in trouble.
-
-To be even safer, create acsin yourself major 11 minor 1,
-and put this line in /etc/modprobe.d/access.conf
-
-options acsint major=11
-
-Read through the user's guide, then send me any questions:
-eklhad@gmail.com
+Run jupiter by itself for a usage message.

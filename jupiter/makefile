@@ -17,18 +17,16 @@ DRIVERPATH = ../drivers
 #	CFLAGS += -I$(DRIVERPATH)
 #	endif
 
-ACSLIB = ../bridge/libacs.a
-
-SRCS = jupiter.c tpxlate.c
+SRCS = jupiter.c tpxlate.c acsbind.c acsbridge.c acstalk.c
 OBJS = $(SRCS:.c=.o)
 
 all : jupiter
 
-jupiter : $(OBJS) $(ACSLIB)
-	cc $(LDFLAGS) -o jupiter $(OBJS) $(ACSLIB) -lao
+jupiter : $(OBJS)
+	cc $(LDFLAGS) -o jupiter $(OBJS) -lao
 
 clean :
-	rm -f $(OBJS) jupiter
+	rm -f $(OBJS) jupiter *.d
 
 install : jupiter
 	install -d ${bindir}
