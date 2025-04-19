@@ -8,9 +8,6 @@ as articulated by the Free Software Foundation.
 
 *********************************************************************/
 
-#ifndef TP_H
-#define TP_H 1
-
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -47,5 +44,3 @@ void textbufClose(const unsigned int *s, int overflow) ;
 void speakChar(unsigned int c, int sayit, int bellsound, int asword) ;
 void prepTTS(void) ;
 unsigned int *prepTTSmsg(const char *msg) ;
-
-#endif

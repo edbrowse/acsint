@@ -411,7 +411,7 @@ static void gensamples(int numsamples)
 {
 int i;
 for(i = 0; i < numsamples; i++)
-samples[i] = togglestate * 1000 * aovolume;
+samples[i] = togglestate * 3000 * aovolume;
 playsamples(numsamples);
 }
 
@@ -448,7 +448,7 @@ duration = SAMPRATE * duration / 100;
 for(i = 0; i < duration; ++i) {
 phase = (i * hz * 32 / SAMPRATE + 1) / 2;
 phase %= 16;
-samples[i] = sinwave[phase] * aovolume;
+samples[i] = sinwave[phase] * 3 * aovolume;
 }
 playsamples(duration);
 }
