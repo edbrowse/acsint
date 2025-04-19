@@ -4,8 +4,6 @@ prefix = /usr/local
 exec_prefix = ${prefix}
 bindir = ${exec_prefix}/bin
 
-CFLAGS += -MMD
-
 LDFLAGS = -s
 ifneq ($(JDEB),)
 LDFLAGS =
@@ -26,7 +24,7 @@ jupiter : $(OBJS)
 	cc $(LDFLAGS) -o jupiter $(OBJS) -lao
 
 clean :
-	rm -f $(OBJS) jupiter *.d
+	rm -f $(OBJS) jupiter
 
 install : jupiter
 	install -d ${bindir}
