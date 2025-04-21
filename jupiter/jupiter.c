@@ -11,6 +11,7 @@ as articulated by the Free Software Foundation.
 #include <fcntl.h>
 #include <unistd.h>
 #include <locale.h>
+#include <pthread.h>
 
 #include <linux/vt.h>
 
@@ -27,6 +28,7 @@ On many systems, $_ holds the absolute path, so let's try that.
 *********************************************************************/
 static const char *program_file;
 static char **argvector;
+static pthread_t ao_thread;
 
 /* Speech command structure, one instance for each jupiter command. */
 struct cmd {
@@ -541,8 +543,8 @@ For instance, ^G beep if the character doesn't correspond
 to a boolean mode in the system.
 *********************************************************************/
 
-static char soundsOn = 1; // sounds on, over all */
-static char clickTTY = 1; // clicks accompany tty output
+char soundsOn = 1; // sounds on, over all */
+char clickTTY = 1; // clicks accompany tty output
 static char autoRead = 1; // read new text automatically
 static char oneLine; /* read one line at a time */
 static char ctrack; /* track visual cursor in screen mode */
@@ -956,11 +958,11 @@ ctrack = 1;
 		break;
 
 	case 3: acs_startbuf();
-// if(!(soundsOn|quiet)) acs_say_string(o->topword);
+if(!(soundsOn|quiet)) acs_say_string(o->topword);
 break;
 
 	case 4: acs_endbuf();
-// if(!(soundsOn|quiet)) acs_say_string(o->bottomword);
+if(!(soundsOn|quiet)) acs_say_string(o->bottomword);
 break;
 
 	case 5: acs_startline(); break;
@@ -1254,8 +1256,8 @@ acs_sy_close();
 acs_close();
 // in case the ao system did not set O_CLOEXEC
 if(aodev) {
-ao_close(aodev);
-ao_shutdown();
+ao_stopthread();
+pthread_join(ao_thread, NULL);
 }
 usleep(700000);
 if(strchr(program_file, '/'))
@@ -1463,21 +1465,6 @@ if(!echo) goRead = 1;
 }
 
 static void
-openSound(void)
-{
-static const short startNotes[] = {
-		476,5,
-530,5,
-596,5,
-662,5,
-762,5,
-858,5,
-942,5,
-0,0};
-acs_notes(startNotes);
-}
-
-static void
 testTTS(void)
 {
 char line[400];
@@ -1620,7 +1607,15 @@ ao_initialize();
 int driver_id = ao_default_driver_id();
 if(driver_id >= 0)
 aodev = ao_open_live(driver_id, &fmt, NULL);
-if(!aodev) fprintf(stderr, "cannot open audio device for sounds\n");
+if(aodev && pipe(aopipe)) {
+ao_close(aodev);
+aodev = 0;
+}
+if(aodev)
+pthread_create(&ao_thread, NULL, ao_main, NULL);
+else fprintf(stderr, "cannot open audio device for sounds\n");
+// At this point the background thread has complete control over the
+// audio device; playing samples and closing the device.
 ++argv, --argc;
 }
 
@@ -1708,7 +1703,7 @@ fprintf(stderr, o->openSerial, serialdev);
 exit(1);
 }
 
-openSound();
+acs_scale(3000,600,-4,20);
 
 /* Initialize the synthesizer. */
 if(synths[i].initstring)

@@ -25,7 +25,7 @@ $(OBJS) : acsbridge.h $(DRIVERPATH)/acsint.h
 jupiter.o tpxlate.o : tp.h
 
 jupiter : $(OBJS)
-	cc $(LDFLAGS) -o jupiter $(OBJS) -lao
+	cc $(LDFLAGS) -o jupiter $(OBJS) -lao -lpthread
 
 clean :
 	rm -f $(OBJS) jupiter

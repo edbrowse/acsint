@@ -16,6 +16,7 @@ and declared in acsbridge.h.
 #include <fcntl.h>
 #include <stdarg.h>
 #include <sys/stat.h>
+#include <sys/select.h>
 #include <sys/sysmacros.h>
 
 #include <linux/vt.h>
@@ -24,7 +25,7 @@ and declared in acsbridge.h.
 
 #define stringEqual !strcmp
 
-#define MAXNOTES 10 // how many notes to play in one call
+#define MAXNOTES 20 // how many notes to play in one call
 #define INBUFSIZE (TTYLOGSIZE*4 + 400) /* size of input buffer */
 /* Output buffer could be 40 bytes, except for injectstring() */
 #define OUTBUFSIZE 20000
@@ -390,6 +391,11 @@ return acs_write(2);
 
 ao_device *aodev;
 int aovolume = 6, aospeed = 4;
+int aopipe[2];
+#define ao_receive aopipe[0]
+#define ao_send aopipe[1]
+extern char soundsOn, clickTTY;
+
 static int togglestate = 0;
 static void toggle(void)
 {
@@ -424,9 +430,15 @@ toggle();
 gensamples(9 * aospeed);
 }
 
-void acs_pause(void)
+static void sc_pause(void)
 {
 gensamples(12 * aospeed);
+}
+
+void acs_pause(void)
+{
+char cmd = ' ';
+write(ao_send, &cmd, 1);
 }
 
 // this one does not change with speed
@@ -466,6 +478,50 @@ playnote(notelist[2*j], notelist[2*j+1]);
 }
 }
 
+static void sc_bell(void)
+{
+static const short bellsnd[] = {
+        1800,10,0,0     };
+playnotes(bellsnd);
+// need a small pause if there are several bells in a row
+playnote(0, 4);
+}
+
+static void sc_buzz(void)
+{
+static const short buzzsnd[] = {
+        120,40,0,0     };
+playnotes(buzzsnd);
+}
+
+static void sc_highcap(void)
+{
+static const short capsnd[] = {
+        3000,3,0,0     };
+playnotes(capsnd);
+}
+
+static void sc_highbeeps(void)
+{
+static const short boundsnd[] = {
+        2800,4,3300,3,0,0       };
+playnotes(boundsnd);
+}
+
+static void sc_on(void)
+{
+static const short onsnd[] = {
+	1000,12,-1,5,1000,12,0,0	};
+playnotes(onsnd);
+}
+
+static void sc_off(void)
+{
+static const short offsnd[] = {
+	140,25,0,0	};
+playnotes(offsnd);
+}
+
 static void playscale(int f1, int f2, int step, int duration)
 {
 while(1) {
@@ -476,16 +532,152 @@ if(f1 < f2 && step < 0 || f1 > f2 && step > 0) break;
 }
 }
 
+// circular buffer of click sounds
+#define AOBUFSIZE 5000
+static unsigned char aobuf[AOBUFSIZE];
+static unsigned char *aohead = aobuf, *aotail = aobuf;
+static const unsigned char *aoend = aobuf + AOBUFSIZE;
+
+static unsigned char ao_getc(void)
+{
+unsigned char c;
+if(aohead == aotail) return 0;
+c = *aotail++;
+if(aotail == aoend) aotail = aobuf;
+return c;
+}
+
+static void ao_putc(unsigned char c)
+{
+unsigned char *h = aohead + 1;
+if(h == aoend) h = aobuf;
+if(h == aotail) { // buffer full
+unsigned char cmd = ao_getc();
+int j;
+if(cmd == 'n') {
+for(j = ao_getc(); j; --j) {
+ao_getc();
+ao_getc();
+}
+}
+if(cmd == 's') {
+for(j=0; j<8; ++j)
+ao_getc();
+}
+}
+*aohead = c;
+aohead = h;
+}
+
+// clicks and beeps under control of the background thread
+void *ao_main(void *notused)
+{
+unsigned char cmd, i, j, d[8];
+union { short s[MAXNOTES]; unsigned char c[MAXNOTES*2]; } list;
+fd_set channels;
+int rc, nfds;
+struct timeval now;
+
+memset(&channels, 0, sizeof(channels));
+nfds = ao_receive + 1;
+// for polling
+now.tv_sec = 0;
+now.tv_usec = 0;
+
+top:
+if(aohead == aotail) goto br;
+
+// use select to see if anything is in the pipe
+FD_SET(ao_receive, &channels);
+rc = select(nfds, &channels, 0, 0, &now);
+if(rc < 0) goto abort;
+if(FD_ISSET(ao_receive, &channels)) goto br;
+
+// make the next sound in the circular buffer
+cmd = ao_getc();
+switch(cmd) {
+case 'g': sc_bell(); break;
+case 'h': sc_highcap(); break;
+case 'b': sc_highbeeps(); break;
+case 'z': sc_buzz(); break;
+case 'o': sc_on(); break;
+case 'p': sc_off(); break;
+case 'c': sc_click(); break;
+case ' ': sc_pause(); break;
+case '\n': sc_chirp(); break;
+case 'n':
+j = ao_getc();
+for(i=0; i<j; ++i) {
+list.c[2*i] = ao_getc();
+list.c[2*i+1] = ao_getc();
+}
+list.c[2*i] = list.c[2*i+1] = 0;
+playnotes(list.s);
+break;
+case 's':
+for(i=0; i<8; ++i)
+list.c[i] = ao_getc();
+playscale(list.s[0], list.s[1], list.s[2], list.s[3]);
+break;
+}
+goto top;
+
+br: // blocking read
+if(read(ao_receive, &cmd, 1) != 1) goto abort;
+ao_putc(cmd);
+if(cmd == 'n') {
+read(ao_receive, &j, 1);
+ao_putc(j);
+while(j) {
+read(ao_receive, d, 2);
+ao_putc(d[0]);
+ao_putc(d[1]);
+--j;
+}
+}
+if(cmd == 's') {
+read(ao_receive, d, 8);
+for(j=0; j<8; ++j)
+ao_putc(d[j]);
+}
+if(cmd == 'e') { // empty
+aohead = aotail = aobuf;
+}
+if(cmd == 'x') { // exit
+abort:
+aohead = aotail = aobuf;
+ao_close(aodev);
+ao_shutdown();
+aodev = 0;
+return 0;
+}
+
+goto top;
+}
+
+static void ao_clearbuffer(void)
+{
+unsigned char cmd = 'e';
+write(ao_send, &cmd, 1);
+}
+
+void ao_stopthread(void)
+{
+unsigned char cmd = 'x';
+write(ao_send, &cmd, 1);
+}
+
 int acs_click(void)
 {
-if(aodev) { sc_click(); return 1; }
+if(!soundsOn) return 1;
+if(aodev) { char cmd = 'c'; write(ao_send, &cmd, 1); return 1; }
 outbuf[0] = ACS_CLICK;
 return acs_write(1);
 }
 
 int acs_cr(void)
 {
-if(aodev) { sc_chirp(); return 1; }
+if(aodev) { char cmd = '\n'; write(ao_send, &cmd, 1); return 1; }
 outbuf[0] = ACS_CR;
 return acs_write(1);
 }
@@ -493,7 +685,16 @@ return acs_write(1);
 int acs_notes(const short *notelist)
 {
 int j;
-if(aodev) { playnotes(notelist); return 1; }
+if(aodev) {
+char cmd = 'n';
+write(ao_send, &cmd, 1);
+for(j=0; j<MAXNOTES; ++j)
+if(!notelist[2*j]) break;
+cmd = j;
+write(ao_send, &cmd, 1);
+write(ao_send, notelist, 2*j);
+return 1;
+}
 outbuf[0] = ACS_NOTES;
 for(j=0; j<MAXNOTES; ++j) {
 if(!notelist[2*j]) break;
@@ -507,7 +708,14 @@ return acs_write(2+3*j);
 
 int acs_scale(int f1, int f2, int step, int duration)
 {
-if(aodev) { playscale(f1, f2, step, duration); return 8; }
+if(aodev) {
+char cmd = 's';
+short l[4];
+write(ao_send, &cmd, 1);
+l[0] = f1, l[1] = f2, l[2] = step, l[3] = duration;
+write(ao_send, l, sizeof(l));
+return 8;
+}
 outbuf[0] = ACS_STEPS;
 outbuf[1] = step;
 outbuf[2] = f1;
@@ -524,18 +732,18 @@ int acs_bell(void)
 static const short bellsnd[] = {
         1800,10,0,0     };
 if(!aodev) return acs_notes(bellsnd);
-playnotes(bellsnd);
-// need a small pause if there are several bells in a row
-playnote(0, 4);
+char cmd = 'g';
+write(ao_send, &cmd, 1);
 return 1;
 }
 
 int acs_buzz(void)
 {
 static const short buzzsnd[] = {
-        100,40,0,0     };
+        120,40,0,0     };
 if(!aodev) return acs_notes(buzzsnd);
-playnotes(buzzsnd);
+char cmd = 'z';
+write(ao_send, &cmd, 1);
 return 1;
 }
 
@@ -544,7 +752,8 @@ int acs_highcap(void)
 static const short capsnd[] = {
         3000,3,0,0     };
 if(!aodev) return acs_notes(capsnd);
-playnotes(capsnd);
+char cmd = 'h';
+write(ao_send, &cmd, 1);
 return 1;
 }
 
@@ -553,7 +762,8 @@ int acs_highbeeps(void)
 static const short boundsnd[] = {
         2800,4,3300,3,0,0       };
 if(!aodev) return acs_notes(boundsnd);
-playnotes(boundsnd);
+char cmd = 'b';
+write(ao_send, &cmd, 1);
 return 1;
 }
 
@@ -564,7 +774,8 @@ static const short offsnd[] = {
 static const short onsnd[] = {
 	1000,12,-1,5,1000,12,0,0	};
 if(!aodev) return acs_notes(enabled ? onsnd : offsnd);
-playnotes(enabled ? onsnd : offsnd);
+char cmd = (enabled ? 'o' : 'p');
+write(ao_send, &cmd, 1);
 return 1;
 }
 
@@ -906,6 +1117,7 @@ i = 0;
 while(i <= nr-4) {
 switch(inbuf[i]) {
 case ACS_KEYSTROKE:
+ao_clearbuffer();
 acs_log("key %d,%d\n", inbuf[i+1], inbuf[i+2]);
 // keystroke refreshes automatically in line mode;
 // we have to do it here for screen mode.
@@ -935,6 +1147,7 @@ i += 4;
 break;
 
 case ACS_FGC:
+ao_clearbuffer();
 acs_log("fg %d\n", inbuf[i+1]);
 acs_fgc = inbuf[i+1];
 checkAlloc();
@@ -983,7 +1196,7 @@ acs_log("%c", d);
 acs_log("\n");
 }
 
-#if 0
+#if 1
 /*********************************************************************
 This is the code that clicks the tty output, but it's in the wrong place.
 The module should be doing it, but it can't.
@@ -994,9 +1207,9 @@ clicking each character, plodding along at 1200 baud.
 You hit a key and I don't see it, because I'm reading and clicking, reading and clicking.
 You are locked out until the entire span of data has been read and clicked;
 and what if it's an infinite loop?
-I haven't found away around this, so for now, clickTTY is not implemented.
+My solution is to let a background thread do the clicking.
+I hope that makes sense.
 *********************************************************************/
-extern char soundsOn, clickTTY;
 if(soundsOn & clickTTY && aodev) {
 // we want clicks but have to run through the sound card
 for(j=0; j<culen; ++j) {
