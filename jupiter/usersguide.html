@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<HEAD>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <META name=description content="jupiter documentation, a linear adapter for the blind.">
 <meta name=keywords content="
 text based, command line, interactive, linear,
 adapter, speech, blind, customizable">
-<TITLE> Jupiter Documentation </TITLE>
-        <style type="text/css">
+<title>Jupiter Documentation</title>
+<style>
 body {
 background: white;
 color: black;
@@ -35,44 +36,47 @@ a:visited { color: red; font-size: 1.25em; }
 a:hover { color: red; font-size: 1.25em; }
 a:active { color: red; font-size: 1.25em; }
 </style>
-</HEAD>
-<BODY>
+</head>
+<body>
 
-<h1> Jupiter Documentation, a User's Guide </h1>
+<h1>Jupiter Documentation: a user's guide</h1>
 
-<h2 id=top> Contents </h2>
+<h2 id=top>Contents</h2>
 
-<UL>
-<LI><A HREF=#auth> Author </A>
-<LI><A HREF=#copy> Copyright Notice </A>
-<LI><A HREF=#over> Overview </A>
-<LI><A HREF=#lang> Other Languages </A>
-<LI><A HREF=#syn> Synthesizers </A>
-<LI><A HREF=#mod> Modules </A>
-<LI><A HREF=#modes> Modes </A>
-<LI><A HREF=#cfg> Config Files </A>
-<LI><A HREF=#rc> The Reading Cursor and Atomic Commands </A>
-<LI><A HREF=#vc> The Visual Cursor and Autoread </A>
-<LI><A HREF=#cfs> Config File Syntax </A>
-<LI><A HREF=#fifo> Jupiter fifo </A>
-<LI><A HREF=#sum> Summary </A>
-</UL>
+<ul>
+<li><a href=#auth>Author</a>
+<li><a href=#copy>Copyright Notice</a>
+<li><a href=#over>Overview</a>
+<li><a href=#lang>Other Languages</a>
+<li><a href=#mod>Modules</a>
+<li><a href=#install>Installation</a>
+<li><a href=#options>Command-line options</a>
+<li><a href=#syn>Synthesizers</a>
+<li><a href=#run>Running at boot</a>
+<li><a href=#modes>Modes</a>
+<li><a href=#cfg>Config Files</a>
+<li><a href=#rc>The Reading Cursor and Atomic Commands</a>
+<li><a href=#vc>The Visual Cursor and Autoread</a>
+<li><a href=#cfs>Config File Syntax</a>
+<li><a href=#fifo>Jupiter fifo</a>
+<li><a href=#sum>Summary</a>
+</ul>
 
-<h2> <A NAME=auth> Author </A> </h2>
+<h2 id=auth>Author</h2>
 
 <p>
 Karl Dahlke
-<A HREF=mailto:eklhad@gmail.com>eklhad@gmail.com</A>
+<a href=mailto:eklhad@gmail.com>eklhad@gmail.com</a>
 
-<h2> <A NAME=copy> Copyright Notice </A> </h2>
+<h2 id=copy>Copyright notice</h2>
 
 <p>
-This program is copyright &copy; Karl Dahlke, 2000-2014.
+This program is copyright &copy; Karl Dahlke, 2000-2025.
 It is made available by the author under the terms of the GNU General Public License (GPL),
 as articulated by the Free Software Foundation.
 It may be used for any purpose, and redistributed, provided this copyright notice is included.
 
-<h2> <A NAME=over> Overview </A> </h2>
+<h2 id=over>Overview</h2>
 
 <p>
 Jupiter is unique among all adapters in that it does not (by default) transform the words or icons on the screen into speech or braille.
@@ -85,7 +89,7 @@ The buffer is 64K, and could represent several hours of work,
 depending on the nature and quantity of output during that time.
 Or it could represent just a few seconds of output, if a program prints "hello world" in an infinite loop.
 
-<P>
+<p>
 I call this a linear adapter, rather than a screen reader,
 because it maintains a linear buffer of tty output,
 and allows the blind user to move about within this buffer and read the accumulated text.
@@ -97,19 +101,20 @@ Once this is done,
 Other applications can leverage these tools,
 and be immediately accessible to a wide range of computer users.
 You can read more about this
-<A HREF=http://www.eklhad.net/philosophy.html>command line philosophy</A> here.
+<a href=http://www.eklhad.net/philosophy.html>command line philosophy</a>
+here.
 
-<P>
+<p>
 Although Jupiter is interoperable with some curses-based screen programs,
 it is incompatible with a graphical desktop such as gnome or kde.
 More generally, Jupiter is incompatible with X, which bypasses the traditional tty driver entirely.
-It doesn't see the output, and certainly can't read it to you.
+Jupiter doesn't see the output, and certainly can't read it to you.
 Instead, Jupiter was written for people who spend most of their time at run level 3,
 logged into a text based console.
 Furthermore, it is most effective when combined with command line programs such as bash,
 fdisk, mpg123, ed, and of course edbrowse.
 
-<P>
+<p>
 The tty buffers are maintained per console -
 thus Jupiter is most effective when combined with the 12 virtual consoles that come standard in Linux,
 accessible by alt F1 through alt F12.
@@ -121,7 +126,7 @@ and the result will be very confusing.
 I therefore recommend 12 or 24 virtual text-based consoles
 to manage your parallel sessions.
 
-<h2> <A NAME=lang> Other Languages </A> </h2>
+<h2 id=lang>Other languages</h2>
 
 <p>
 The buffer stores tty output in unicode, which is compatible with every language on Earth.
@@ -132,93 +137,7 @@ You don't have to be a programmer;
 you just have to be fluent in your language and conversational in English.
 I will do the rest.
 
-<h2> <A NAME=syn> Synthesizers </A> </h2>
-
-<p>
-This adapter, like Speakup or Orca or any other adapter, requires a speech synthesizer.
-There are two flavors.
-An external synthesizer plugs into the serial port on your computer
-and runs as a peripheral,
-apart from your sound card and speakers.
-In contrast, a software synthesizer is a program that runs on your computer and uses the in-built sound card.
-I prefer an external synth, because it runs independently of my music.
-They run through different channels, and I can control them independently.
-I turn up the music when I am taking a break, and I turn down the music when I have to think.
-But a software synth has distinct advantages too.
-It does not require a serial port (some computers don't have these ports any more),
-and I don't really want to carry a hardware synth and cables with me when I am on the go.
-That kinda defeats the purpose of a laptop.
-Also, a software synth can be updated from time to time,
-to fix bugs or improve the speech.
-So there are pros and cons to these two approaches.
-
-<P>
-The hardware synths, or external synths, that are supported are shown by the usage message.
-Type jupiter with no arguments to get the usage message.
-After a few options, the first argument is the synthesizer.
-Here are the supported hardware synthesizers.
-
-<P>
-dbe = doubletalk external
-<br>
-dte = dectalk external
-<br>
-bns = braille n speak
-<br>
-ace = accent
-
-<P>
-The second argument determines the serial port.
-This is 0 through 3, for /dev/ttyS0 through /dev/ttyS3.
-On my system I invoke `jupiter dbe 0' for the DoubleTalk synthesizer on /dev/ttyS0.
-
-<P>
-A computer without a serial port can still connect to an external synth using a usb to serial converter.
-Use u0 for /dev/ttyUSB0, and so on.
-
-<P>
-The only software synthesizer currently supported is espeak,
-which, fortunately, comes in a variety of languages.
-(Most of the external synths are English, or perhaps English and Spanish.)
-Jupiter connects to espeakup through a pipe, sending text to be spoken,
-and receiving index markers in return.
-Once again jupiter is invoked with two arguments.
-The first is esp, for espeakup, and the second is the command to launch espeakup.
-On my system it looks like this.
-
-<P>
-jupiter esp "|espeakup -V en-us+klatt4 -a 2>/dev/null"
-
-<P>
-Espeakup is the program to run, and even though it launches and operates correctly,
-it generates error messages, which is why standard error is sent to /dev/null.
-The -V option specifies the language and the voice,
-in this case English, as pronounced in the United States,
-using the male voice klatt4.
-Finally the -a option tells espeakup to operate through a pipe,
-as required by Jupiter,
-and that's where we run into trouble.
-The distributed version of espeakup doesn't recognize the -a option,
-and thus doesn't work with jupiter.
-Instead, you must fetch the source from github and compile it yourself.
-
-<P>
-git clone https://github.com/williamh/espeakup
-
-<P>
-I really don't understand why the distributed binary does not behave exactly as the compiled source,
-but there it is.
-You can always test your system by:
-
-<P>
-echo "hello world" | espeakup -V en-us -a
-
-<P>
-Another quirk of espeakup is that it does not exit on broken pipe.
-If jupiter exits for any reason, espeakup is still hanging around.
-You need to killall espeakup to clean things up.
-
-<h2> <A NAME=mod> Modules </A> </h2>
+<h2 id=mod>Modules</h2>
 
 <p>
 Any program can read screen memory from /dev/vcs,
@@ -230,7 +149,7 @@ Jupiter opens this device driver, and has access to all tty output,
 and to the keystrokes that implement speech commands.
 In other words, /dev/acsint is the connector between Jupiter and the Linux kernel.
 
-<P>
+<p>
 You must compile and install two modules to bring /dev/acsint to life.
 These modules are ttyclicks.ko and acsint.ko.
 Unfortunately I can't distribute these modules in binary,
@@ -239,47 +158,54 @@ Run `uname -r' to see your kernel version.
 If yours is 3.12.3.2, and mine is 3.12.3.1, then my modules won't run on your kernel, and vice versa.
 This is intentional,
 to prevent the accidental assembly of an inconsistent kernel, but it sometimes gets in the way.
-Thus you have to build these modules yourself.
+Thus you have to build and install these modules
+each time you update your kernel.
 That means you have to have the kernel headers, which is an available package,
 but rarely loaded by default.
 After all, most people don't build the kernel or kernel modules.
 But you may have to, as part of the Jupiter installation process,
-so make sure you have the headers,
-e.g. apt install kernel-headers.
-Then descend into the drivers directory in the acsint package and type `make modules'.
-Then as root, type `make modules_install',
-or simply copy the ko files to any location under /lib/modules/version/kernel.
-If these two steps run without error, run `depmod -a'.
-This tells the modprobe system about the two new modules that you just built.
-Now you will be able to load them into the kernel at any time,
-and of course you will want to load them early in the boot sequence,
-because Jupiter will not run without them.
-I use to load the modules and run jupiter from the top of /etc/rc.sysinit,
-whence my computer was talking as early as possible.
-That was before systemd came on the scene.
-As my friend summarized, "Resistance is Futile".
-I have indeed been assimilated into the systemd world,
-but I still don't understand the labyrinth of the boot sequence, and probably never will.
-Failing this, I load the modules by
-putting the word acsint in /etc/modules-load.d/access.conf,
-and then I use /etc/rc.local to create /dev/acsint and launch jupiter.
-This does not bring jupiter up as early as I might like,
-but the computer is talking before the multi-user target places gettys on the virtual consoles,
-and I guess that's good enough.
-If there is something wrong with the computer
-and it throws me into an emergency maintenance shell,
-I will have to enter the root password and run a speech script,
-without clicks or speech.
-As rare as that is, I think I can cope.
-So the computer is accessible,
-and I didn't have to trace through all the targets and services of the boot sequence.
+so make sure you have the headers.
+For example:
+<br>
+sudo apt -q install kernel-headers
+<p>
+Change to the drivers directory:
+<br>
+cd drivers
+<p>
+Configure the acsint driver for your keyboard layout:
+<br>
+./keyconfigure
+<p>
+Make the modules:
+<br>
+make
+<p>
+Install the modules:
+<br>
+sudo make modules_install
+<p>
+You can now leave the drivers directory.
+For example, to return to the previous directory:
+<br>
+cd -
+<p>
+Tell the modprobe system about the modules:
+<br>
+sudo depmod -a
+<p>
+Tell the system to load the acsint modules while booting the system
+by putting the word acsint in a file in the
+directory /etc/modules-load.d (you only need to do this once).
+For example:
+<br>
+sudo echo acsint &gt; /etc/modules-load.d/access.conf
 
-<P>
+<p>
 There is no harm in installing and running ttyclicks and acsint, whether you use Jupiter or not.
-They will not interfere with Speakup, or other adapters, or other running programs.
+They do not interfere with Speakup, or other adapters, or other running programs.
 So just let them run all the time.
-
-<P>
+<p>
 You'll notice that ttyclicks
 generates clicks as output is sent to the screen.
 This is exactly what it is suppose to do;
@@ -291,7 +217,7 @@ without any speech or braille.
 In addition, the output is throttled, and does not fly by the screen
 faster than I could possibly hit control S.
 
-<P>
+<p>
 It is important that this be a separate, stand alone kernel module,
 apart from anybody's adapter.
 If the adapter isn't running,
@@ -314,15 +240,14 @@ I can turn off the clicks at run time if I wish,
 but if the synthesizer ever fails me for any reason,
 I have the clicks to fall back on.
 
-<P>
+<p>
 As you can see from the above paragraph,
 I don't want to run these clicks through anybody's sound card.
 There are too many points of failure along that path.
 Instead, I use the in-built toggle speaker at port 0x61.
-Not all computers have this speaker, but most do,
-and I wouldn't buy one that didn't.
+Not all computers have this speaker, but most do.
 
-<P>
+<p>
 Other programs, outside of the linux kernel, can also take advantage of
 this legacy speaker.
 Grub, for instance, beeps when it brings up the menu,
@@ -335,19 +260,25 @@ Thus a multi-boot system becomes practical.
 It is difficult to overstate the importance of this little in-built speaker
 for the blind user.
 
-<P>
+<p>
 This module might not click and chirp if you are in X.
 It responds to text characters that pass through the standard tty,
 and as mentioned earlier, X bypasses this channel.
 Even the terminal emulator running under a desktop still runs through X,
 and probably won't work with ttyclicks.
 You really need to be in multi-user mode.
-See /etc/inittab for the run level.
+Type systemctl get-default to see the run level,
+and change it like this.
+
+<p>
+systemctl set-default multi-user.target
+
+<p>
 The ttyclicks module is for command line users,
 or users who will stay in command mode long enough to make sure their
 software is properly launched and speaking.
 
-<P>
+<p>
 If an output character is an echo of what you typed in, and if it is in upper case, you will hear a high beep instead of a click.
 This confirms the fact that you have entered a capital letter.
 Thus you receive immediate audio feedback if caps lock is on.
@@ -355,25 +286,17 @@ It is quite common for me to hit caps lock by mistake, but I know that it has ha
 and I hit caps lock again to return to standard typing.
 All this audio feedback is at your disposal as long as ttyclicks is installed, whether you run Jupiter or not.
 
-<P>
+<p>
 The clicks have one drawback however;
 while output is being generated they monopolize the cpu.
 It is hard for other processes to run.
 You may find that your music pauses
 when a program generates a lot of output.
-There is a two step fix for this.
-The first step is a patch to the kernel.
-See click-sleep.3.12.3.patch in the patch directory of the acsint project.
-If you are able to patch and rebuild and reinstall your kernel,
-which is, sadly, not a trivial task, then the parameter sleep=1
-enables ttyclicks to sleep between clicks, so that it does not take over the cpu.
-Place this line in /etc/modprobe.d/access.conf, but only if you have patched the kernel as directed above.
+For a time I tried to patch the kernel to obviate this,
+but that became impractical.
 
-<P>
-options ttyclicks sleep=1
-
-<P>
-The acsint module also has an optional parameter, major=n, to set the major number of the device driver.
+<p>
+The acsint module has an optional parameter, major=n, to set the major number of the device driver.
 If a major number is not specified, then acsint registers a character device with major number 10 and a minor number that is chosen dynamically.
 In practice the minor number is the same each time on your machine,
 as long as acsint is loaded early in the boot sequence.
@@ -394,17 +317,163 @@ One way around this is to start udev first.
 Then /dev becomes a virtual file system that is writable.
 That solves the problem as long as everything works up to the point of udev, which it usually does.
 
-<P>
+<p>
 If you don't start udev at this point, or if you don't use udev at all,
 then /dev/acsint should be in place on your system,
 with major 10 and minor 59, or whatever minor number comes up on your system,
 or perhaps with major 11 minor 1 if you put this line
 in /etc/modprobe.d/access.conf
 
-<P>
+<p>
 options acsint major=11
 
-<h2> <A NAME=modes> Modes </A> </h2>
+<p>
+On the whole we recommend no options, and let acsint select its minor number dynamically,
+and let jupiter create /dev/acsint accordingly,
+and this works almost all the time.
+
+<h2 id=install>Installation</h2>
+
+<p>
+If you want Jupiter to use the sound card to output various informative sounds,
+install the libao-dev package. For example:
+<br>
+sudo apt -q install libao-dev
+<p>
+Change to the jupiter directory. For example:
+<br>
+cd jupiter
+<p>
+Build Jupiter:
+<br>
+make
+<p>
+Install Jupiter:
+<br>
+sudo make install
+<p>
+If you want to use the sample config file as your default config file,
+copy it to /etc/jupiter/start.cfg:
+<br>
+sudo cp sample.cfg /etc/jupiter/start.cfg
+
+<h2 id=options>Command-line options</h2>
+
+<p>
+Run jupiter with the -d option to run it in the background.
+This is usually what you want.
+While you are deciding how you want to run Jupiter,
+particularly which synthesizer arguments to use,
+you might want to run Jupiter without the -d option,
+so that you can use control C to easily stop Jupiter.
+
+<p>
+Run Jupiter with the -a option if you want Jupiter to use the
+sound card to output various informative sounds.
+Only use this if multiple programs can access the sound card
+at the same time on your system.
+
+<h2 id=syn>Synthesizers</h2>
+
+<p>
+This adapter, like Speakup or Orca or any other adapter, requires a speech synthesizer.
+There are two flavors.
+An external synthesizer plugs into the serial port on your computer
+and runs as a peripheral,
+apart from your sound card and speakers.
+In contrast, a software synthesizer is a program that runs on your computer and uses the in-built sound card.
+I prefer an external synth, because it runs independently of my music.
+They run through different channels, and I can control them independently.
+I turn up the music when I am taking a break, and I turn down the music when I have to think.
+But a software synth has distinct advantages too.
+It does not require a serial port (some computers don't have these ports any more),
+and I don't really want to carry a hardware synth and cables with me when I am on the go.
+That kinda defeats the purpose of a laptop.
+Also, a software synth can be updated from time to time,
+to fix bugs or improve the speech.
+So there are pros and cons to these two approaches.
+
+<p>
+The hardware synths, or external synths, that are supported are shown by the usage message.
+Type jupiter with no arguments to get the usage message.
+After a few options, the first argument is the synthesizer.
+Here are the supported hardware synthesizers.
+
+<p>
+dbe = doubletalk external
+<br>
+dte = dectalk external
+<br>
+bns = braille n speak
+<br>
+ace = accent
+
+<p>
+The second argument determines the serial port.
+This is 0 through 3, for /dev/ttyS0 through /dev/ttyS3.
+On my system I invoke `jupiter dbe 0' for the DoubleTalk synthesizer on /dev/ttyS0.
+
+<p>
+A computer without a serial port can still connect to an external synth using a usb to serial converter.
+Use u0 for /dev/ttyUSB0, and so on.
+
+<p>
+The only software synthesizer currently supported is espeakup,
+which, fortunately, supports a variety of languages.
+Jupiter connects to espeakup through a pipe, sending text to be spoken,
+and receiving index markers in return.
+Again jupiter is invoked with two arguments.
+The first is esp, for espeakup, and the second is the command to launch espeakup.
+On my system it looks like this.
+
+<p>
+jupiter esp "|espeakup -V en-us+klatt4 -a"
+
+<p>
+Espeakup is the program to run.
+The -V option specifies the language and the voice,
+in this case English, as pronounced in the United States,
+using the male voice klatt4.
+Finally the -a option tells espeakup to operate through a pipe,
+as required by Jupiter.
+If the version of espeakup in your distribution doesn't support the -a option,
+you can fetch the espeakup source from github and compile it yourself.
+
+<p>
+git clone https://github.com/williamh/espeakup
+
+<p>
+You can test your system by:
+
+<p>
+echo "hello world" | espeakup -V en-us -a
+
+<p>
+Another quirk of espeakup is that it does not exit on broken pipe.
+If Jupiter exits for any reason, espeakup is still hanging around.
+You need to killall espeakup to clean things up.
+
+<h2 id=run>Running at boot</h2>
+
+<p>
+The easiest way to get the system to run Jupiter
+while booting the system is to include the command to run Jupiter in the /etc/rc.local file.
+For example, if you installed Jupiter to /usr/bin/local/jupiter,
+and you want to use espeakup, the /etc/rc.local file might contain:
+<br>
+<pre>
+#!/bin/sh
+/usr/local/bin/jupiter -d -a esp "|espeakup -V en-us -a"
+exit 0
+</pre>
+<p>
+Make sure that this file is executable:
+<br>
+sudo chmod a+x /etc/rc.local
+<p>
+This should get the system to run Jupiter as root.
+
+<h2 id=modes>Modes</h2>
 
 <p>
 Jupiter has several modes that are on or off, enabled or disabled.
@@ -416,11 +485,11 @@ For instance, you may have an application running on console 9 that has to opera
 while all the other consoles run happily in linear mode.
 The modes are as follows.
 
-<DL>
-<P><DT>Sounds
+<dl>
+<dt>Sounds
 
-<P>
-<DD>
+<p>
+<dd>
 If it is the middle of the night and your roommate is asleep, you can disable all the chirps and clicks and beeps from the pc speaker.
 This includes the clicks that accompany tty output,
 and also the short beeps that Jupiter uses to convey status or error conditions.
@@ -431,23 +500,23 @@ the mode key says "mode",
 a key that calls for a line of text says "input",
 mmark for cut&amp;paste says "mark",
 cut says "cut",
-the control g bell becomes "error",
+the control G bell becomes "error",
 and the two quick beeps that indicate a boundary condition are replaced with "boundary".
-These words, like all the inbuilt words of jupiter, can change with the language.
+These words, like all the inbuilt words of Jupiter, can change with the language.
 
-<P><DT>Clicktty
+<p><dt>Clicktty
 
-<P>
-<DD>
+<p>
+<dd>
 If sounds are on, you can still disable the clicks associated with tty output.
 That still leaves the beeps and tones that Jupiter produces for empty buffer, end of buffer, input error, toggle mode, etc.
 Without clicktty, output is no longer throttled, and it flies across the screen at lightning speed.
 
-<P><DT>Transparent
+<p><dt>Transparent
 
-<P>
-<DD>
-In transparent mode, jupiter steps aside, as though it was not running at all.
+<p>
+<dd>
+In transparent mode, Jupiter steps aside, as though it was not running at all.
 Function keys pass right through, and it is not possible to read any text.
 Also, the sounds are disabled.
 Jupiter watches for one and only one keystroke, the one that turns transparent mode off
@@ -457,15 +526,15 @@ then three ascending tones when transparent mode is turned off and Jupiter retur
 Text accumulates in the tty buffer even in transparent mode,
 so you can see what happened while Jupiter was quiescent.
 
-<P>
+<p>
 This mode runs per console.
 Put console 1 in transparent mode and switch to console 2, and Jupiter is talking again.
 Thus you could leave a console in transparent mode for your sighted friend.
 
-<P><DT>Screen
+<p><dt>Screen
 
-<P>
-<DD>
+<p>
+<dd>
 Jupiter reads tty output by default,
 but in screen mode it will read the text from screen memory.
 This is useful if a program uses curses to arrange text on the screen in a certain manner,
@@ -477,15 +546,15 @@ and some international characters are misrepresented in screen memory.
 Still, there are times when a screen program is the only game in town,
 and in those situations you just have to play along.
 
-<P>
+<p>
 Due to some hard compiled limits, screen mode will not work at all if the screen has more than 20,000 cells.
 Jupiter will simply buzz for larger screens and remain in linear mode.
 The largest screen I've run into so far is 48 by 170 = 8,160.
 
-<P><DT>Oneline
+<p><dt>Oneline
 
-<P>
-<DD>
+<p>
+<dd>
 If oneline is enabled,Jupiter reads to the end of a line and then stops.
 A line is delimited by newline in the tty buffer, or the edge of the screen if screen mode is enabled.
 If oneline is disabled then Jupiter reads all the way to the end of the buffer or the end of the screen.
@@ -495,10 +564,10 @@ they should perhaps set oneline mode to stop at the end of that line.
 If F5 reads the rest of the screen or the rest of the buffer, it should clear oneline mode.
 But it's up to you of course.
 
-<P><DT>Autoread
+<p><dt>Autoread
 
-<P>
-<DD>
+<p>
+<dd>
 If the computer generates a new batch of output, jump to the end of the buffer and start reading the new output.
 The word "new" here is subtle, and very important.
 The computer may be cranking out 2 or 3 pages of output,
@@ -524,11 +593,11 @@ like echo hello world,
 and reading begins with the new output.
 This was tricky to program, but you know, it works pretty well.
 
-<P>
+<p>
 If your system is under load, or if you are connected to a distant system via ssh, then 0.4 seconds may not be enough.
 This parameter is hard coded in Jupiter, but some day I may make it a tunable parameter in the config file.
 
-<P>
+<p>
 Autoread disables oneline mode.
 If there is new stuff to read, and you're not busy reading other stuff,
 and Jupiter pulls you down and reads the new stuff for you,
@@ -538,43 +607,37 @@ So it makes sense to disable oneline mode at this point.
 There is no trouble here,
 because your next reading command will probably enable or disable oneline mode as part of its functionality.
 
-<P><DT>Interrupt
+<p><dt>Interrupt
 
-<P>
-<DD>
+<p>
+<dd>
 If interrupt is active, then any key will interrupt reading.
 This is a mode you probably don't want.
 I often type ahead, entering the next command while Jupiter is reading the prior output.
-By default, Jupiter continues to read until a jupiter-bound key is entered,
+By default, Jupiter continues to read until a Jupiter-bound key is entered,
 that is, a key that causes Jupiter to take some action.
 At that point Jupiter will stop reading.
 This includes, of course, the shutup key.
 
-<P><DT>Echo
+<p><dt>Echo
 
-<P>
-<DD>
+<p>
+<dd>
 When echo mode is on, Jupiter echos the keys that you type.
 These are the primary keys, alphanumeric and punctuation.
 Function keys and the like are not echoed, assuming they perform some function, either through Jupiter or through a running application.
 Like the clicks, this is a confirmation of the character on screen.
 Type an e, and you hear the e when the e comes back to you, perhaps from far away over ssh.
 
-<P>
+<p>
 This is primarily for people who aren't confident in their typing.
 I find it distracting, and since echo mode implies interrupt mode,
 it prevents any type-ahead, which slows me down even further.
 
-<P>
-For you international folks, this feature doesn't work with accented letters.
-The &ntilde; that comes back on screen doesn't match n, the last key you typed, and so there is no echo.
-This could be addressed, but it's not a high priority,
-since echo mode is rarely used.
+<p><dt>Literal
 
-<P><DT>Literal
-
-<P>
-<DD>
+<p>
+<dd>
 When literal mode is on, all punctuation marks are read.
 Programmers typically run with literal mode enabled, because every comma, every semicolon, might be important.
 When literal mode is off, punctuation marks are passed directly to the synthesizer,
@@ -586,10 +649,10 @@ and in my brain it almost has the same effect as the corresponding pauses.
 Of course it isn't nearly as funny as Victor Borge's
 Phonetic Punctuation.
 
-<P><DT>Number Processing
+<p><dt>Number Processing
 
-<P>
-<DD>
+<p>
+<dd>
 Jupiter preprocesses numbers so they are pronounced the same way regardless of the synthesizer.
 123 becomes one twenty three, 123,456 becomes one hundred twenty three thousand four hundred fifty six,
 $3.75 becomes three dollars and seventy five cents,
@@ -597,27 +660,27 @@ $8.5 million becomes eight point five million dollars,
 and so on.
 If your synthesizer handles numbers and monitary amounts well, you might not need this feature.
 
-<P><DT>Control Chars
+<p><dt>Control Chars
 
-<P>
-<DD>
+<p>
+<dd>
 Control characters, other than newline, tab, and bell, are typically culled from the tty buffer.
 If this mode is enabled, they are retained.
 This is usually used for debugging.
 
-<P><DT>Override Signals
+<p><dt>Override Signals
 
-<P>
-<DD>
+<p>
+<dd>
 If the serial connection to your external synthesizer is suspect,
 you can use this mode to override the cts and rts signals that are typically used for flow control.
 In other words, we switch to software flow control using x-on and x-off.
 This is used for debugging serial connections, and is rarely needed.
 
-<P><DT>Debug
+<p><dt>Debug
 
-<P>
-<DD>
+<p>
+<dd>
 When debug is enabled,
 the file /var/log/acslog is truncated (not removed),
 and status messages are written to /var/log/acslog,
@@ -625,9 +688,9 @@ until debug mode is turned off.
 This helps me debug the acsint system and the Jupiter adapter.
 A typical user will never activate this mode.
 
-</DL>
+</dl>
 
-<P>
+<p>
 Function keys, control keys, or alt keys can be configured to set, clear, or toggle any of these modes.
 Key bindings will be discussed later.
 Some of these modes, like the oneline mode, are changed often,
@@ -640,7 +703,7 @@ e.g. when there is a lot more output than you expected, you want to shut them of
 Thus I use F9 to toggle oneline, and F10 to toggle clicktty.
 Other modes are changed infrequently, and can be modified by key chords or key sequences.
 
-<h2> <A NAME=cfg> Config Files </A> </h2>
+<h2 id=cfg>Config files</h2>
 
 <p>
 At startup, Jupiter reads its key bindings, and loads its replacement dictionary,
@@ -648,7 +711,7 @@ from the file /etc/jupiter/start.cfg.
 This can be changed using the -c option.
 The syntax and semantics of the config file will be described later.
 
-<P>
+<p>
 You can have many different config files in /etc/jupiter,
 tailored to specific applications.
 These can be loaded at run time.
@@ -661,7 +724,7 @@ I'll call them foo1 through foo4,
 and if you want the 4 function keys on the right to load these 4 files,
 then your bindings will look like this.
 
-<P>
+<p>
 F9 reload foo1
 <br>
 F10 reload foo2
@@ -670,13 +733,13 @@ F11 reload foo3
 <br>
 F12 reload foo4
 
-<P>
+<p>
 These four bindings should be the same in every config file, so you can switch between them in a consistent manner.
 Of course other keys will differ from one config file to another, in their placement and functionality;
 else why would you have different config files in the first place?
 Key bindings will be described later, after I have presented the atomic speech commands.
 
-<P>
+<p>
 Configurations run per console,
 as you would expect with different applications running under different consoles.
 When you switch consoles, Jupiter uses the key bindings last associated with that console,
@@ -685,18 +748,18 @@ However, any macros you have set for the purposes of cut&amp;paste are retained.
 See the markl and markr functions below.
 Thus you can copy a string from one console to another, from one application to another.
 
-<P>
+<p>
 A config file can include another, like #include in C.
 Thus common configurations, like your replacement dictionary, can be written once
 and pulled into every config file,like this.
 
-<P>
-<< dictionary
+<p>
+&lt;&lt; dictionary
 
-<P>
+<p>
 Again these files are taken relative to /etc/jupiter.
 
-<h2> <A NAME=rc> The Reading Cursor and Atomic Commands </A> </h2>
+<h2 id=rc>the reading cursor and atomic commands</h2>
 
 <p>
 The reading cursor is a location in the tty buffer (in linear mode),
@@ -720,7 +783,7 @@ Other screen readers refer to this roaming about as "screen review".
 Fair enough, but a bit misleading if you are in linear mode,
 for then you are reading text out of the tty buffer and not off the screen.
 
-<P>
+<p>
 Various atomic commands move the reading cursor about in the tty buffer or on screen.
 These are not typically issued on their own.
 Instead, they are often put together in a sequence, then bound to a key.
@@ -732,52 +795,52 @@ You could construct a command that reads the top line of the screen, then the th
 then leaves the reading cursor at the end of the second line.
 That is a bit contrived, but it illustrates what can be done.
 
-<P>
+<p>
 Here is a list of the atomic commands that relate to the reading cursor.
 Each command has a brief name, about 6 characters, that you will use in the config file,
 followed by a description of what that command does.
 
-<DL>
-<P><DT>cursor:
-<DD>
+<dl>
+<dt>cursor:
+<dd>
 Move the reading cursor to the visual cursor on screen.
 This is where the action is.
 A composite command might go down to the bottom of the screen, read the status message,
 then issue this command to go back to the visual cursor.
 This command has no effect in linear mode.
 
-<P><DT>clbuf:
-<DD>
+<p><dt>clbuf:
+<dd>
 Clear the buffer.
 Now the buffer is empty.
 This generates an error (beep) in screen mode.
 
-<P><DT>sbuf:
-<DD>
+<p><dt>sbuf:
+<dd>
 Place the cursor at the start of the buffer, or the upper left of the screen.
 If the buffer is empty you will hear a couple of quick high beeps indicating a boundary condition.
 The same sound occurs if you pull the cursor past the start of the buffer, or push it past the end of the buffer.
 
-<P><DT>ebuf:
-<DD>
+<p><dt>ebuf:
+<dd>
 Place the cursor at the end of the buffer, or the lower right of the screen.
 
-<P><DT>sline:
-<DD>
+<p><dt>sline:
+<dd>
 Place the cursor at the start of the current line.
 In linear mode, lines are delimited by the newline character control J.
 Unless control char mode is enabled,
 Jupiter turns crlf into lf, so you don't have to worry about extra return characters (control M) cluttering up your tty buffer.
 
-<P><DT>eline:
-<DD>
+<p><dt>eline:
+<dd>
 Place the cursor at the end of the current line.
 The cursor sits on the newline character that terminates the line.
 In screen mode the cursor sits on a mythical newline character that Jupiter inserts for you.
 Thus screen mode and linear mode have the same look&amp;feel.
 
-<P><DT>sword:
-<DD>
+<p><dt>sword:
+<dd>
 Place the cursor at the start of the current word.
 A word is a sequence of alphanumerics, as per the iso8859-1 page,
 and at most one apostrophe,
@@ -792,16 +855,16 @@ Hello3world is one word in any language.
 Many variables in computer programming, or in math, are a mix of letters and numbers,
 and it is convenient to treat these as compound words.
 
-<P><DT>eword:
-<DD>
+<p><dt>eword:
+<dd>
 Place the cursor at the end of the current word.
 
-<P><DT>wordlen:
-<DD>
+<p><dt>wordlen:
+<dd>
 Read the length of the current word.
 
-<P><DT>lspc:
-<DD>
+<p><dt>lspc:
+<dd>
 Move the cursor to the left through spaces,
 stopping at the last space.
 If there are no spaces to the left of the cursor then it remains in position.
@@ -810,48 +873,48 @@ That is still under consideration.
 As you might imagine, this is rarely used on its own.
 Rather, it is used in sequence to skip past whitespace and read the next word.
 
-<P><DT>rspc:
-<DD>
+<p><dt>rspc:
+<dd>
 Move the cursor to the right through spaces,
 stopping at the last space.
 If there are no spaces to the right of the cursor then it remains in position.
 
-<P><DT>back:
-<DD>
+<p><dt>back:
+<dd>
 Move the cursor back one character.
 
-<P><DT>for:
-<DD>
+<p><dt>for:
+<dd>
 Move the cursor forward one character.
 
-<P><DT>prow:
-<DD>
+<p><dt>prow:
+<dd>
 Move the cursor up one row.
 Sound an error if there is no previous row, or if the previous row is too short
 to remain in your current column.
 Obviously this latter condition cannot occur in screen mode, since all rows are the same length.
 
-<P><DT>nrow:
-<DD>
+<p><dt>nrow:
+<dd>
 Move the cursor down one row.
 
-<P><DT>lcline:
-<DD>
+<p><dt>lcline:
+<dd>
 Put the cursor at the start of the last complete line.
 This is meant to read the last line of output, just before the prompt.
 In screen mode the cursor is at the start of the second to last line,
 assuming the last line is a prompt.
 
-<P><DT>colnum:
-<DD>
+<p><dt>colnum:
+<dd>
 Read the current column number.
 The first character in a line is in column 1.
 Remember that lines can be very long in linear mode.
 A series of dots, indicating progress in a file transfer,
 could create a line that is hundreds or thousands of characters long.
 
-<P><DT>char:
-<DD>
+<p><dt>char:
+<dd>
 Read the current character.
 A letter or digit is simply passed to the speech synthesizer.
 Control G sounds the bell if sounds are enabled,
@@ -873,8 +936,8 @@ Capital X is read as "cap X", rather than simply x.
 I use to have a separate command for this, capchar, and that is still supported for legacy reasons,
 but now char is the same as capchar, just as the word command always indicates the capitalization of the word.
 
-<P><DT>asword:
-<DD>
+<p><dt>asword:
+<dd>
 This is the same as char,
 but a letter is read as a word, using the nato alphabet.
 This is used to distinguish between similar sounding letters such as m and n.
@@ -885,13 +948,13 @@ If the character is nonascii, its unicode value is read in hex format.
 If you have set x1f600 to grin in your config file, it is read as grin by characters, by words, or in continuous reading,
 but asword tells you that it is code 1f600.
 
-<P><DT>casw:
-<DD>
+<p><dt>casw:
+<dd>
 A combination of char plus asword.
 n november, for example.
 
-<P><DT>word:
-<DD>
+<p><dt>word:
+<dd>
 Read the current word.
 The entire word is read, even if the cursor is in the middle of the word.
 The cursor is left at the end of the word.
@@ -906,8 +969,8 @@ allcap indicates the entire word is in upper case, and mixcap indicates a mix of
 This can save time;
 you thence don't need to look letter by letter.
 
-<P><DT>read:
-<DD>
+<p><dt>read:
+<dd>
 Start continuous reading.
 Jupiter will begin reading, and will not stop until you interrupt it,
 or it reaches the end of a line and oneline mode is enabled.
@@ -917,13 +980,13 @@ and the cursor will be on the word you last heard.
 If something doesn't sound right, stop reading and review the individual words and letters.
 You can then resume reading at this point if you like.
 
-<P><DT>shutup:
-<DD>
+<p><dt>shutup:
+<dd>
 Stop reading, but take no other action.
 This leaves the cursor on or near the word you last heard.
 
-<P><DT>speak:
-<DD>
+<p><dt>speak:
+<dd>
 speak the next string at this point in the command sequence.
 This lets you specify a word or phrase, instead of the default that Jupiter provides.
 If the previous command sets or clears a mode, you can specify two different phrases separated by pipe.
@@ -934,11 +997,11 @@ For example, the following sequence causes control f5 to toggle screen mode, and
 
 <p>
 If speak is the only command, ^f5 speak, then Jupiter takes input from the keyboard and sends it directly to the synthesizer.
-This can be used as a test,  to see how things are spoken without any preprocessing.
+This can be used as a test, to see how things are spoken without any preprocessing.
 The same can be accomplished by sending text into /etc/jupiter/fifo, described below, but this can be more convenient.
 
-<P><DT>label:
-<DD>
+<p><dt>label:
+<dd>
 This command waits for you to type a letter, then sets a label, using that letter,
 at the current location in the buffer.
 If you are at the start of the buffer you might issue this command, then type the letter t, to mark this as the top of the buffer.
@@ -946,16 +1009,16 @@ That's rather silly, since there is already a start of buffer command, but I pre
 Then jump t will take you back to this location.
 This is primarily used in linear mode, where you may want to mark several locations in your tty buffer.
 
-<P><DT>jump:
-<DD>
+<p><dt>jump:
+<dd>
 Enter a letter and jump to the location in your buffer that was set using that letter.
 
-<P><DT>markl:
-<DD>
+<p><dt>markl:
+<dd>
 Mark this as the left edge of some text that you want to cut&amp;paste.
 
-<P><DT>markr:
-<DD>
+<p><dt>markr:
+<dd>
 Mark this as the right edge of some text that you want to cut&amp;paste.
 You must then enter a follow-on letter, whence this block of text will be associated
 with the alt of that letter.
@@ -965,10 +1028,10 @@ Then move the cursor to the d in world and issue mark right, followed by h.
 Now alt-h will generate "hello world", as though you had typed it in.
 After you get use to using cut&amp;paste, you will become absolutely dependent on it.
 I'm getting older, and can hardly remember a 7 digit phone number any more,
-so I just use cut&amp;paste to copy it from one file to another.
+so I use cut&amp;paste to copy it from one file to another.
 
-<P><DT>searchd:
-<DD>
+<p><dt>searchd:
+<dd>
 Search down the buffer for a string of text.
 Enter the string at the keyboard, using ascii only.
 The search is case insensitive, and letters will match their accented counterparts.
@@ -978,14 +1041,14 @@ Jupiter will read the current line in oneline mode, or simply say ok otherwise.
 Of course you can follow this up with other commands,
 e.g. read the line just before the line that contains the phrase "oreo cooky".
 
-<P><DT>searchu:
-<DD>
+<p><dt>searchu:
+<dd>
 Search up the buffer for a string of text.
 The behavior is as above, except the cursor moves backwards rather than forwards.
 
-</DL>
+</dl>
 
-<P>
+<p>
 While we're in the neighborhood, let's describe some other atomic commands.
 As you recall, Jupiter runs in several different modes.
 These modes can be set, cleared, and toggled using the
@@ -994,7 +1057,7 @@ A follow-on letter determines the mode.
 Thus stmode s sets screen mode, and clmode a clears autoread mode.
 The letters and modes are as follows.
 
-<P>
+<p>
 s screen mode versus linear mode
 <br>
 a autoread
@@ -1019,24 +1082,24 @@ o override rs232 signals, software flow control
 <br>
 d debug messages in /var/log/acslog
 
-<P>
+<p>
 Most reading commands will start by setting or clearing oneline mode.
 To read the next line, and only the next line, do this.
 
-<P>
+<p>
 stmode 1 eline for read
 
-<P>
+<p>
 To read from your current location to the end of the buffer, do this.
 
-<P>
+<p>
 clmode 1 read
 
-<P>
+<p>
 Several atomic commands control the speech synthesizer.
 Some of these may not be implemented, depending on your synthesizer.
 
-<P>
+<p>
 The volume, speed, pitch, and voice can be set,
 using the volume, speed, pitch, and voice commands.
 Each command takes a follow-on digit from 0 to 9.
@@ -1047,10 +1110,10 @@ However, this is only implemented for a couple of external synthesizers.
 Yes, espeakup has several voices to choose from, but you cannot change them on the fly.
 It is a -V option that is part of the espeakup command line.
 
-<P>
+<p>
 Other commands increase or decrease these parameters as follows.
 
-<P>
+<p>
 incvol increase volume
 <br>
 decvol decrease volume
@@ -1063,38 +1126,38 @@ incpch increase pitch
 <br>
 decpch decrease pitch
 
-<P>
+<p>
 It's nice to have some nearby keys to increase and decrease volume,
 commensurate with the background noise of your surroundings.
 
-<P>
+<p>
 Here are a few more system commands.
 Like the synthesizer commands, these are run on their own,
 and not combined into larger commands.
 
-<DL>
-<DT>bypass:
-<DD>
+<dl>
+<dt>bypass:
+<dd>
 What happens if F2 reads the current line, and yet you have to pass F2 to your running program?
 The bypass command takes the next key and passes it through, as though it had no meaning.
 This is rarely needed in linear mode,
 except to pass control D through for EOF, and control C for interrupt.
 
-<P><DT>bind:
-<DD>
+<p><dt>bind:
+<dd>
 Read a text string from the keyboard and pass it to Jupiter as though it had come from the config file.
 Thus you can change key bindings or pronunciations on the fly.
 This is generally used for testing.
 You should really keep your keyboard layouts and pronunciations in config files.
 
-<P><DT>reexec:
-<DD>
+<p><dt>reexec:
+<dd>
 Restart the adapter.
 This is for developers; after you have made a change to the software you can restart the program with one button.
 The same arguments are passed to the program.
 
-<P><DT>reload:
-<DD>
+<p><dt>reload:
+<dd>
 Reload a config file.
 The name of the file is entered at the keyboard,
 and is taken relative to /etc/jupiter, unless it begins with a slash.
@@ -1104,18 +1167,18 @@ that is better suited to your application.
 If the file cannot be found, or is unreadable,
 Jupiter sounds the error bell and retains the preexisting configuration.
 
-<P><DT>dump:
-<DD>
+<p><dt>dump:
+<dd>
 Dump the current buffer, in utf8, to /tmp/bufn, where n is the number of your current console.
 This is a snapshot of the tty log or screen memory.
 
-<P><DT>suspend:
-<DD>
+<p><dt>suspend:
+<dd>
 Suspend the adapter.
 Activate transparent mode, as described in an earlier section.
 
-<P><DT>step:
-<DD>
+<p><dt>step:
+<dd>
 Play a chromatic scale on the pc speaker using parameters drawn from a file.
 The name of the file is entered at the keyboard,
 and is taken relative to /etc/jupiter, unless it begins with a slash.
@@ -1128,24 +1191,24 @@ A negative step gives a descending scale.
 The fourth number is the duration of each note in hundredths of a second.
 Here is a pretty sound.
 
-<P>
+<p>
 8000,200,-10,40
 
-</DL>
+</dl>
 
-<h2> <A NAME=vc> The Visual Cursor and Autoread </A> </h2>
+<h2 id=vc>the visual cursor and autoread</h2>
 
 <p>
 This section has no meaning in linear mode; it only applies to screen mode.
 
-<P>
+<p>
 The visual cursor is the location on the screen where new text is entered, or preexisting text is modified, or settings are changed, or other work is done.
 The sighted user has his eyes on the visual cursor most of the time,
 and in the same way, the blind user is reading the text at or near the visual cursor, most of the time.
 To support this, the reading cursor jumps to the visual cursor whenever the cursor moves, or when any new output is generated.
 In other words, the reading cursor is the visual cursor, unless you are specifically roaming about the screen.
 
-<P>
+<p>
 Autoread will read any new output in the order it is generated.
 In fact autoread still acts like you are in linear mode.
 If a program updates the status message at the bottom, then the file line at the top,
@@ -1163,7 +1226,7 @@ or even replace a high unicode with another.
 On my system the German s-zet is replaced with the Greek beta, for example.
 That's just one more reason to run command line programs whenever possible.
 
-<P>
+<p>
 There is another form of autoread that is unique to screen mode.
 If the cursor moves one character left or right,
 usually because you have hit the left or right arrow key,
@@ -1175,13 +1238,13 @@ Jupiter reads the line of text on the new row.
 This gives you feedback as you move the visual cursor about on screen.
 It is one more way that Jupiter tracks the visual cursor for you.
 
-<P>
+<p>
 This is a cursor-induced form of screen review,
 so once again the reading cursor tracks the words you are hearing.
 If you don't interrupt speech, then the reading cursor jumps back to the visual cursor
 in its new location.
 
-<P>
+<p>
 On its own, this system is not as responsive as you would like.
 You cannot hit down arrow rapidly in succession to move through several lines on the screen.
 Yes, the visual cursor moves down, but Jupiter is still reading the second line of text.
@@ -1189,14 +1252,14 @@ You have not specifically interrupted speech, and autoread does not interrupt au
 So you are still hearing the line of text that is several lines above the new location of the visual cursor.
 The secret is the T function, named after /usr/bin/tee.
 This replicates the arrow key and sends it to the running program
-(such as a text editor) and back to jupiter for processing.
+(such as a text editor) and back to Jupiter for processing.
 Jupiter will simply interrupt speech; then when the cursor moves,
 autoread will read the next line.
 In this way you can move up or down through the lines on the screen quickly and efficiently.
 The arrow bindings in your config file might look like this.
 
-<P>
-#  arrows move cursors, so it's a good idea for them to interrupt speech.
+<p>
+# arrows move cursors, so it's a good idea for them to interrupt speech.
 <br>
 up T shutup
 <br>
@@ -1206,14 +1269,14 @@ left T shutup
 <br>
 right T shutup
 
-<P>
+<p>
 Don't try to perform the autoread function yourself.
-Don't ask jupiter to read the next character like this.
+Don't ask Jupiter to read the next character like this.
 
-<P>
+<p>
 right T char
 
-<P>
+<p>
 This works if the application receives the arrow key first, before Jupiter,
 but there is a race condition here that cannot be predicted or resolved.
 Jupiter may receive the key first,
@@ -1224,17 +1287,17 @@ rather than the character that the cursor is on now.
 The T function should only be used with the shutup command;
 then Jupiter can perform autoread as it was programmed to do.
 
-<h2> <A NAME=cfs> Config File Syntax </A> </h2>
+<h2 id=cfs>config file syntax</h2>
 
 <p>
 Each line in a config file is one of the following.
 
-<UL>
-<P><LI>
+<ul>
+<li>
 A line consisting of white space, or a line whose first nonblank character is a pound sign.
 These are ignored.
 
-<P><LI>
+<p><li>
 key command1 command2 command3 &#8230;
 This is a key binding.
 The commands are the atomic commands described above.
@@ -1243,18 +1306,18 @@ set and clear modes, control the synthesizer, or modify the system in some way.
 Letters or strings can be included inline for those commands that require follow-on input.
 Here f6 toggles autoread, and f7 searches for the word banana in the buffer.
 
-<P>
+<p>
 f6 toggle a
 <br>
 f7 searchu banana
 
-<P>
+<p>
 Use quotes for a follow-on string, like this.
 
-<P>
+<p>
 f7 searchu "my favorite martian"
 
-<P>
+<p>
 The key is f1 through f12 for the function keys, #0 through #9 for the digits on the keypad,
 #. #+ #- #* #/ #e (enter) for the remaining numpad keys,
 up down left right for the arrows,
@@ -1263,17 +1326,17 @@ Don't worry, Jupiter knows that a line like this is not a comment.
 Instead, it causes numpad 7 to read the previous line,
 and then leave the reading cursor at the start of that line.
 
-<P>
+<p>
 #7 stmode 1 sline back sline read sline
 
-<P>
+<p>
 If a key does not have a name in Jupiter's lexicon, you can specify the keycode directly, as below.
 Use the showkey command to find the key code.
 
 <p>
 k110 colnum
 
-<P>
+<p>
 Keys can be modified by shift, control, or alt, in all combinations.
 The designators are +, ^, and @ respectively.
 Thus @home is alt home key, and +^f3 is shift control f3.
@@ -1282,18 +1345,18 @@ Thus r@u is right alt u, but not left alt u.
 Using @ by itself implies either alt key,
 just as + implies either shift key.
 
-<P>
+<p>
 Map plain function keys or plain numpad keys to the reading functions that you perform often.
 Or - you may wish to assign some of these to control letters, so you don't have to leave the home row,
 but bear in mind, certain applications like nano and vi use control characters to perform their functions,
 so you would have to bypass the speech function in order to pass the control character to the application.
 Even 99% linear users like myself must remember that standard tty uses ^c for interrupt and ^d for EOF.
 
-<P>
+<p>
 Rarely used commands, like restarting the adapter, can safely be assigned to awkward key chords like control alt #+.
 It's all a matter of taste.
 
-<P><LI>
+<p><li>
 Make a key act like a modifier.
 It is sometimes convenient to let the large 0 key on the numpad modify the other keys.
 In other words, hold down 0, and the other keys take on different functions,
@@ -1301,102 +1364,108 @@ as though you were holding down shift or alt.
 Speakup users will be familiar with this behavior.
 The following line causes numpad 0 to simulate the right alt key.
 
-<P>
+<p>
 #0 r@
 
-<P>
+<p>
 If @#5 reads the current line,
 you can accomplish the same thing by holding down #0 and hitting #5.
 
-<P>
+<p>
 A key can also simulate a modifier combination, such as #0 +r@, for shift and right alt together.
 
-<P><LI>
+<p><li>
 Set the pronunciation of a punctuation mark.
 The syntax is the punctuation mark, whitespace, and the word or words to say.
 
-<P>
+<p>
 ( left parenthesis
 <br>
 ) right parenthesis
 
-<P>
+<p>
 The words can be international, in utf8.
 However the punctuation mark must be in ascii.
 To set the pronunciation of a high unicode,
 you must specify the unicode in hex or in decimal.
 Set alpha beta gamma like this.
 
-<P>
+<p>
 x3b1	alpha
 <br>
 x3b2	beta
 <br>
 x3b3	gamma
 
-<P>
+<p>
 Or like this.
 
-<P>
+<p>
 u945	alpha
 <br>
 u946	beta
 <br>
 u947	gamma
 
-<P>
+<p>
 You will probably amass a large collection of emojis, just to read social media and casual emails.
-entries like x1f61c  tongue out and winking, or x1f422 turtle.
+entries like x1f61c tongue out and winking, or x1f422 turtle.
 
-<P><LI>
+<p><li>
 Replace one word with another as text is being read.
 The word must consist of letters in your language, in utf8.
 It can be replaced with any string, again in utf8.
 
-<P>
+<p>
 syzygy sizijee
 <br>
 sleight slite
 <br>
 czech check
 
-<P><LI>
+<p><li>
 Include another config file.
 The file is taken relative to /etc/jupiter, unless it begins with a slash.
 
-<P>
-<< high-unicodes
+<p>
+&lt;&lt; high-unicodes
 <br>
-<< dictionary
+&lt;&lt; dictionary
 
-<P><LI>
+<p><li>
 Execute some commands right now, indicated by two leading colons.
 This is used to put Jupiter in an initial state.
 Set the volume and speed of the synthesizer, for example.
 
-<P>
+<p>
 :: volume 5 speed 8 stmode l
 
-</UL>
+</ul>
 
-<h2> <A NAME=fifo> Jupiter fifo </A> </h2>
+<h2 id=fifo>Jupiter fifo</h2>
 
 <p>
 In unix or linux, a fifo is a virtual file that carries data from one running program to another.
 A particular fifo is used to pass text or instructions from other programs into Jupiter.
 Create the fifo like this.
 
-<P>
-mkfifo -m 666 /etc/jupiter/fifo
+<p>
+sudo mkfifo -m 660 /etc/jupiter/fifo
 
-<P>
+<p>
+Change the group of the fifo to a group that only includes users who you trust to use the fifo.
+For example, if the tty group is that group:
+<br>
+sudo chown root:tty /etc/jupiter/fifo
+
+<p>
 Any text sent to this fifo is passed directly to the synthesizer without processing.
 Verify the fifo like this.
 
-<P>
-echo hello world > /etc/jupiter/fifo
+<p>
+echo hello world &gt; /etc/jupiter/fifo
 
-<P>
+<p>
 If you cat a large file into the fifo, you may have to listen to the entire file,
 with no way to interrupt it.
 That's not a great idea.
@@ -1406,27 +1475,16 @@ It is also used for alerts.
 A program can send status messages, or a completion message, into the fifo,
 and you will hear it, even if the program is in the background or on another console.
 
-<P>
+<p>
 If a line begins with two colons,
 then it is interpreted by Jupiter as speech commands.
 An external program could cause Jupiter to jump to the start of the buffer and start reading,
 though I don't know why you would do that.
 
-<P>
-echo ':: clmode 1 sbuf read' > /etc/jupiter/fifo
+<p>
+echo ':: clmode 1 sbuf read' &gt; /etc/jupiter/fifo
 
-<p>
-Note there is no security here; I assume you are the only one on your computer.
-If someone else is logged in,
-perhaps by ssh, even temporarily,
-he can
-<p>
-echo :: dump >/etc/jupiter/fifo
-<p>
-and dump your interactive session into a readable file.
-If you were reviewing your credit card numbers, passwords, etc, that is now visible to him.
-
-<h2> <A NAME=sum> Summary </A> </h2>
+<h2 id=sum>Summary</h2>
 
 <p>
 Jupiter is written in three layers.
@@ -1438,23 +1496,19 @@ The bridge layer (2) places, metaphorically, a file system on top of the modules
 It is documented in acsbridge.h.
 Adapters such as Jupiter will want to use the bridge layer, rather than the device driver itself.
 Finally, Jupiter (3) is an example of such an adapter.
-To validate this layered approach,
-Tyler started writing his own adapter using the bridge layer,
-and made considerable progress,
-but soon concluded,
-"Jupiter was just too far along; it was easier to just use Jupiter.
-Besides, Jupiter is extremely configurable;
-you can make it be just about anything you want it to be."
 
-<P>
+<p>
+Note that Jupiter is extremely configurable;
+you can make it be just about anything you want it to be.
 Writing the config file, or files, is the key.
 It takes some practice, some trial and error.
 The sample config file may be of some help.
 As always, you can
-<A href=mailto:eklhad@gmail.com>contact me</A> with any questions.
+<a href=mailto:eklhad@gmail.com>contact me</a>
+with any questions.
 
-<P>
-<A HREF=#top>Back to top</A>
+<p>
+<a href=#top>Back to top</a>
 
-</BODY>
+</body>
 </html>
