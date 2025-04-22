@@ -298,39 +298,6 @@ but that became impractical.
 <p>
 The acsint module has an optional parameter, major=n, to set the major number of the device driver.
 If a major number is not specified, then acsint registers a character device with major number 10 and a minor number that is chosen dynamically.
-In practice the minor number is the same each time on your machine,
-as long as acsint is loaded early in the boot sequence.
-Thus it becomes predictable.
-There are two ways to determine the minor number.
-After acsint is loaded, tail /var/log/messages.
-The log contains the registration of acsint as a character device, along with its minor number.
-A better way is to look at
-/sys/devices/virtual/misc/acsint/dev,
-assuming /sys is mounted type sysfs.
-In fact, Jupiter reads this file to see if perhaps /dev/acsint was created with the wrong major or minor numbers.
-If /dev/acsint is missing, or if it has numbers different from its corresponding file under /sys,
-Jupiter tries to remove it and recreate it.
-I am doing everything I can to make sure the system comes up talking.
-And yet there are still speedbumps.
-At startup, /dev is mounted readonly, so I can't make any changes to it.
-One way around this is to start udev first.
-Then /dev becomes a virtual file system that is writable.
-That solves the problem as long as everything works up to the point of udev, which it usually does.
-
-<p>
-If you don't start udev at this point, or if you don't use udev at all,
-then /dev/acsint should be in place on your system,
-with major 10 and minor 59, or whatever minor number comes up on your system,
-or perhaps with major 11 minor 1 if you put this line
-in /etc/modprobe.d/access.conf
-
-<p>
-options acsint major=11
-
-<p>
-On the whole we recommend no options, and let acsint select its minor number dynamically,
-and let jupiter create /dev/acsint accordingly,
-and this works almost all the time.
 
 <h2 id=install>Installation</h2>
 
@@ -759,7 +726,7 @@ and pulled into every config file,like this.
 <p>
 Again these files are taken relative to /etc/jupiter.
 
-<h2 id=rc>the reading cursor and atomic commands</h2>
+<h2 id=rc>The reading cursor and atomic commands</h2>
 
 <p>
 The reading cursor is a location in the tty buffer (in linear mode),
@@ -1196,7 +1163,7 @@ Here is a pretty sound.
 
 </dl>
 
-<h2 id=vc>the visual cursor and autoread</h2>
+<h2 id=vc>The visual cursor and autoread</h2>
 
 <p>
 This section has no meaning in linear mode; it only applies to screen mode.
@@ -1287,7 +1254,7 @@ rather than the character that the cursor is on now.
 The T function should only be used with the shutup command;
 then Jupiter can perform autoread as it was programmed to do.
 
-<h2 id=cfs>config file syntax</h2>
+<h2 id=cfs>Config file syntax</h2>
 
 <p>
 Each line in a config file is one of the following.

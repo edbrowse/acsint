@@ -390,7 +390,7 @@ return acs_write(2);
 // or through the sound card if the speaker is not present.
 
 ao_device *aodev;
-int aovolume = 6, aospeed = 4;
+int aovolume = 3, aospeed = 3;
 int aopipe[2];
 #define ao_receive aopipe[0]
 #define ao_send aopipe[1]
