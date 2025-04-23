@@ -9,6 +9,7 @@ as articulated by the Free Software Foundation.
 
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <unistd.h>
 #include <locale.h>
 #include <pthread.h>
@@ -864,6 +865,7 @@ The argument is the command list, null-terminated.
 *********************************************************************/
 
 static const char *cmd_resume;
+extern int pss_pid;
 static void runSpeechCommand(int input, const char *cmdlist)
 {
 	const struct cmd *cmdp;
@@ -958,11 +960,11 @@ ctrack = 1;
 		break;
 
 	case 3: acs_startbuf();
-if(!(soundsOn|quiet)) acs_say_string(o->topword);
+//if(!(soundsOn|quiet)) acs_say_string(o->topword);
 break;
 
 	case 4: acs_endbuf();
-if(!(soundsOn|quiet)) acs_say_string(o->bottomword);
+//if(!(soundsOn|quiet)) acs_say_string(o->bottomword);
 break;
 
 	case 5: acs_startline(); break;
@@ -1259,6 +1261,8 @@ if(aodev) {
 ao_stopthread();
 pthread_join(ao_thread, NULL);
 }
+// espeakup doesn't always drop away, so kill it.
+if(pss_pid) kill(pss_pid, SIGTERM);
 usleep(700000);
 if(strchr(program_file, '/'))
 	execv(program_file, argvector);

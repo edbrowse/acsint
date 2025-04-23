@@ -32,7 +32,7 @@ static char *ipmsg; /* interprocess message */
 acs_fifo_handler_t acs_fifo_h;
 
 /* parent process, if a child is forked to manage the software synth. */
-static int pss_pid;
+int pss_pid;
 /* Set this for broken pipe - need to respawnw the child */
 int acs_pipe_broken;
 
