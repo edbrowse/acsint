@@ -64,7 +64,7 @@ static FILE *f;
 if(!acs_debug) return 0;
 
 if(!f) {
-f = fopen(debuglog, "a");
+f = fopen(debuglog, "ae");
 if(!f)
 return -1;
 setlinebuf(f);
@@ -321,7 +321,7 @@ uid = geteuid();
 if(uid) return; /* not root */
 
 fd = open("/sys/devices/virtual/misc/acsint/dev", O_RDONLY);
-if(fd < 0) return; /* nothing in /sys to help us */
+if(fd < 0) return; // nothing in /sys to help us
 if(read(fd, line, sizeof(line)) <= 0) {
 close(fd);
 return;
@@ -645,6 +645,8 @@ aohead = aotail = aobuf;
 }
 if(cmd == 'x') { // exit
 abort:
+close(ao_receive);
+close(ao_send);
 aohead = aotail = aobuf;
 ao_close(aodev);
 ao_shutdown();

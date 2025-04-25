@@ -204,7 +204,7 @@ errno = EEXIST;
 return -1;
 }
 
-acs_sy_fd0 = open(devname, O_RDWR|O_NONBLOCK);
+acs_sy_fd0 = open(devname, O_RDWR|O_NONBLOCK|O_CLOEXEC);
 if(acs_sy_fd0 < 0) return 0;
 acs_sy_fd1 = acs_sy_fd0;
 
@@ -888,7 +888,7 @@ errno = EBUSY;
 return -1;
 }
 
-fifo_fd = open(pathname, O_RDWR);
+fifo_fd = open(pathname, O_RDWR|O_CLOEXEC);
 if(fifo_fd < 0)
 return -1;
 
