@@ -1493,6 +1493,22 @@ free(out);
 exit(0);
 }
 
+// catch SIGTERM and pass it down to espeakup,
+// since for some reason it doesn't exit on broken pipe.
+static void exitOnSignal(int n)
+{
+acs_sy_close();
+acs_close();
+if(pss_pid) {
+signal(SIGTERM, SIG_IGN);
+if (killpg(getpid(), SIGTERM))
+	perror("killpg");
+signal(SIGTERM, SIG_DFL);
+usleep(300000);
+}
+exit(100);
+}
+
 static void
 selectLanguage(void)
 {
@@ -1539,7 +1555,7 @@ acs_lang = ACS_LANG_SK;
     fprintf(stderr, "Sorry, language %s is not implemented\n", buf);
 }
 
-/* Supported synthesizers */
+// Supported synthesizers
 struct synth {
 const char *name;
 int style;
@@ -1711,6 +1727,12 @@ if(!cmd && acs_serial_open(serialdev, 9600)) {
 fprintf(stderr, o->openSerial, serialdev);
 exit(1);
 }
+
+// soft synth should now be running
+signal(SIGTERM, exitOnSignal);
+signal(SIGINT, exitOnSignal);
+signal(SIGQUIT, exitOnSignal);
+signal(SIGHUP, exitOnSignal);
 
 acs_scale(3000,600,-4,20);
 
