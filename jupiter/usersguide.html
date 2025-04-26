@@ -268,10 +268,10 @@ Even the terminal emulator running under a desktop still runs through X,
 and probably won't work with ttyclicks.
 You really need to be in multi-user mode.
 Type systemctl get-default to see the run level,
-and change it like this.
+and change it, if need be, like this.
 
 <p>
-systemctl set-default multi-user.target
+sudo systemctl set-default multi-user.target
 
 <p>
 The ttyclicks module is for command line users,
@@ -414,11 +414,6 @@ You can test your system by:
 
 <p>
 echo "hello world" | espeakup -V en-us -a
-
-<p>
-Another quirk of espeakup is that it does not exit on broken pipe.
-If Jupiter exits, espeakup is still hanging around.
-You need to killall espeakup to clean things up.
 
 <h2 id=run>Running at boot</h2>
 
