@@ -32,7 +32,7 @@ static char *ipmsg; /* interprocess message */
 acs_fifo_handler_t acs_fifo_h;
 
 /* parent process, if a child is forked to manage the software synth. */
-int pss_pid;
+pid_t pss_pid;
 /* Set this for broken pipe - need to respawnw the child */
 int acs_pipe_broken;
 
@@ -836,7 +836,7 @@ if(p0[1] != STDOUT_FILENO) close(p0[1]);
 if(p1[0] != STDIN_FILENO) close(p1[0]);
 /* run the program */
 execvp(progname, alist);
-perror("execv");
+perror("execvp");
 exit(1);
 
 default: /* parent */

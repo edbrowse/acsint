@@ -865,7 +865,7 @@ The argument is the command list, null-terminated.
 *********************************************************************/
 
 static const char *cmd_resume;
-extern int pss_pid;
+extern pid_t pss_pid;
 static void runSpeechCommand(int input, const char *cmdlist)
 {
 	const struct cmd *cmdp;
@@ -1262,8 +1262,13 @@ ao_stopthread();
 pthread_join(ao_thread, NULL);
 }
 // espeakup doesn't always drop away, so kill it.
-if(pss_pid) kill(pss_pid, SIGTERM);
+if(pss_pid) {
+signal(SIGTERM, SIG_IGN);
+if (killpg(getpid(), SIGTERM))
+	perror("killpg");
+signal(SIGTERM, SIG_DFL);
 usleep(700000);
+}
 if(strchr(program_file, '/'))
 	execv(program_file, argvector);
 execvp(program_file, argvector);

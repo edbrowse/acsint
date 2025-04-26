@@ -417,7 +417,7 @@ echo "hello world" | espeakup -V en-us -a
 
 <p>
 Another quirk of espeakup is that it does not exit on broken pipe.
-If Jupiter exits for any reason, espeakup is still hanging around.
+If Jupiter exits, espeakup is still hanging around.
 You need to killall espeakup to clean things up.
 
 <h2 id=run>Running at boot</h2>
@@ -430,8 +430,7 @@ and you want to use espeakup, the /etc/rc.local file might contain:
 <br>
 <pre>
 #!/bin/sh
-/usr/local/bin/jupiter -d -a esp "|espeakup -V en-us -a"
-exit 0
+/usr/local/bin/jupiter -d -a esp "|/usr/bin/espeakup -V en-us -a"
 </pre>
 <p>
 Make sure that this file is executable:
