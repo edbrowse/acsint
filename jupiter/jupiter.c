@@ -1264,8 +1264,8 @@ pthread_join(ao_thread, NULL);
 // espeakup doesn't always drop away, so kill it.
 if(pss_pid) {
 signal(SIGTERM, SIG_IGN);
-if (killpg(getpid(), SIGTERM))
-	perror("killpg");
+if (kill(0, SIGTERM))
+	perror("kill");
 signal(SIGTERM, SIG_DFL);
 usleep(700000);
 }
@@ -1501,8 +1501,8 @@ acs_sy_close();
 acs_close();
 if(pss_pid) {
 signal(SIGTERM, SIG_IGN);
-if (killpg(getpid(), SIGTERM))
-	perror("killpg");
+if (kill(0, SIGTERM))
+	perror("kill");
 signal(SIGTERM, SIG_DFL);
 usleep(300000);
 }
