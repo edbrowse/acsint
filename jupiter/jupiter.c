@@ -485,7 +485,7 @@ char filename[SUPPORTLEN+20];
 /* everything has been cleared; start with the cut&paste strings */
 for(i=0; i<26; ++i) {
 if(!cp_macro[i]) continue;
-sprintf(cutbuf, "@%c<%s", 'a'+i, cp_macro[i]);
+sprintf(cutbuf, "l@%c<%s", 'a'+i, cp_macro[i]);
 acs_line_configure(cutbuf, 0);
 }
 
@@ -1175,7 +1175,7 @@ acs_cursorsync();
 	}
 	break;
 
-case 40: /* mark left */
+case 40: // mark1
 if(!input) goto error_bell;
 acs_cursorsync();
 markleft = acs_mb->cursor;
@@ -1185,11 +1185,12 @@ else acs_say_string(o->markword);
 }
 break;
 
-case 41: /* mark right */
+case 41: // mark2
 if(!input) goto error_bell;
 if(support < 'a' || support > 'z') goto error_bell;
 if(!markleft) goto error_bell;
 n = 0;
+cutbuf[n++] = 'l';
 cutbuf[n++] = '@';
 cutbuf[n++] = support;
 cutbuf[n] = 0;

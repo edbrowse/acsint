@@ -459,7 +459,7 @@ When sounds are off, words replace most of the beeps.
 Toggle modes say "yes" or "no" for on or off,
 the mode key says "mode",
 a key that calls for a line of text says "input",
-mmark for cut&amp;paste says "mark",
+mark1 for cut&amp;paste says "mark",
 cut says "cut",
 the control G bell becomes "error",
 and the two quick beeps that indicate a boundary condition are replaced with "boundary".
@@ -983,8 +983,13 @@ Mark this as the start of some text that you want to copy.
 Mark this as the end of some text that you want to copy.
 You must then enter a follow-on letter,
 whence the block of text between the start and end marks is associated
-with the alt of that letter.
+with the left-alt of that letter.
 You should probably leave most of your alt-letters unbound, so they can be used for copy&amp;paste.
+The text is not associated with the right-alt (alt graphics) of that letter.
+AltGR is sometimes used by international keyboards to generate accented letters or other symbols,
+and we do not want to interfere with that.
+
+<p>
 As an example, put your cursor on the h in hello world and issue mark start.
 Then move the cursor to the d in world and issue mark end, followed by h.
 Now alt-h will generate "hello world", as though you had typed it in.
