@@ -1310,12 +1310,12 @@ return;
 case 48: /* suspend */
 if(suspended) {
 static const short unsuspendNotes[] = {
-500, 10, 530, 10, 560, 10, 0};
+700, 10, 600, 10, 500, 10, 0};
 unsuspend();
 acs_notes(unsuspendNotes);
 } else {
 static const short suspendNotes[] = {
-560, 10, 530, 10, 500, 10, 0};
+500, 10, 600, 10, 700, 10, 0};
 acs_notes(suspendNotes);
 suspend();
 }

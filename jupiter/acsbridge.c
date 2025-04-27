@@ -608,10 +608,12 @@ case '\n': sc_chirp(); break;
 case 'n':
 j = ao_getc();
 for(i=0; i<j; ++i) {
-list.c[2*i] = ao_getc();
-list.c[2*i+1] = ao_getc();
+list.c[4*i] = ao_getc();
+list.c[4*i+1] = ao_getc();
+list.c[4*i+2] = ao_getc();
+list.c[4*i+3] = ao_getc();
 }
-list.c[2*i] = list.c[2*i+1] = 0;
+list.s[2*i] = 0;
 playnotes(list.s);
 break;
 case 's':
@@ -629,9 +631,11 @@ if(cmd == 'n') {
 read(ao_receive, &j, 1);
 ao_putc(j);
 while(j) {
-read(ao_receive, d, 2);
+read(ao_receive, d, 4);
 ao_putc(d[0]);
 ao_putc(d[1]);
+ao_putc(d[2]);
+ao_putc(d[3]);
 --j;
 }
 }
@@ -694,7 +698,7 @@ for(j=0; j<MAXNOTES; ++j)
 if(!notelist[2*j]) break;
 cmd = j;
 write(ao_send, &cmd, 1);
-write(ao_send, notelist, 2*j);
+write(ao_send, notelist, 4*j);
 return 1;
 }
 outbuf[0] = ACS_NOTES;
