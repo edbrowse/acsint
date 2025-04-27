@@ -1855,16 +1855,13 @@ alphaToken:
 		if(acs_unaccent(d) == '\'' || acs_unaccent(d) == '\'' ||
 		!isPronounceable(start, end-start))
 			end = apos, apos = 0, e = '\'';
-	} /* interior apostrophe */
+	} // interior apostrophe
 
-	/* str76at  s t r 7 6 a t */
-	if(acs_isdigit(d) && end-start < 3) goto acronym;
-
-	/* A word cannot be too long */
+	// A word cannot be too long
 	if(end - start > WORDLEN)
 		end = start + WORDLEN, e = *end;
 
-	/* Check for mjordan@domain.com. */
+	// Check for mjordan@domain.com
 	if(e == '@' && end - start >= 4 && acs_isalpha(end[1])) {
 		char leadLetters[3];
 		leadLetters[0] = 0;
@@ -1881,12 +1878,12 @@ alphaToken:
 			if(appendAcronString(leadLetters)) goto overflow;
 			start += i;
 		}
-	} /* followed by @ */
+	} // followed by @
 
 	if(isPronounceable(start, end-start)) goto copyword;
 
-	/* Don't bother spelling out long words;
-	 * the user hasn't got the time or the patience. */
+// Don't bother spelling out long words;
+// the user hasn't got the time or the patience.
 	i = end - start;
 	if(i > 6) goto copyword;
 
@@ -1905,7 +1902,7 @@ acronym:
 	goto possessive;
 
 copyword:
-	/* copy a word into the buffer, shiftint to lower case */
+	// copy a word into the buffer, shiftint to lower case.
 	for(; start<end; ++start) {
 		c = *start;
 		if(acs_isalpha(c)) c = acs_tolower(c);
