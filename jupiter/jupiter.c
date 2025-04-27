@@ -83,8 +83,8 @@ static const struct cmd speechcommands[] = {
 	{"set voice", "voice",0,0,0, 1},
 	{"key binding","bind",0,0,1,2},
 	{"last complete line","lcline",1,1},
-	{"mark left", "markl",1,3},
-	{"mark right", "markr",1,3, 0, 1},
+	{"mark start", "mark1",1,3},
+	{"mark end", "mark2",1,3, 0, 1},
 	{"obsolete", "x@y`"},
 	{"label", "label",1,3, 0, 1},
 	{"jump", "jump",1, 1, 0, 1},
@@ -1197,7 +1197,12 @@ acs_line_configure(cutbuf, 0);
 cutbuf[n++] = '<';
 acs_cursorsync();
 markright = acs_mb->cursor;
-if(markright < markleft) goto error_bound;
+unsigned int *markswap = NULL;
+if(markright < markleft) {
+markswap = markright;
+	markright = markleft;
+	markleft = markswap;
+}
 ++markright;
 i = markright - markleft;
 if(i + n >= sizeof(cutbuf)) goto error_bound;
@@ -1218,7 +1223,8 @@ free(cut8);
 cp_macro[i] = 0;
 goto error_bell;
 }
-markleft = 0;
+if (markswap)
+	markleft = markright - 1;
 if(!quiet) {
 if(soundsOn) acs_tone_onoff(0);
 else acs_say_string(o->cutword);

@@ -706,7 +706,7 @@ as you would expect with different applications running under different consoles
 When you switch consoles, Jupiter uses the key bindings last associated with that console,
 i.e. the config file last loaded under that console.
 However, any macros you have set for the purposes of cut&amp;paste are retained.
-See the markl and markr functions below.
+See the mark1 and mark2 functions below.
 Thus you can copy a string from one console to another, from one application to another.
 
 <p>
@@ -974,22 +974,24 @@ This is primarily used in linear mode, where you may want to mark several locati
 <dd>
 Enter a letter and jump to the location in your buffer that was set using that letter.
 
-<p><dt>markl:
+<p><dt>mark1:
 <dd>
-Mark this as the left edge of some text that you want to cut&amp;paste.
+Mark this as the start of some text that you want to copy.
 
-<p><dt>markr:
+<p><dt>mark2:
 <dd>
-Mark this as the right edge of some text that you want to cut&amp;paste.
-You must then enter a follow-on letter, whence this block of text will be associated
+Mark this as the end of some text that you want to copy.
+You must then enter a follow-on letter,
+whence the block of text between the start and end marks is associated
 with the alt of that letter.
-You should probably leave most of your alt-letters unbound, so they can be used for cut&amp;paste.
-As an example, put your cursor on the h in hello world and issue mark left.
-Then move the cursor to the d in world and issue mark right, followed by h.
+You should probably leave most of your alt-letters unbound, so they can be used for copy&amp;paste.
+As an example, put your cursor on the h in hello world and issue mark start.
+Then move the cursor to the d in world and issue mark end, followed by h.
 Now alt-h will generate "hello world", as though you had typed it in.
-After you get use to using cut&amp;paste, you will become absolutely dependent on it.
+The same thing happens if you mark d as the start of your text and h as the end.
+After you get use to using copy&amp;paste, you will become absolutely dependent on it.
 I'm getting older, and can hardly remember a 7 digit phone number any more,
-so I use cut&amp;paste to copy it from one file to another.
+so I use copy&amp;paste to copy it from one file to another.
 
 <p><dt>searchd:
 <dd>
