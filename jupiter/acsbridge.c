@@ -25,7 +25,6 @@ and declared in acsbridge.h.
 
 #define stringEqual !strcmp
 
-#define MAXNOTES 20 // how many notes to play in one call
 #define INBUFSIZE (TTYLOGSIZE*4 + 400) /* size of input buffer */
 /* Output buffer could be 40 bytes, except for injectstring() */
 #define OUTBUFSIZE 20000

@@ -96,6 +96,7 @@ static const struct cmd speechcommands[] = {
 	{"char plus asword","casw",1,3},
 	{"speak now","speak",0,0,0,2},
 	{"current word length","wordlen",1,3},
+	{"play notes","notes",0,0,0,2},
 	{0,""}
 };
 
@@ -858,6 +859,26 @@ fclose(f);
 acs_scale(f1, f2, step, duration);
 }
 
+static void
+playnotes(const char *scalefile)
+{
+FILE *f;
+int j = 0;
+char c;
+short notelist[MAXNOTES*2+2];
+f = fopen(scalefile, "r");
+if(!f) return;
+while(fscanf(f, "%hd,%hd",
+notelist+2*j, notelist+2*j+1) == 2) {
+++j;
+c = fgetc(f);
+if(c != ',') break;
+if(j == MAXNOTES) break;
+}
+fclose(f);
+notelist[2*j] = 0;
+acs_notes(notelist);
+}
 
 /*********************************************************************
 Execute the speech command.
@@ -1352,6 +1373,13 @@ case 52: /* current word length */
 		sprintf(shortPhrase, "%d", n);
 		acs_cursorset();
 		acs_say_string_uc(prepTTSmsg(shortPhrase));
+break;
+
+case 53:
+if(!*suptext) goto error_bell;
+etcjup(suptext);
+if(access(jfile, 4)) goto error_bell;
+playnotes(jfile);
 break;
 
 	default:

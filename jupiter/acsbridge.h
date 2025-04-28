@@ -122,6 +122,7 @@ passing messages up to acsint and then to ttyclicks, to use the speaker.
 extern ao_device *aodev;
 extern int aovolume, aospeed;
 #define SAMPRATE 11025
+#define MAXNOTES 40
 extern int aopipe[2];
 void *ao_main(void *);
 void ao_stopthread(void);

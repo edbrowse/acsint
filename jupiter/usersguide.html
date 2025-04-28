@@ -1157,10 +1157,19 @@ Thus 6 takes steps of 6%,
 which produces a traditional chromatic scale.
 A negative step gives a descending scale.
 The fourth number is the duration of each note in hundredths of a second.
-Here is a pretty sound.
+An example is the file harp in this directory.
 
-<p>
-8000,200,-10,40
+<p><dt>notes:
+<dd>
+Play a sequence of notes on the pc speaker using parameters drawn from a file.
+The name of the file is entered at the keyboard,
+and is taken relative to /etc/jupiter, unless it begins with a slash.
+The file contains pairs of numbers separated by commas.
+Each pair is a frequency in hurtz and a duration in jiffies.
+An example is the file bach in this directory.
+This is the Minuet in G major.
+At present the max number of notes, including rests, is 40.
+This feature is for playing helpful sounds and alerts, not for playing concertos.
 
 </dl>
 
