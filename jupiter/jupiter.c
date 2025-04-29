@@ -92,7 +92,7 @@ static const struct cmd speechcommands[] = {
 	{"reload the config file","reload",0,0,1,2},
 	{"dump buffer","dump",0,0,1},
 	{"suspend the adapter","suspend",0,0,1},
-	{"chromatic scale","step",0,0,0,2},
+	{"obsolete", "x@y`"},
 	{"char plus asword","casw",1,3},
 	{"speak now","speak",0,0,0,2},
 	{"current word length","wordlen",1,3},
@@ -847,28 +847,23 @@ suspended = 0;
 
 
 static void
-chromscale(const char *scalefile)
-{
-FILE *f;
-int f1, f2, step, duration;
-f = fopen(scalefile, "r");
-if(!f) return;
-fscanf(f, "%d,%d,%d,%d",
-&f1, &f2, &step, &duration);
-fclose(f);
-acs_scale(f1, f2, step, duration);
-}
-
-static void
-playnotes(const char *scalefile)
+playnotes(const char *soundfile)
 {
 FILE *f;
 int j = 0;
-char c;
+char c, cmd;
 short notelist[MAXNOTES*2+2];
-f = fopen(scalefile, "r");
+f = fopen(soundfile, "r");
 if(!f) return;
-while(fscanf(f, "%hd,%hd",
+cmd = fgetc(f);
+if(cmd == 's') {
+int f1, f2, step, duration;
+fscanf(f, " %d, %d, %d, %d",
+&f1, &f2, &step, &duration);
+fclose(f);
+acs_scale(f1, f2, step, duration);
+} else if(cmd == 'n') {
+while(fscanf(f, " %hd, %hd",
 notelist+2*j, notelist+2*j+1) == 2) {
 ++j;
 c = fgetc(f);
@@ -878,6 +873,10 @@ if(j == MAXNOTES) break;
 fclose(f);
 notelist[2*j] = 0;
 acs_notes(notelist);
+} else {
+acs_bell();
+fclose(f);
+}
 }
 
 /*********************************************************************
@@ -1343,13 +1342,6 @@ suspend();
 suspendlist[acs_fgc] = suspended;
 return;
 
-case 49:
-if(!*suptext) goto error_bell;
-etcjup(suptext);
-if(access(jfile, 4)) goto error_bell;
-chromscale(jfile);
-break;
-
 case 50: // char plus asword
 asword = asword2 = 1;
 goto letter;
@@ -1375,7 +1367,7 @@ case 52: /* current word length */
 		acs_say_string_uc(prepTTSmsg(shortPhrase));
 break;
 
-case 53:
+case 53: // play notes from a file
 if(!*suptext) goto error_bell;
 etcjup(suptext);
 if(access(jfile, 4)) goto error_bell;

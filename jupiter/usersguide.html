@@ -1145,11 +1145,20 @@ This is a snapshot of the tty log or screen memory.
 Suspend the adapter.
 Activate transparent mode, as described in an earlier section.
 
-<p><dt>step:
+<p><dt>notes:
 <dd>
-Play a chromatic scale on the pc speaker using parameters drawn from a file.
+Play a sequence of notes on the pc speaker using parameters drawn from a file.
 The name of the file is entered at the keyboard,
 and is taken relative to /etc/jupiter, unless it begins with a slash.
+If the first character in the file is n, then jupiter plays a series of notes.
+The file contains pairs of numbers separated by commas.
+Each pair is a frequency in hurtz and a duration in jiffies.
+Some whitespace is permitted.
+At present the max number of notes, including rests, is 50.
+This feature is for playing helpful sounds and alerts, not for playing concertos.
+
+<p>
+If the first character in the file is s, then jupiter plays a scale, of sorts.
 The file contains 4 numbers separated by commas.
 The first is a start frequency and the second is an end frequency.
 The third is a geometric step, as measured in percent.
@@ -1157,19 +1166,9 @@ Thus 6 takes steps of 6%,
 which produces a traditional chromatic scale.
 A negative step gives a descending scale.
 The fourth number is the duration of each note in hundredths of a second.
-Examples are in the files harp and swoop, in this directory.
 
-<p><dt>notes:
-<dd>
-Play a sequence of notes on the pc speaker using parameters drawn from a file.
-The name of the file is entered at the keyboard,
-and is taken relative to /etc/jupiter, unless it begins with a slash.
-The file contains pairs of numbers separated by commas.
-Each pair is a frequency in hurtz and a duration in jiffies.
-An example is the file bach in this directory.
-This is the Minuet in G major.
-At present the max number of notes, including rests, is 40.
-This feature is for playing helpful sounds and alerts, not for playing concertos.
+<p>
+Examples are in the sounds directory.
 
 </dl>
 
