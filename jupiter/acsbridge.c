@@ -405,8 +405,8 @@ togglestate ^= 1;
 #define SINLENGTH 16
 static const short sinwave[SINLENGTH] =
 {500,691,892,962,1000,962,892,691,500,309,108,38,0,38,108,309,};
-// 4 tenths of a second
-static short samples[SAMPRATE*4/10];
+// one second
+static short samples[SAMPRATE];
 static void playsamples(int numsamples)
 {
 ao_play(aodev, (char *) samples, numsamples * sizeof(short));
@@ -458,7 +458,7 @@ static void playnote(int hz, int duration)
 {
 int i, phase;
 // duration is in jiffies
-if(duration > 40) duration = 40;
+if(duration > 100) duration = 100;
 duration = SAMPRATE * duration / 100;
 for(i = 0; i < duration; ++i) {
 phase = (i * hz * 32 / SAMPRATE + 1) / 2;

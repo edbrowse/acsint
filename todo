@@ -1,7 +1,7 @@
 Things to do in the acsint / acsbridge world.
 Some of these tasks make the system more usable;
 some simply make the software more palatable to the linux community,
-in hopes of submitting it to the kernel.
+in hopes of submitting it to the kernel some day.
 These are in no particular order.
 
 * Follow the linux coding standards and recommendations,
@@ -59,17 +59,6 @@ If the math doesn't work out, then the module should printk an error message
 and return -1, whence it does not load.
 Or maybe printk an error message that the timing is not quite what you want,
 then return 0 and load anyways.
-So ok, let's say we get past that hurdle.
-The cpu timing is no problem, just usleep for that many microseconds.
-If sleeping then we have to pass the delay value back to vt.c.
-I currently pass back a special number, sleep or not.
-So I would instead pass back a range of ten numbers,
-sleep for that many milliseconds,
-and hope, as I do today, that those magic numbers would
-never come up in normal unicode output.
-Passing special unicodes back is of course very kludgy,
-but I don't think we're ready to hack the notifier system at this time,
-which is the right way to do it.
 
 * Maintain a table of row mappings for screen memory.
 Example, since last time you refreshed, row 7 has moved up to row 5.
@@ -95,4 +84,11 @@ because doing it in user space, after the fact, is suboptimal.
 * Can acsint.ko access the kernel to see what that key
 and its shift state is going to produce? For echo purposes?
 Culling this information out of dumpkeys is not optimal.
+
+* Why does espeakup sometimes pass back all its index markers early?
+That makes jupiter almost unusable.
+Here is my test sentence.
+why don't <mark name="65"/>you write me <mark name="66"/>I'm out in the jungle <mark name="67"/>I'm hungry to hear you <mark name="68"/>Send me a card <mark name="69"/>I am waiting so hard <mark name="70"/>to be near you.<mark name="71"/>
+cat this into espeakup -a and watch the capital letters come out,
+hopefully in sync with their words.
 
