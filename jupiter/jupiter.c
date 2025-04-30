@@ -455,6 +455,7 @@ strcat(jfile, s);
 }
 
 static const char *acsdriver = "/dev/acsint";
+static const char *acsdriver2 = "/tmp/acsint";
 
 /* cut&paste macros; preserve these across all reloads */
 static char *cp_macro[26];
@@ -1720,12 +1721,18 @@ sprintf(serialdev, "/dev/%s%d",
 (onusb ? "ttyUSB" : "ttyS"), port);
 }
 
-/* Compare major minor numbers on acsdriver with what we see
- * in /sys.  If it's wrong, and we are root, fix it up.
- * This is linux only. */
+reopen:
+// Compare major minor numbers on acsdriver with what we see
+// in /sys.  If it's wrong, and we are root, fix it up.
 acs_nodecheck(acsdriver);
 
 if(acs_open(acsdriver) < 0) {
+if(errno == ENOENT && acsdriver != acsdriver2) {
+// perhaps /dev is a readonly filesystem,
+// /tmp is our last hope.
+acsdriver = acsdriver2;
+goto reopen;
+}
 fprintf(stderr, o->openDriver, acsdriver, strerror(errno));
 if(errno == EBUSY) {
 fprintf(stderr, o->busyDriver);
