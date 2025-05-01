@@ -1734,15 +1734,20 @@ acsdriver = acsdriver2;
 goto reopen;
 }
 fprintf(stderr, o->openDriver, acsdriver, strerror(errno));
+static const short badopen[] = { 300,30,240,30,0,0};
 if(errno == EBUSY) {
 fprintf(stderr, o->busyDriver);
-exit(1);
+goto openfail;
 }
 if(errno == EACCES) {
 fprintf(stderr, o->permDriver, acsdriver);
-exit(1);
+goto openfail;
 }
 fprintf(stderr, o->makeDriver, acsdriver);
+openfail:
+acs_notes(badopen);
+sleep(2); // give time to sound the tones
+// nothing we can do without the acsint driver; not even click the output
 exit(1);
 }
 
