@@ -40,14 +40,14 @@ int acs_pipe_broken;
 int acs_style;
 
 /* current synth parameters */
-int acs_curvolume, acs_curpitch, acs_curspeed, acs_curvoice;
+int acs_curvolume, acs_curpitch, acs_currange, acs_curspeed, acs_curvoice;
 
 /* What are the speech parameters when the unit is first turned on? */
 void
 acs_style_defaults(void)
 {
 acs_curvoice = 0;
-acs_curvolume = acs_curspeed = 5;
+acs_curspeed = acs_curvolume = acs_currange = 5;
 acs_curpitch = 3;
 
 switch(acs_style) {
@@ -709,6 +709,48 @@ int acs_decpitch(void)
 {
 if(acs_curpitch == 0) return -1;
 if(acs_setpitch(acs_curpitch-1))
+return -2;
+return 0;
+}
+
+int acs_setrange(int n)
+{
+static char doublestring[] = "\01xe";
+static char espeakupstring[] = "\01xr";
+
+if(n < 0 || n > 9) return -1;
+
+switch(acs_style) {
+case ACS_SY_STYLE_DOUBLE:
+doublestring[1] = '0' + n;
+ss_writeString(doublestring);
+break;
+
+case ACS_SY_STYLE_ESPEAKUP:
+espeakupstring[1] = '0' + n;
+ss_writeString(espeakupstring);
+break;
+
+default:
+return -2;
+} // switch
+
+acs_currange = n;
+return 0;
+}
+
+int acs_incrange(void)
+{
+if(acs_currange == 9) return -1;
+if(acs_setrange(acs_currange+1))
+return -2;
+return 0;
+}
+
+int acs_decrange(void)
+{
+if(acs_currange == 0) return -1;
+if(acs_setrange(acs_currange-1))
 return -2;
 return 0;
 }

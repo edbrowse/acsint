@@ -1068,10 +1068,10 @@ Several atomic commands control the speech synthesizer.
 Some of these may not be implemented, depending on your synthesizer.
 
 <p>
-The volume, speed, pitch, and voice can be set,
-using the volume, speed, pitch, and voice commands.
+The volume, speed, pitch, pitch range (intonation), and voice can be set,
+using the volume, speed, pitch, range, and voice commands.
 Each command takes a follow-on digit from 0 to 9.
-0 is the slowest speed and 9 is the fastest, and similarly for volume and pitch.
+0 is the slowest speed and 9 is the fastest, and similarly for volume, pitch, and range.
 The voice command selects one of several voices, and then says "hello there",
 so you can hear how the voice sounds.
 However, this is only implemented for a couple of external synthesizers.
@@ -1093,6 +1093,10 @@ decspd decrease speed
 incpch increase pitch
 <br>
 decpch decrease pitch
+<br>
+incrng increase pitch range
+<br>
+decrng decrease pitch range
 
 <p>
 It's nice to have some nearby keys to increase and decrease volume,

@@ -97,6 +97,9 @@ static const struct cmd speechcommands[] = {
 	{"speak now","speak",0,0,0,2},
 	{"current word length","wordlen",1,3},
 	{"play notes","notes",0,0,0,2},
+	{"set pitch range","range",0,0,0,1},
+	{"increase pitch range", "incrng"},
+	{"decrease pitch range", "decrng"},
 	{0,""}
 };
 
@@ -132,6 +135,9 @@ const char *slowerword;
 const char *setpitchword;
 const char *higherword;
 const char *lowerword;
+const char *setrangeword;
+const char *widerword;
+const char *narrowerword;
 const char *helloword;
 const char *reloadword;
 const char *okword;
@@ -183,6 +189,7 @@ static const struct OUTWORDS const outwords[6] = {
 "set volume", "louder", "softer",
 "set rate", "faster", "slower",
 "set pitch", "higher", "lower",
+"set pitch range", "wider", "narrower",
 "hello there", "reload", "o k",
 "mark", "cut", "mode", "boundary", "input", "error",
 "top", "bottom",
@@ -221,6 +228,7 @@ static const struct OUTWORDS const outwords[6] = {
 "ändere Lautstärrke", "lauter", "leiser",
 "ändere Geschwindigkeit", "schneller", "langsamer",
 "setze Tonhöhe", "höher", "niedriger",
+"set pitch range", "wider", "narrower",
 "hallo", "erneut laden", "ok",
 "Markieren", "ausschneiden", "Modus", "Ende", "Kommando", "Fehler",
 "Anfang", "Ende",
@@ -259,6 +267,7 @@ static const struct OUTWORDS const outwords[6] = {
 "determinar volume", "mais alto", "mais baixo",
 "determinar velocidade", "mais rápido", "mais lento",
 "determinar tom", "mais alto", "mais baixo",
+"set pitch range", "wider", "narrower",
 "olá", "recarregar", "o k",
 "marcar", "cortar", "modo", "limite", "inserir", "erro",
 "topo", "fundo",
@@ -299,6 +308,7 @@ static const struct OUTWORDS const outwords[6] = {
 "volume", "plus fort", "moins fort",
 "vitesse", "plus vite", "moins vite",
 "pitch", "plus haut", "plus bas",
+"set pitch range", "wider", "narrower",
 "bonjour", "rechargement", "o k",
 "marquer", "couper", "mode", "limite", "entrer", "erreur",
 "début", "fin",
@@ -336,6 +346,7 @@ static const struct OUTWORDS const outwords[6] = {
 "nastaviť hlasitosť", "hlasnejšie", "tichšie",
 "nastaviť tempo", "rýchlejšie", "pomalšie",
 "nastaviť výšku", "nižšie", "vyššie",
+"set pitch range", "wider", "narrower",
 "dobrý deň", "načítať znovu", "oukey",
 "mark", "cut", "mode", "boundary", "input", "error",
 "top", "bottom",
@@ -1130,12 +1141,12 @@ if(rc == -2) goto error_bell;
 		acs_say_string(t);
 		break;
 
-	case 29: /* inc volume */
+	case 29: /* increase volume */
 rc = acs_incvolume();
 t = o->louderword;
 goto speechparam;
 
-	case 30: /* dec volume */
+	case 30: /* decrease volume */
 rc = acs_decvolume();
 t = o->softerword;
 goto speechparam;
@@ -1146,12 +1157,12 @@ rc = acs_setspeed(support-'0');
 t = o->setrateword;
 goto speechparam;
 
-	case 32: /* inc speed */
+	case 32: /* increase speed */
 rc = acs_incspeed();
 t = o->fasterword;
 goto speechparam;
 
-	case 33: /* dec speed */
+	case 33: /* decrease speed */
 rc = acs_decspeed();
 t = o->slowerword;
 goto speechparam;
@@ -1162,12 +1173,12 @@ rc = acs_setpitch(support-'0');
 t = o->setpitchword;
 goto speechparam;
 
-	case 35: /* inc pitch */
+	case 35: /* increase pitch */
 rc = acs_incpitch();
 t = o->higherword;
 goto speechparam;
 
-	case 36: /* dec pitch */
+	case 36: /* decrease pitch */
 rc = acs_decpitch();
 t = o->lowerword;
 goto speechparam;
@@ -1374,6 +1385,22 @@ etcjup(suptext);
 if(access(jfile, 4)) goto error_bell;
 playnotes(jfile);
 break;
+
+	case 54: /* pitch range */
+		if(!isdigit(support)) goto error_bell;
+rc = acs_setrange(support-'0');
+t = o->setrangeword;
+goto speechparam;
+
+	case 55: /* increase pitch range */
+rc = acs_incrange();
+t = o->widerword;
+goto speechparam;
+
+	case 56: /* decrease pitch range */
+rc = acs_decrange();
+t = o->narrowerword;
+goto speechparam;
 
 	default:
 	error_bell:

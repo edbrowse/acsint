@@ -603,7 +603,7 @@ There is no checking here, just return the key and the state.
 Could be a function key, whatever.
 get1char does more checking - returns a letter or digit.
 This can be used to set modes that are 0 to 9,
-like the voice,  pitch, rate, etc.
+like the voice,  pitch, speed, etc.
 Or choose, by letter, one of a dozen binary modes to toggle.
 Or try to open the synthesizer on a different port, 0 through 3,
 for ttyS0 through ttyS3.
@@ -1269,7 +1269,7 @@ We do, as shown by getModemStatus(),
 and I may take advantage of this some day.
 
 You could time it, and say each word takes so many seconds to speak
-at the current speech rate.
+at the current speech speed.
 I've done this before, and it's butt ugly!
 But it's all you have in ACS_SY_STYLE_GENERIC.
 
@@ -1402,7 +1402,8 @@ void acs_shutup(void);
 
 /*********************************************************************
 Section 13: synthesizer speed, volume, pitch, etc.
-Set the volume, pitch, speed, and voice of the speech synthesizer.
+Set the volume, pitch, pitch range (intonation), speed,
+and voice of the speech synthesizer.
 The argument is a number from 0 to 9.
 In the adapter you might have ^f7 set volume,
 and the user can follow that up with a digit, and there you are.
@@ -1434,6 +1435,11 @@ int acs_setpitch(int level);
 int acs_incpitch(void);
 int acs_decpitch(void);
 
+extern int acs_currange;
+int acs_setrange(int level);
+int acs_incrange(void);
+int acs_decrange(void);
+
 extern int acs_curspeed;
 int acs_setspeed(int level);
 int acs_incspeed(void);
@@ -1444,14 +1450,15 @@ int acs_setvoice(int voice);
 
 /*********************************************************************
 When you first open a synthesizer it has certain default values
-for speed, volume, pitch, etc.
+for speed, volume, pitch, pitch range (intonation), etc.
 These, of course, depend on the synthesizer,
 and are not known to you, or otherwise predictable, unless you read the manual.
 So I set them for you here.
 Make sure style is set,
 open the synthesizer,
 and then call this function.
-Check curvolume curspeed curpitch and curvoice for the resulting values.
+Check acs_curvolume, acs_curspeed, acs_curpitch, acs_currange, and acs_curvoice
+for the resulting values.
 *********************************************************************/
 
 void acs_style_defaults(void);
