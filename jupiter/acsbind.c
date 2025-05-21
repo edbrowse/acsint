@@ -241,7 +241,7 @@ char acs_unaccent(unsigned int c)
 	"`abcdefghijklmno"
 	"pqrstuvwxyz{|}~\177"
 	"..........s....."
-	".....*...'s....y"
+	"..'..*...'s....y"
 	" ..............."
 	"................"
 	"aaaaaaa eeeeiiii"
