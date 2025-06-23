@@ -17,7 +17,11 @@ exit 1;
 my @newarrays = <KC>;
 close KC;
 if($#newarrays != 7) {
-print "Output from keycodes is not 8 lines as expected";
+print "Output from keycodes is not 8 lines as expected\n";
+exit 1;
+}
+if($newarrays[1] =~ /^[\s";]*$/) {
+print "Output from keycodes appears to be empty\n";
 exit 1;
 }
 
