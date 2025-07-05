@@ -1355,6 +1355,18 @@ you can accomplish the same thing by holding down #0 and hitting #5.
 A key can also simulate a modifier combination, such as #0 +r@, for shift and right alt together.
 
 <p><li>
+Bind a key to a macro.
+<p>
+If you follow a key with &lt;, the rest of the line is text to send to standard input.
+You can include \n to send a newline.
+<p>
+^f9&lt;Kind regards\n\nFred Flintstone\n
+<p>
+If you follow a key with |, the rest of the line is a system command to execute.
+<p>
+scroll|amixer -q set Headphone 105+
+
+<p><li>
 Set the pronunciation of a punctuation mark.
 The syntax is the punctuation mark, whitespace, and the word or words to say.
 

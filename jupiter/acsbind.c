@@ -489,7 +489,14 @@ acs_clearmacro(mkcode);
 acs_clearspeechcommand(mkcode);
 if(!s) return;
 macrolist[mkcode] = malloc(strlen(s) + 1);
-strcpy(macrolist[mkcode], s);
+if (macrolist[mkcode] != NULL) {
+char *t = macrolist[mkcode];
+while (*s) {
+if(*s == '\\' && s[1] == 'n') { *t++ = '\n'; s += 2; continue; }
+*t++ = *s++;
+}
+*t = '\0';
+}
 }
 
 void acs_clearspeechcommand(int mkcode)
@@ -765,6 +772,10 @@ static const struct uc_name english_uc[] = {
 {0x2191, "up arrow"},
 {0x2192, "right arrow"},
 {0x2193, "down arrow"},
+{0x220f, "n-ary product"},
+{0x2212, "minus"},
+{0x2264, "less than or equal to"},
+{0x2265, "greater than or equal to"},
 {0x300a, "left double angle bracket"},
 {0x300b, "right double angle bracket"},
 {0, 0}
