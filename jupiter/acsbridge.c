@@ -662,8 +662,10 @@ goto top;
 
 static void ao_clearbuffer(void)
 {
+if(aodev) {
 unsigned char cmd = 'e';
 write(ao_send, &cmd, 1);
+}
 }
 
 void ao_stopthread(void)
