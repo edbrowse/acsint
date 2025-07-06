@@ -492,6 +492,7 @@ macrolist[mkcode] = malloc(strlen(s) + 1);
 if (macrolist[mkcode] != NULL) {
 char *t = macrolist[mkcode];
 while (*s) {
+if(*s == '\\' && s[1] == '\\') { *t++ = '\\'; s += 2; continue; }
 if(*s == '\\' && s[1] == 'n') { *t++ = '\n'; s += 2; continue; }
 *t++ = *s++;
 }
