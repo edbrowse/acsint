@@ -15,7 +15,7 @@ DRIVERPATH = ../drivers
 #	CFLAGS += -I$(DRIVERPATH)
 #	endif
 
-all : jupiter
+all : jupiter injkey
 
 SRCS = jupiter.c tpxlate.c acsbind.c acsbridge.c acstalk.c
 OBJS = $(SRCS:.c=.o)
@@ -28,11 +28,13 @@ jupiter : $(OBJS)
 	cc $(LDFLAGS) -o jupiter $(OBJS) -lao -lpthread
 
 clean :
-	rm -f $(OBJS) jupiter
+	rm -f $(OBJS) jupiter injkey
 
-install : jupiter
+install : jupiter injkey
 	install -d ${bindir}
 	install jupiter ${bindir}
+	install injkey ${bindir}
+	chmod 4755 ${binder}/injkey
 
 uninstall :
 	rm -f ${bindir}/jupiter

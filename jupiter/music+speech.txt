@@ -1,0 +1,135 @@
+This file documents hot keys for playing music on the Raspberry pi,
+though it is applicable to other platforms.
+And the hotkeys need not be jupiter based, you could use esekeyd for example,
+or write your own program in user space to intercept keystrokes and take action.
+
+It began in 2008 when we bought the mac, one of the best computers I ever owned,
+relative to the needs of my entire family.
+Pricy - but it was easy to use,
+more intuitive than today's computers and cell phones, and it lasted a long time.
+The keyboard had three keys at the upper right, which have since become standard.
+Those keys raised and lowered volume, and paused the music.
+You could be off in another application, doing homework, browsing the net, playing a game,
+and still the music was always at your fingertips.
+The phone rings - just hit pause.
+someone comes in and wants to chat - lower the volume.
+You don't have to switch to another tab or change context.
+I wanted this capability on all my computers.
+
+jupiter's config file supports a pipe syntax to run a command.
+So the conceptual idea is:
+
+sysrq|lower volume
+scroll|raise volume
+pause|pause music
+
+Now those three buttons act just like the Mac.
+I can be on some other console,working on a project,
+and the music is still at my fingertips.
+But how to implement?
+
+Volume is controlled by /usr/bin/amixer,
+and that program seems to change its syntax with every release.
+It can be frustrating - but I read the man page,
+determine the new syntax, and update jupiter's config file accordingly.
+It's a minor maintenance every few years.
+Here is the syntax that works on Raspbian 12 bookworm.
+Your mileage may vary.
+
+sysrq|amixer -q set master 3%-
+scroll|amixer -q set master 3%+
+
+A couple of aliases in .bashrc can read and set the volume.
+
+alias auvol="amixer get Master | sed -e '/%/!d' -e '/Right/d' -e 's/%].*//' -e 's/.* \[//'"
+alias auset="amixer -q set Master 60%"
+
+Press the hot keys, volume up and down, and verify by auvol
+that the volume is indeed changing.
+Or try it while music is playing.
+
+But there's another problem.
+I naturally play music under my account, as a user, and once pipewire is launched,
+root has no access to the mixer, or to the music programs in general,
+such as play or mpg123 or mpv.
+This was not a problem in earlier versions of Raspbian, but it is now.
+And it seems to be insurmountable.
+Therefore, jupiter cannot run as root.
+In fact it must run as me.
+Not just to access the mixer, but to access the sound card in general, for speech.
+I use an external hardware synthesizer, but most people don't.
+Most people use a software synth, such as espeakup,
+so you have to have access to the sound card, else the computer remains silent.
+
+That is not a show stopper.
+It means root has to su to me when it launches jupiter,
+and I thence have to have permissions on all the devices.
+Now jupiter can speak through the sound card,
+and it can, in parallel, control the hot keys to raise and lower volume.
+
+Note that amixer controls over all volume,
+while the volume of speech is handled by internal jupiter commands.
+Thus you can control the volume of jupiter speech relative to your music,
+and then you can control the overall volume.
+
++f1 decvol
++f2 incvol
+sysrq|amixer -q set master 3%-
+scroll|amixer -q set master 3%+
+
+Here is my rc.local file that launches jupiter under my user account eklhad.
+the devices mentioned herein should exist by udev.
+
+# Grant me access to the audio devices, control through timer
+chmod 666 /dev/snd/[c-t]*
+chmod 666 /dev/acsint /dev/vcsa
+# permission under /var/log, so I can debug
+touch /var/log/acslog ; chmod 666 /var/log/acslog
+# I use a hardware synth on the serial port through a usb serial converter.
+chmod 666 /dev/ttyUSB0
+su -c "XDG_RUNTIME_DIR=/run/user/1000 /usr/local/bin/jupiter -d dbe u0 >/tmp/jupiter.log 2>&1" eklhad
+
+The XDG variable is important here.
+XDG_RUNTIME_DIR tells amixer where to find the pid of the running pipewire daemon.
+It can't figure it out from my id alone.
+But if XDG doesn't match my id, (eklhad = 1000), it prints an error and exits.
+so you'd think it would just find the runtime directory for my account and move on, but no.
+I have to explicitly set XDG_RUNTIME_DIR in jupiter's environment.
+
+Now let's return to the pause button, which we have not addressed yet.
+jupiter is a daemon process running in the background, and mpg123 (for example)
+is a music player running under a console, in my case console 11.
+If I happen to be in console 11, where the music is, I can hit space to pause and resume,
+or other action keys, but I am almost always somewhere else.
+In console 7 for example, writing this documentation.
+Somehow the pause button must launch a program that communicates with mpg123,
+(wherever it is), and send it a space key.
+There is a lovely ioctl function that injects keystrokes into another terminal.
+I wrote a program to take advantage of this function;
+it is injkey.c (inject key) in this directory.
+It's very short; feel free to read it.
+make will compile it, and make install will install it.
+The program is setuid root, because ironically, it has to run as root.
+So I have to run jupiter as user, to access the sound card,
+but then injkey has to run as root. Wow!
+With that in place, here are the three hot keys.
+
+sysrq|amixer -q set master 3%-
+scroll|amixer -q set master 3%+
+pause|/usr/local/bin/injkey 11 ' '
+
+This assumes console 11 is devoted to music;
+you may do things differently.
+
+this is not limited to pause.
+You can inject other characters (see man mpg123).
+You can set hot keys to restart the song, jump to the previous song,
+jump to the next song, skip ahead or back, etc.
+As many hot keys as you care to dedicate to music -
+although these are no longer available for your speech functions or other capabilities.
+Remember to run mpg123 -q -C, for quiet mode and character response.
+
+This is not limited to mpg123.
+If you prefer mpv, you can write hot keys to control that program instead.
+Just read the man page to see what keys elicit what responses.
+
