@@ -34,7 +34,8 @@ install : jupiter injkey
 	install -d ${bindir}
 	install jupiter ${bindir}
 	install injkey ${bindir}
-	chmod 4755 ${binder}/injkey
+#  obvious security risk if this can be run by other users on your computer
+	chmod 4700 ${binder}/injkey
 
 uninstall :
 	rm -f ${bindir}/jupiter
