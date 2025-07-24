@@ -111,8 +111,11 @@ It's very short; feel free to read it.
 make will compile it, and make install will install it.
 The program is setuid root, because ironically, it has to run as root.
 So I have to run jupiter as user, to access the sound card,
-but then injkey has to run as root. Wow!
-With that in place, here are the three hot keys.
+but then injkey has to run as root.
+Not just effective user root but real user root.
+This has obvious security risks; so you should only do this
+if this is your personal computer, which it probably is.
+With that in mind, here are the three hot keys.
 
 sysrq|amixer -q set master 3%-
 scroll|amixer -q set master 3%+

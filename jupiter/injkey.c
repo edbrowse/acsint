@@ -21,6 +21,7 @@ if(fd < 0) {
 perror("cannot open tty");
 exit(2);
 }
+setuid(geteuid());
 if(ioctl(fd, TIOCSTI, argv[2])) {
 perror("cannot inject character into the tty\n");
 exit(3);
