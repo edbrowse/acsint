@@ -247,15 +247,43 @@ If he hasn't done that, and you are on by ethernet, and you want wifi instead,
 there are several methods, again depending on the version of Raspbian.
 cat /etc/os-release for  your Raspbian version.
 One way that always works is raspi-config.
-But this is a screen program. It's not graphical, but it is screen based.
+This is a screen program. It's not graphical, but it is screen based.
 You have to switch jupiter over to screen mode.
 Use the up down left right keys to move the cursor around,
 and hit return to make a selection.
 It is manageable.
-I prefer a command line solution, and I may write more about that later.
+Naturally I prefer a command line solution, if possible.
 
-At this point you are talking to the new pi through a machine that is already adapted,
-over ethernet or by wifi.
+Note that raspi-config expects you to type in the ssid perfectly,
+it does not present a menu of choices.
+That's fine if you're home and you know your own networks, but not if you're travelling.
+Thus the first step is obtaining a list of ssids.
+iw scan will do this for you, but it generates a deluge of incomprehensible output.
+You need to filter it, like this.
+
+iw dev wlan0 scan | grep '[^A-Z]SSID: *[^ ]'
+
+Even this will duplicate some of the ssids, but at least it fits on one screen.
+
+A better filter might tell us which of these ssids are public, wep, or wpa.
+Or perhaps you can tell by context.
+A ssid at your local McDonalds will be public.
+You can connect to a public ssid by:
+
+iw dev wlan0 connect [network SSID]
+iw dev wlan0 disconnect
+
+wep security is easy, but hardly ever used.
+Wireless lans tend to be public or wpa.
+Just for informational purposes, here is the syntax for wep.
+
+iw dev wlan0 connect [network SSID] key 0:[WEP key]
+
+Unfortunately wpa is considerably more complicated.
+For now let's say Bob set it up for you, or you used raspi-config.
+Or you found another way.
+
+At this point you are talking to the new pi over ethernet or by wifi.
 There are several things you may want to do, no matter what adapter you are using.
 
 The first is an exchange of rsa keys.
@@ -266,8 +294,9 @@ Go into your .ssh directory.
 Do you have id_rsa and id_rsa.pub?
 If yes then continue on to the next step.
 If no then use ssh_keygen with no arguments to generate them.
-Then send these files over to the new pi using scp.
-Put them in .ssh.
+
+Send the rsa files over to the new pi using scp.
+Put them in .ssh, mirroring the source machine.
 Note the permissions; ida_rsa must be 600. This is the private key.
 On both machines, make sure authorized_keys is the same as id_rsa.pub.
 You can copy the latter onto the former, or create a symbolic link.
