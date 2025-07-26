@@ -1,0 +1,358 @@
+This file describes the creation of a talking raspberry pi, or perhaps any debian system,
+or perhaps a linux system in general.
+I will assume you have another talking computer at your hand.
+You can use one to configure the other.
+If you don't, then you will need a bit more help from your sighted friend, (I'll call him Bob),
+but it is still manageable.
+
+Attach an sd card to your computer.
+It's ok if the sd card has no filesystem on it; it could be fresh from the factory.
+Even if it does have a filesystem on it, you're going to overwrite it.
+No need to mount it or look inside.
+Download a Raspberry pi image, whatever version you prefer,
+probably the latest version, and copy it onto the sd card.
+This is an image copy, /bin/dd under unix.
+Probably some kind of drag and drop in Windows; I don't know anything about Windows.
+At this point you could put it into a pi and start it up,
+but there might be other useful things you can do first.
+
+If you don't have a talking computer,
+then Bob will copy the boot image onto the sd card for you.
+It's not difficult, and it doesn't take long.
+I have a talking computer and still I have my friend do it for me,
+because he can do it faster than me and that's all there is to it.
+
+Now there are three paths.
+
+A) Put it in a pi and bring up Raspbian for the first time.
+It doesn't always have to be your pi, sometimes it can be a different pi,
+perhaps Bob's pi at Bob's house.
+As a general disclaimer, the setup pi should be the same as the destination pi,
+but I have used a different pi on occasion, without trouble,
+assuming the pis are the same model, e.g. both pi-4.
+In any case, Bob will start the process for you.
+Raspbian comes up on screen, no adapters, no speech,
+and asks some very simple questions:
+country, time zone, name of the computer, etc.
+
+B) Before he puts it into a pi, ask Bob to mount the sd card as a drive,
+so he can put some important files under /boot.
+These will cause the first boot to set up some good things for you,
+so you don't have to manage them with the GUI.
+
+C) If you have a talking computer, and you downloaded the image and put it
+on the card yourself, then perhaps you can mount it and put some files
+on the boot partition.
+In this path you might not need any sighted help at all!
+
+B and C assume you can mount an ext4 partition.
+Windows can't do that.
+There are some third party tools that attempt to read and write ext4 safely,
+but honestly I think that's a bit dicey.
+There are some linux emulators under Windows and these work pretty well,
+but that's a lot of work just to go down path C.
+If neither you nor Bob has a linux computer, I recommend path A.
+
+When you bring up Raspbian for the first time,
+it will ask you to make a user account; you should do this.
+You can't work 100% as root.
+One slip of the finger and there goes /bin.  Oops!
+Tell Bob your login and password, probably the one you use
+on all your computers, maybe the one you've been using since 1978,
+(eklhad in my case, my last name backwards).
+If you don't trust Bob, and that would be a sorry state indeed,
+then give him a temp password; you can change it later.
+
+But there is another way, relative to paths B and C.
+Create the file /boot/userconf.txt containing a line of the format
+<username>:<hashed password>
+This creates a user account with that username and password on first boot.
+You can try something like
+echo "your_login:$(openssl passwd -6 -stdin)" > userconf.txt
+and type your password, and put that file on the /boot partition of the micro
+SD card before its first boot.
+Once your user account is created, you can safely remove /boot/userconf.txt,
+if the pi hasn't already done so.
+
+Whether created interactively, or by /boot/userconf.txt,
+this user account has administrative privileges.
+That means you will be able to use sudo, and perform root commands. You will need this;
+if you can never be superuser, then the computer is practically useless.
+
+At startup, the pi may ask you for the root password.
+Some linux distributions do this, some don't.
+If prompted, ask Bob to type it in for you.
+If not, you can do without it for a while, thanks to sudo,
+but you will need it eventually.
+If there is no root password, debian will not go into rescue mode.
+Suppose there is a kernel panic - rare, but it happens.
+Or suppose there is a power failure.
+The unit comes up with a corrupt filesystem and runs fsck.
+Suppose there is a problem that it cannot solve, and it requires human intervention.
+This is when it switches to rescue mode - but if there is no root password,
+then that option is off the table.
+Your computer is inaccessible, permanently!
+Bob has no advantage here, his eyes do not help you get in.
+We can assume your pi won't crash for a while,
+but at some point you need to run
+sudo passwd
+It will ask for the root password.
+If it instead asks for your password, then sudo didn't take effect,
+and you aren't really root.
+I don't know why that would happen.
+So make sure it asks for root password,
+type it in twice, and then you're good to go.
+Type su as a test; put in your password; make sure you are root.
+Then exit to get back to your user account.
+You can still use sudo, but if you have a lot of
+root commands to issue, then a superuser session is more convenient.
+
+Speaking of rescue mode, there is an interesting parameter in another
+important boot file.
+Have a look at /boot/cmdline.txt, or /boot/firmware/cmdline.txt
+This will become important later, when we setup wifi.
+This contains options passed to the kernel at boot time.
+There are typically more options as linux advances, but at minimum you should see:
+
+console=serial0,115200 console=tty1 root=PARTUUID=6c1463a0-02 rootfstype=ext4 fsck.repair=yes rootwait
+
+This is all on one line.
+There may or may not be a newline character at the end.
+If you edit it, and inadvertently
+put a newline character at the end, that's ok.
+Let's look at a couple of these parameters.
+
+root=PARTUUID=6c1463a0-02
+
+Certain devices have unique numbers on them, the way each car has a VIN.
+Ethernet chips for example, or wifi chips, have a mac address.
+This is used by the dhcp server to hand out the same ip address to that card,
+whenever if requests a connection.
+They are also used by routers in certain intranet configurations.
+Port forwarding for example.
+Disks, and other storage devices, also have a unique number.
+It is called a uuid.
+This was not always the case.
+In the 1990's /etc/fstab looked quite different, simpler in fact, than it looks today.
+It might direct unix to mount / on /dev/sda1
+That was fine, but what if the system administrator
+moved disks around inside the computer?
+Perhaps he wanted that disk to be in slot three, thus /dev/sdc1.
+Do we have to update half a dozen files under /etc?
+We use to.
+But now we refer to the uuid of the disk, and that specifies it directly.
+In my fstab, and probably yours, / is mounted on a disk by uuid, partition 1,
+and /boot is mounted on a disk of the same uuid, partition 2.
+Obviously your uuid will not be the same as mine.
+
+We see why Bob can set up the sd card on his pi, then hand you the card
+to place in your own pi.
+The uuid is part of the card, and does not change as he hands it to you.
+
+fsck.repair=yes
+
+This one is mightily important.
+Rewind to the 1990's, when this parameter didn't exist.
+We've already talked about a kernel panic or a power failure.
+The computer comes back up with a corrupt root filesystem.
+In those days it always went into rescue mode.
+You had to run fsck manually.
+Since it switched over to rescue mode, none of the services are running.
+Speech is not running. The computer is silent.
+The screen is asking you to log in as root and run fsck, but you don't know that.
+That is why, among other reasons, jupiter was originally embedded in the kernel.
+All that software in the kernel, using the kernel functions (which are quite different from libc.a).
+The slightest bug brought down the entire operating system.
+No debug log, no print statements, just figure out what went wrong
+out of thin air, make a change, rebuild the kernel,
+reinstall the kernel, reboot, and try again.
+I can't describe how difficult that was.
+And yet, speakup went down the same path.
+That two people on earth tried to do this is amazing -
+like saying two people with no connection to each other both climbed Mount everest on hands and knees.
+Well - that is in the past, and most of jupiter, and most of speakup,
+now live in user space, with supporting modules to connect to the kernel.
+this is a perfect example of convergent evolution.
+This is feasible only because todays kernels do not
+flop over into rescue mode just because the root filesystem is corrupt.
+The fsck.repair=yes parameter tells the kernel to run fsck on its own,
+without human intervention,
+fix the disk errors if possible, and come up running.
+The services launch, the computer speaks, and you don't even know anything was amiss.
+This isn't an iron-clad guarantee though.
+Some errors cannot be fixed automatically, and then linux has to go into rescue mode.
+At that point you probably don't have speech,
+but Bob can attach a monitor and perhaps the two of you, working together,
+can get the computer back on its feet.
+I have given some thought to adding speech to rescue mode,
+perhaps connecting the rescue target to the rc.local target,
+in the case of jupiter, or to speakup.service in the case of speakup.
+This is difficult to test, and I'm a bit over my head here.
+Perhaps Bob and I will make progress on this in the future.
+
+cfg80211.ieee80211_regdom=US
+
+This parameter may or may not be in cmdline.txt.
+If it is missing, you can add it at the end.
+If it is there, but the country code is wrong, you can change it.
+When I set up wifi on my new pi, it was working, all was well,
+and yet the country code was AD, for Andora.
+Obviously I don't live in Andora - and yet it worked. I was rather surprised.
+I believe it picked AD because it was first on the list in
+/usr/share/zoneinfo/iso3166.tab
+I changed it from Ad to US and was happy to see that wifi still worked.
+But it's a good idea to have your wifi country code correct from the start.
+So this is a change you, or Bob, might want to make in /boot/cmdline.txt,
+either before you put the card in the pi, or after the fact.
+
+The next thing you need to do is enable ssh.
+This will allow you to connect your talking computer to the pi,
+whence you can take over, and Bob can go to lunch.
+From the terminal, it is
+systemctl enable ssh.service
+and if you want it right now rather then upon the next reboot,
+systemctl start ssh.service
+But of course you aren't at a terminal.
+Bob is looking at a graphical interface.
+It's easy to find services, then ssh, then turn it on.
+Be sure to say yes to both passwords and keys.
+You aren't going to ssh in via private key the first time;
+you will have to use your login and password.
+
+Once again there is a way to do this on path B or C.
+Put an empty file called ssh.txt
+on the /boot partition of the micro SD card, to enable sshd on first boot.
+You can verify that the service is active through the GUI,
+or systemctl | fgrep ssh
+I believe it is safe to remove /boot/ssh.txt at this point;
+the ssh service has been enabled.
+
+The easiest way to connect the new pi to your existing talking machine is over ethernet.
+Put them both on the same hub or the same router.
+(You can connect the two machines directly but that requires a crossover cable,
+which most people don't have in their house.)
+Or - you can set up wifi on the pi.
+We already talked about the wifi country code.
+Unfortunately the wifi mechanisms vary widely from buster, to bullseye, to bookworm,
+and none of them are particularly intuitive.
+Ironically, things have gotten more difficult over the past few years.
+Everything use to be in a wpa file under /etc, and that was easy peasy.
+Put all your networks there, uncomment the one you want to connec to, and reboot.
+All text based.
+No GUI, not even a screen. Sweet!
+But that method went out the window with bookworm.
+
+Bob can set up wifi from the GUI.
+If he hasn't done that, and you are on by ethernet, and you want wifi instead,
+there are several methods, again depending on the version of Raspbian.
+cat /etc/os-release for  your Raspbian version.
+One way that always works is raspi-config.
+But this is a screen program. It's not graphical, but it is screen based.
+You have to switch jupiter over to screen mode.
+Use the up down left right keys to move the cursor around,
+and hit return to make a selection.
+It is manageable.
+I prefer a command line solution, and I may write more about that later.
+
+At this point you are talking to the new pi through a machine that is already adapted,
+over ethernet or by wifi.
+There are several things you may want to do, no matter what adapter you are using.
+
+The first is an exchange of rsa keys.
+You will be doing a lot of logging in, scp, even rsync,
+to copy your personal files from the old computer to the new.
+You don't want to type in your password every time.
+Go into your .ssh directory.
+Do you have id_rsa and id_rsa.pub?
+If yes then continue on to the next step.
+If no then use ssh_keygen with no arguments to generate them.
+Then send these files over to the new pi using scp.
+Put them in .ssh.
+Note the permissions; ida_rsa must be 600. This is the private key.
+On both machines, make sure authorized_keys is the same as id_rsa.pub.
+You can copy the latter onto the former, or create a symbolic link.
+Now you should be able to log in, or scp files, from either machine to the other,
+without the hassle of passwords. Nice.
+
+Remember that Bob provided a name for your pi.
+If the name is not to your liking, edit /etc/hostname.
+The new name takes effect after reboot.
+
+Set the root password,
+sudo passwd
+as discussed earlier.
+Use su to test it, then exit to get back to your user account.
+
+You may want to run in text mode, rather than in graphical mode.
+You can't tell the difference over ssh, but it matters when you log in.
+In the 1990's these were called run level 3 and run level 5.
+Today we use systemctl.
+You can determine the run mode by
+systemctl get-default
+It will say graphical or multiuser. It probably says graphical.
+You can change it like this.
+systemctl set-default multi-user.target
+on the next reboot, the consoles will present a text based login,
+and when you enter your login and password, you will be in the shell, just like ssh.
+If you or Bob or anyone wants to go back to graphical on one of the consoles, type startx
+That's all there is to it.
+The other consoles remain in text mode.
+You can switch between the consoles by alt-f1 through alt-f6
+
+Because Bob was originally in graphical mode, there are several files
+in your home directory that you didn't create. Like Desktop.
+remove these if you like.
+But if you ever type startx to go back to graphical, under your account,
+these files will reappear.
+
+If you run text based, like I do, you probably have a .bash_login
+and .bashrc that customize the shell just the way you like it.
+Copy these over to the new pi.
+scp .bash_login .bashrc newmachine:
+You don't have to reboot for these to take effect, simply log out and log back in again.
+You may want to remove .profile; you're not using it any more.
+
+When you log in for real, not over ssh, is your keyboard not as you expect?
+Keys like " @ # \ are they in the wrong place?
+Check /etc/default/keyboard.
+In particular look for XKBLAYOUT.
+Make sure it has the two letter country code you expect.
+If it doesn't then change it.
+Note that this time the code is lower case, whereas in the /boot/firmware/cmdline.txt it was upper case.
+As my old boss use to say,
+"The great thing about standards is, there are so many of them."
+Another important line in this file is XKBOPTIONS.
+I set mine to ctrl:nocaps
+This causes the caps lock to act like a third control key.
+I use control keys for speech functions about 20 times a minute,
+and it would be a serious impairment if I had to reach all the way down to
+Tierra del Fuego every time I wanted to activate control.
+apparently I am not alone in this preference, since they made an option for this.
+
+There are 6 consoles by default. That's not nearly enough.
+I have to have 12, some people want 24.
+Edit /etc/default/console-setup and look for the line
+ACTIVE_CONSOLES
+It is a glob pattern indicating 6 consoles. Change it to this.
+ACTIVE_CONSOLES="/dev/tty[1-9] /dev/tty1[0-2]"
+Write the file and quit.
+
+This makes the consoles available but doesn't put a getty on them.
+Use this command to check.
+systemctl | fgrep getty@tty
+On some systems you have 1 through 6; on some systems you only have 1.
+There was only 1 active on bookworm.
+Here is a command to bring in all the rest.
+for i in 2 3 4 5 6 7 8 9 10 11 12 ; do systemctl enable getty@tty$i.service ; done
+After the next reboot, all 12 consoles will be available.
+
+There is probably a message that appears after each login.
+A legal disclaimer of some sort.
+This is in /etc/motd  which means message of the day.
+This feature was part of the original unix in the late 1970's.
+You can get rid of the message by removing the file. That's it.
+
+There may be other actions upon login, that you do or do not want.
+Check the files under /etc/issue.d
+
+More coming soon.
