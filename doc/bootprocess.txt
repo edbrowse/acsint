@@ -356,9 +356,10 @@ Check /etc/default/keyboard.
 In particular look for XKBLAYOUT.
 Make sure it has the two letter country code you expect.
 If it doesn't then change it.
-Note that this time the code is lower case, whereas in the /boot/firmware/cmdline.txt it was upper case.
+Note that this time the code is lower case, whereas in the /boot/firmware/cmdline.txt file it was upper case.
 As my old boss use to say,
 "The great thing about standards is, there are so many of them."
+
 Another important line in this file is XKBOPTIONS.
 I set mine to ctrl:nocaps
 This causes the caps lock to act like a third control key.
@@ -392,5 +393,41 @@ You can get rid of the message by removing the file. That's it.
 
 There may be other actions upon login, that you do or do not want.
 Check the files under /etc/issue.d
+
+You will probably use git at some point; you probably did to clone this project.
+git has about 287 features, and I know how to use 12.
+And it will probably remain so. I look at the manual and am somewhat overwhelmed.
+But for my purposes, 12 is enough.
+
+Setting up for git push can be counterintuitive.
+You may want to git push some day, example, contributing to the edbrowse wiki,
+which anyone with a github account can do.
+The trick is the different protocols.
+Clone using the https protocol, like this.
+
+git clone https://github.com/edbrowse/acsint
+
+Then look in .git/config, just to get comfortable with what is there.
+It's only about 20 lines long.
+You will see this same url.
+But it's not set up for push.
+If you ever need to push, then enter a command like this.
+
+git remote set-url --push origin 'git@github.com:edbrowse/acsint.git'
+
+Note that the protocol has changed.
+You can push via an https url but it won't work properly.
+You have to use the git protocol.
+Now go back into .git/config and notice that one line has been added.
+pushurl = git@github.com:edbrowse/acsint.git
+I could have done that myself using the editor,
+and in fact I sometimes do.
+
+To complete the github handshake, you have to give them your public key.
+This is .ssh/id_rsa.pub, as described earlier.
+You can limp along without it, but you'll be entering your password over and over and over again,
+every time you do something with github, and it's exhausting.
+With keys in place, and urls set up properly, you can get pull and git push
+all day long, and there's no trouble.
 
 More coming soon.
