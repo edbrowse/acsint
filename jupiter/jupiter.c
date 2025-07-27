@@ -165,7 +165,8 @@ static const struct OUTWORDS const outwords[6] = {
 "dte = dectalk external, dtp = dectalk pc,\n"
 "bns = braille n speak, ace = accent, esp = espeakup.\n"
 "port is 0 through 7 for the serial device, or u0 through u7 for usb serial.\n"
-"jupiter tc    to test the configuration file.\n",
+"jupiter tc    to test the configuration file.\n"
+"jupiter tts or ltts for text to speech stand alone test\n",
 "cannot open config file %s\n",
 "cannot open the device driver %s;\n%s.\n",
 "cannot open the serial port %s\n",

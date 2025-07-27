@@ -340,6 +340,21 @@ sound card to output various informative sounds.
 Only use this if multiple programs can access the sound card
 at the same time on your system.
 
+<p>
+jupiter tc is a stand-alone test of your config file.
+This is helpful, because you don't see the errors at run time.
+The first error is reported, with its line number, and then jupiter exits.
+Fix your errors one by one until you get a clean run.
+
+<p>
+jupiter tts is a stand-alone test of the text-to-speach preprocessor.
+Type in words or sentences and it prints what it would send to the synthesizer.
+EOF or control c to terminate.
+This helps the user understand how jupiter behaves, in conjunction with the config file,
+and it helps the developer diagnose and fix bugs.
+Use jupiter ltts to do the same thing with literal mode on.
+Thus x,y produces x comma y.
+
 <h2 id=syn>Synthesizers</h2>
 
 <p>
