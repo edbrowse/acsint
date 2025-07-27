@@ -102,13 +102,13 @@ and you aren't really root.
 I don't know why that would happen.
 So make sure it asks for root password,
 type it in twice, and then you're good to go.
-Type su as a test; put in your password; make sure you are root.
+Type su as a test; put in the root password; make sure you are root.
 Then exit to get back to your user account.
 You can still use sudo, but if you have a lot of
 root commands to issue, then a superuser session is more convenient.
 
 Speaking of rescue mode, there is an interesting parameter in another
-important boot file.
+important file under /boot.
 Have a look at /boot/cmdline.txt, or /boot/firmware/cmdline.txt
 This will become important later, when we setup wifi.
 This contains options passed to the kernel at boot time.
@@ -124,7 +124,7 @@ Let's look at a couple of these parameters.
 
 root=PARTUUID=6c1463a0-02
 
-Certain devices have unique numbers on them, the way each car has a VIN.
+Some devices have unique numbers on them, the way each car has a VIN.
 Ethernet chips for example, or wifi chips, have a mac address.
 This is used by the dhcp server to hand out the same ip address to that card,
 whenever if requests a connection.
@@ -133,7 +133,7 @@ Port forwarding for example.
 Disks, and other storage devices, also have a unique number.
 It is called a uuid.
 This was not always the case.
-In the 1990's /etc/fstab looked quite different, simpler in fact, than it looks today.
+In the 1990's, /etc/fstab looked quite different, simpler in fact, than it looks today.
 It might direct unix to mount / on /dev/sda1
 That was fine, but what if the system administrator
 moved disks around inside the computer?
@@ -151,7 +151,7 @@ The uuid is part of the card, and does not change as he hands it to you.
 
 fsck.repair=yes
 
-This one is mightily important.
+This boot parameter is mightily important.
 Rewind to the 1990's, when this parameter didn't exist.
 We've already talked about a kernel panic or a power failure.
 The computer comes back up with a corrupt root filesystem.
@@ -160,11 +160,11 @@ You had to run fsck manually.
 Since it switched over to rescue mode, none of the services are running.
 Speech is not running. The computer is silent.
 The screen is asking you to log in as root and run fsck, but you don't know that.
-That is why, among other reasons, jupiter was originally embedded in the kernel.
+That is why, among other reasons, jupiter was originally embedded in the linux kernel.
 All that software in the kernel, using the kernel functions (which are quite different from libc.a).
 The slightest bug brought down the entire operating system.
-No debug log, no print statements, just figure out what went wrong
-out of thin air, make a change, rebuild the kernel,
+No debug log, no print statements, just crash!
+Figure out what went wrong out of thin air, make a change, rebuild the kernel,
 reinstall the kernel, reboot, and try again.
 I can't describe how difficult that was.
 And yet, speakup went down the same path.
@@ -188,7 +188,7 @@ I have given some thought to adding speech to rescue mode,
 perhaps connecting the rescue target to the rc.local target,
 in the case of jupiter, or to speakup.service in the case of speakup.
 This is difficult to test, and I'm a bit over my head here.
-Perhaps Bob and I will make progress on this in the future.
+Perhaps you can help me with this one.
 
 cfg80211.ieee80211_regdom=US
 
@@ -269,8 +269,8 @@ Again, some of the ssids are duplicated.
 
 nmcli -g in-use,ssid device wifi
 
-nmcli may be a powerful tool for making wifi connections.
 nmcli has been suggested to me, as an alternative to raspi-config.
+It could be a powerful tool for making wifi connections.
 
 nmcli device wifi connect my_ssid password my_wireless_Password
 
@@ -288,13 +288,13 @@ Just for informational purposes, here is the syntax for wep.
 
 iw dev wlan0 connect [network SSID] key 0:[WEP key]
 
-Unfortunately wpa is considerably more complicated.
+Unfortunately wpa is more complicated,
+and the iw tool isn't sufficient.
 For now let's say Bob set it up for you, or you used raspi-config,
 or you used nmcli as shown above.
 
-Now you are talking to the new pi, over ethernet or through wifi.
+At this point you are talking to the new pi, over ethernet, or through wifi.
 There are several things you may want to do, no matter what adapter you are using.
-
 The first is an exchange of rsa keys.
 You will be doing a lot of logging in, scp, even rsync,
 to copy your personal files from the old computer to the new.
@@ -363,6 +363,7 @@ As my old boss use to say,
 Another important line in this file is XKBOPTIONS.
 I set mine to ctrl:nocaps
 This causes the caps lock to act like a third control key.
+(speakup modules can interfere with this, but I'll talk about that later.)
 I use control keys for speech functions about 20 times a minute,
 and it would be a serious impairment if I had to reach all the way down to
 Tierra del Fuego every time I wanted to activate control.
@@ -395,7 +396,7 @@ There may be other actions upon login, that you do or do not want.
 Check the files under /etc/issue.d
 
 You will probably use git at some point; you probably did to clone this project.
-git has about 287 features, and I know how to use 12.
+git has about 287 features, and I know how to use 12 of them.
 And it will probably remain so. I look at the manual and am somewhat overwhelmed.
 But for my purposes, 12 is enough.
 
