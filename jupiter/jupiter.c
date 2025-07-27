@@ -963,7 +963,8 @@ if(*cmdlist) ++cmdlist;
 } else {
 if(soundsOn) acs_tone_onoff(0);
 else acs_say_string(o->inputword);
-if(acs_keystring(suptext, sizeof(suptext), ACS_KS_DEFAULT)) return;
+if(acs_keystring(suptext, sizeof(suptext),
+soundsOn ? ACS_KS_DEFAULT : ACS_KS_BACKUP)) return;
 }
 }
 

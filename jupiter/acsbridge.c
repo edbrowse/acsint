@@ -886,7 +886,7 @@ swallow_rc = 0;
 goto cleanup;
 }
 
-// This only works on a qwerty layout; not sure how to fix this.
+// make sure layout.c is correct for your keyboard
 keychar = (ss&ACS_SS_SHIFT) ? uppercode_s[key] : lowercode_s[key];
 if(keychar == ' ' && key != KEY_SPACE) goto bad;
 if(leds & K_CAPSLOCK && isalpha(keychar))

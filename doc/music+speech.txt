@@ -104,6 +104,22 @@ or other action keys, but I am almost always somewhere else.
 In console 7 for example, writing this documentation.
 Somehow the pause button must launch a program that communicates with mpg123,
 (wherever it is), and send it a space key.
+
+At my request, Thomas Orgis was kind enough to add a feature for me, in 2016,
+wherein mpg123 would pause and restart upon signal SIGUSR1.
+So all I had to do was killall -s10 mpg123.
+That rounds out the three keys.
+
+sysrq|amixer -q set master 3%-
+scroll|amixer -q set master 3%+
+pause|killall -s10 mpg123
+
+Unfortunately this feature broke as of Raspbian 12 bookworm.
+I notified Thomas and he fixed it right away. very responsive to his users.
+So signal 10 may or may not work for you, depending on your version.
+If it works for you then run with it; that is the easiest way to implement a global pause button.
+If not, there is another way.
+
 There is a lovely ioctl function that injects keystrokes into another terminal.
 I wrote a program to take advantage of this function;
 it is injkey.c (inject key) in this directory.
@@ -114,7 +130,7 @@ So I have to run jupiter as user, to access the sound card,
 but then injkey has to run as root.
 Not just effective user root but real user root.
 This has obvious security risks; so you should only do this
-if this is your personal computer, which it probably is.
+if this is your personal computer, with no other users.
 With that in mind, here are the three hot keys.
 
 sysrq|amixer -q set master 3%-
