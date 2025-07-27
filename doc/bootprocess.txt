@@ -264,8 +264,17 @@ You need to filter it, like this.
 iw dev wlan0 scan | grep '[^A-Z]SSID: *[^ ]'
 
 Even this will duplicate some of the ssids, but at least it fits on one screen.
+If you have nmcli installed it can also produce a scan, without the need for a filter.
+Again, some of the ssids are duplicated.
 
-A better filter might tell us which of these ssids are public, wep, or wpa.
+nmcli -g in-use,ssid device wifi
+
+nmcli may be a powerful tool for making wifi connections.
+nmcli has been suggested to me, as an alternative to raspi-config.
+
+nmcli device wifi connect my_ssid password my_wireless_Password
+
+We can't tell from the scan, which of these ssids are public, wep, or wpa.
 Or perhaps you can tell by context.
 A ssid at your local McDonalds will be public.
 You can connect to a public ssid by:
@@ -280,10 +289,10 @@ Just for informational purposes, here is the syntax for wep.
 iw dev wlan0 connect [network SSID] key 0:[WEP key]
 
 Unfortunately wpa is considerably more complicated.
-For now let's say Bob set it up for you, or you used raspi-config.
-Or you found another way.
+For now let's say Bob set it up for you, or you used raspi-config,
+or you used nmcli as shown above.
 
-At this point you are talking to the new pi over ethernet or by wifi.
+Now you are talking to the new pi, over ethernet or through wifi.
 There are several things you may want to do, no matter what adapter you are using.
 
 The first is an exchange of rsa keys.
