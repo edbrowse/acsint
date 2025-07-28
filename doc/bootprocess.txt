@@ -267,7 +267,7 @@ Even this will duplicate some of the ssids, but at least it fits on one screen.
 If you have nmcli installed it can also produce a scan, without the need for a filter.
 Again, some of the ssids are duplicated.
 
-nmcli -g in-use,ssid device wifi
+nmcli -g in-use,ssid,security device wifi
 
 nmcli is an alternative to raspi-config.
 It can be a powerful tool for making wifi connections.
@@ -275,9 +275,8 @@ After all, cli means command line interface.
 
 nmcli device wifi connect my_ssid password my_Password [name my_nickname]
 
-We can't tell from the scan which ssids are public, wep, or wpa.
-Or perhaps you can tell by context.
-A ssid at your local McDonalds will be public.
+By including the security field in the nmcli scan,
+nmcli tells us which sids are public, wep, or wpa.
 You can connect to a public ssid by:
 
 iw dev wlan0 connect [network SSID]
@@ -297,6 +296,7 @@ For now let's say Bob set it up for you, or you used raspi-config,
 or you used nmcli as shown above.
 
 Put your pi on your network, over ethernet, or through wifi.
+If on ethernet, you can set up wifi later.
 How do you find it?
 What is its ip address?
 I have this alias in my .bashrc.
