@@ -272,7 +272,7 @@ nmcli -g in-use,ssid device wifi
 nmcli has been suggested to me, as an alternative to raspi-config.
 It could be a powerful tool for making wifi connections.
 
-nmcli device wifi connect my_ssid password my_wireless_Password
+nmcli device wifi connect my_ssid password my_Password [name my_nickname]
 
 We can't tell from the scan, which of these ssids are public, wep, or wpa.
 Or perhaps you can tell by context.
@@ -430,5 +430,39 @@ You can limp along without it, but you'll be entering your password over and ove
 every time you do something with github, and it's exhausting.
 With keys in place, and urls set up properly, you can get pull and git push
 all day long, and there's no trouble.
+
+If you want to run speakup, you will need to
+apt install espeakup
+espeakup is a stand alone program that turns text into speech
+using the espeak-ng library.
+Note that it does not use espeak, you don't even need that, it uses espeak-ng,
+which is brought in by dependency.
+The installation does some things under the covers by triggers.
+It installs two modules, speakup and speakup_software,
+and it enables speakup.service.
+These modules intercept keystrokes and can be intrusive.
+That is why this package is never installed by default.
+The casual debian user would have no clue what was happening.
+I was confused as well, for quite some time.
+
+If you want to run jupiter in combination with espeakup, you must also run
+apt install espeakup
+You need that program.
+But you don't want or need all the other machinery,
+so you must run
+systemctl disable speak.service ; rmmod speakup speakup_software
+If you don't do this, jupiter and speakup modules might glom onto the same keys,
+with ambiguous results.
+Either might speak, or maybe both; it could be confusing.
+I have only known one person who ran both at the same time, successfully.
+It wasn't me, so I can't say too much more about that.
+
+I am especially odd in that I run jupiter with an external hardware synthesizer,
+and I don't think anybody else does that any more.
+But I prefer it.
+Still I want to have espeakup at the ready,
+in case my hardware synth fails, or I am travelling -
+my synthesizer, which was quite compact in the 1990's,
+is three times the size of my pi, and requires another outlet.
 
 More coming soon.
