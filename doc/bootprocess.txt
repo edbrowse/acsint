@@ -237,7 +237,7 @@ Unfortunately the wifi mechanisms vary widely from buster, to bullseye, to bookw
 and none of them are particularly intuitive.
 Ironically, things have gotten more difficult over the past few years.
 Everything use to be in a wpa file under /etc, and that was easy peasy.
-Put all your networks there, uncomment the one you want to connec to, and reboot.
+Put all your networks there, uncomment the one you want to connect to, and reboot.
 All text based.
 No GUI, not even a screen. Sweet!
 But that method went out the window with bookworm.
@@ -269,31 +269,49 @@ Again, some of the ssids are duplicated.
 
 nmcli -g in-use,ssid device wifi
 
-nmcli has been suggested to me, as an alternative to raspi-config.
-It could be a powerful tool for making wifi connections.
+nmcli is an alternative to raspi-config.
+It can be a powerful tool for making wifi connections.
+After all, cli means command line interface.
 
 nmcli device wifi connect my_ssid password my_Password [name my_nickname]
 
-We can't tell from the scan, which of these ssids are public, wep, or wpa.
+We can't tell from the scan which ssids are public, wep, or wpa.
 Or perhaps you can tell by context.
 A ssid at your local McDonalds will be public.
 You can connect to a public ssid by:
 
 iw dev wlan0 connect [network SSID]
-iw dev wlan0 disconnect
+iw dev wlan0 disconnect # when done
+nmcli device wifi connect public_ssid
 
 wep security is easy, but hardly ever used.
 Wireless lans tend to be public or wpa.
 Just for informational purposes, here is the syntax for wep.
 
 iw dev wlan0 connect [network SSID] key 0:[WEP key]
+nmcli device wifi connect my_ssid password my_Password
 
 Unfortunately wpa is more complicated,
 and the iw tool isn't sufficient.
 For now let's say Bob set it up for you, or you used raspi-config,
 or you used nmcli as shown above.
 
-At this point you are talking to the new pi, over ethernet, or through wifi.
+Put your pi on your network, over ethernet, or through wifi.
+How do you find it?
+What is its ip address?
+I have this alias in my .bashrc.
+
+alias ipsearch="nmap -sn 10.0.0.0/24"
+
+Run ipsearch >i1 before you boot up the pi, then ipsearch >i2 afterward.
+diff i1 i2 should give you the address of the pi.
+There's a chance other devices will come and go between
+the two scans, but it's unlikely.
+Edit /etc/hosts and associate the ip address with a convenient name for your pi.
+Now ssh pi_name should get you in.
+ssh will ask about adding to the known hosts etc, just say yes.
+
+At this point you are talking to the new pi over your network.
 There are several things you may want to do, no matter what adapter you are using.
 The first is an exchange of rsa keys.
 You will be doing a lot of logging in, scp, even rsync,
