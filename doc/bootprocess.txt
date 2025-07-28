@@ -450,7 +450,7 @@ apt install espeakup
 You need that program.
 But you don't want or need all the other machinery,
 so you must run
-systemctl disable speak.service ; rmmod speakup speakup_software
+systemctl disable speakup.service ; rmmod speakup speakup_software
 If you don't do this, jupiter and speakup modules might glom onto the same keys,
 with ambiguous results.
 Either might speak, or maybe both; it could be confusing.

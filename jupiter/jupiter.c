@@ -1122,7 +1122,7 @@ else strcpy(suptext, lasttext);
 		if(!acs_bufsearch(suptext, asword, oneLine)) goto error_bound;
 if(*cmdlist) break; // more to do
 		acs_cursorsync();
-if(!quiet) acs_cr();
+if(soundsOn && !quiet) acs_cr();
 		if(!oneLine) {
 			acs_say_string(o->okword);
 acs_mb->cursor -= (strlen(suptext)-1);
