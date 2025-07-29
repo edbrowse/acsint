@@ -274,25 +274,30 @@ nmcli -g in-use,ssid,security device wifi
 nmcli is an alternative to raspi-config.
 It can be a powerful tool for managing wifi connections.
 After all, cli means command line interface.
+In general, the iw and nmcli commands will not work properly unless run as root.
+In the following, "name home", optional, gives a nickname to this wifi connection, your home.
+You can give short names to other wifi networks,
+at your friend's house, your daughter's house,
+your local McDonalds, etc.
 
-nmcli device wifi connect my_ssid password my_Password [name my_nickname]
+nmcli device wifi connect my_ssid password my_Password name home
 
 By including the security field in the nmcli scan,
-nmcli tells us which sids are public, wep, or wpa.
+nmcli tells us which sids are public, wep, or wpa2.
 You can connect to a public ssid by:
 
 iw dev wlan0 connect [network SSID]
 iw dev wlan0 disconnect # when done
-nmcli device wifi connect public_ssid
+nmcli device wifi connect public_ssid name McDonalds
 
 wep security is easy, but hardly ever used.
-Wireless lans tend to be public or wpa.
+Wireless lans tend to be public or wpa2.
 Just for informational purposes, here is the syntax for wep.
 
 iw dev wlan0 connect [network SSID] key 0:[WEP key]
 nmcli device wifi connect my_ssid password my_Password
 
-Unfortunately wpa is more complicated,
+Unfortunately wpa2 is more complicated,
 and the iw tool isn't sufficient.
 For now let's say Bob set it up for you, or you used raspi-config,
 or you used nmcli as shown above.
@@ -302,6 +307,7 @@ If on ethernet, you can set up wifi later.
 How do you find it?
 What is its ip address?
 I have this alias in my .bashrc.
+route -n to see if this subnet is valid for you.
 
 alias ipsearch="nmap -sn 10.0.0.0/24"
 
@@ -339,8 +345,8 @@ without the hassle of passwords. Nice.
 Remember that Bob provided a hostname for your pi.
 If the name is not to your liking, edit /etc/hostname.
 The new name takes effect after reboot.
-My three pis are named Eric Carmen, WallyBryson, and Dave Smalley.
-Do you see the pattern?
+My three pis are named Eric Carmen, Wally Bryson, and Dave Smalley.
+Can you spot the pattern?
 In /etc/hosts they are eric, wally, and dave - convenient nicknames.
 
 Set the root password,
@@ -474,8 +480,7 @@ The casual debian user would have no clue what was happening.
 I was confused as well, for quite some time.
 
 If you want to run jupiter in combination with espeakup, you must also run
-apt install espeakup
-You need that program.
+apt install espeakup, because you need that program.
 But you don't want or need all the other machinery,
 so you must run
 systemctl disable speakup.service ; rmmod speakup speakup_software
@@ -489,8 +494,138 @@ I am especially odd in that I run jupiter with an external hardware synthesizer,
 and I don't think anybody else does that any more.
 But I prefer it.
 Still I want to have espeakup at the ready,
-in case my hardware synth fails, or I am travelling -
-my synthesizer, which was quite compact in the 1990's,
+in case my hardware synth fails, or I am travelling.
+My synthesizer, which was quite compact in the 1990's,
 is three times the size of my pi, and requires another outlet.
 
-More coming soon.
+Make and install procedures are described in the users guide,
+but let's include them here, in a more concise, step-by-step format.
+
+cd drivers
+./keyconfigure </dev/tty1
+
+This is a perl program that prepares the source file acsint.c,
+according to your keyboard layout.
+If you change your keyboard layout, you have to go back to this point and start again.
+Though I don't expect you'll ever need to do that.
+
+make
+
+If certain linux header files are missing, then you don't have kernel headers installed.
+apt install kernel-headers
+
+sudo make modules_install
+
+At the end it may say that depmod cannot run because a system file is missing.
+Yet it works for me manually.
+
+sudo depmod -a
+
+If you need to build and install the modules again for any reason,
+you don't need to run depmod again.
+Once is enough.
+
+Tell the system to load the acsint modules at boot time by putting
+the word acsint in a file in the directory /etc/modules-load.d.
+For example:
+sudo echo acsint > /etc/modules-load.d/access.conf
+reboot, and verify the modules by lsmod | fgrep acsint
+
+There is no harm in running ttyclicks and acsint all the time,
+whether you use Jupiter or not. They do not interfere with Speakup,
+or other adapters, or other running programs.
+
+You should also verify that /dev/acsint exists.
+It should be created for you by udev when the acsint module is loaded.
+
+You'll notice that ttyclicks generates clicks as output is sent to the screen.
+This is exactly what it is suppose to do;
+it is the primary function of the ttyclicks module (though it can be disabled
+with a module parameter). This can be extremely helpful,
+especially if your adapter is not running for any reason.
+I can tell, by clicks alone, when the computer responds to a command,
+and I can discern the quantity and format of that response,
+without any speech or braille.
+
+Unfortunately, the raspberry pi has no toggle speaker,
+so this module doesn't do anything.
+That is somewhat of a disappointment to me,
+but the pi has so many wonderful advantages that I'm willing to live with it.
+Or more accurately, live without it.
+
+Jupiter has a -a (audio) parameter that simulates these clicks through the sound card,
+but that misses the point.
+If jupiter doesn't run, there are no clicks, no feedback,
+which is what ttyclicks was designed to do.
+Still, if all goes well, some people do like the clicks,
+and the -a option makes that possible.
+
+Now we are ready to build jupiter itself.
+This is the majority of the adapter, which lives in user space.
+
+cd jupiter
+make
+
+If it can't find the include file ao.h
+sudo apt install libao-dev
+
+sudo make install
+
+However, this installs injkey.
+You can read more about injkey in music+speech.txt.
+If there are any other users on your computer, this is a serious security risk!
+You should remove injkey from /usr/local/bin and even from this jupiter directory.
+Since you have root access, I assume this is your private computer,
+and you don't have to worry about other users
+accessing your files or issuing commands in your name.
+
+Next, jupiter needs a speech synthesizer.
+If you are using a hardware synth then attach it to your computer.
+The pi has no serial port, so I use a usb serial converter.
+This creates the device /dev/ttyUSB0.
+That should be present by udev, assuming the converter is plugged in.
+
+Morelikely, you will be using a software synth.
+If so, you need to install it.
+We already talked about installing espeakup,
+and the need to move its modules and services out of the way.
+
+apt install espeakup
+systemctl disable speakup.service
+rmmod speakup speakup_software
+
+Before you connect it to jupiter, test espeakup directly.
+Run it as user, not root.
+
+espeak -a
+
+Just type stuff in and listen to it talk in the speakers or headphones.
+Type control d or control c when done.
+
+mkdir /etc/jupiter
+mkfifo /etc/jupiter/fifo
+cp sample.cfg /etc/jupiter/start.cfg
+
+This makes my sample config file your jupiter config file.
+That's probably not what you want but it's easier to edit something
+that exists than to start from scratch.
+So edit the file and put the speech commands where you want them on the keyboard.
+
+Now you can bravely try the whole system.
+
+jupiter -d esp "|espeakup -a 2>/dev/null"
+
+remember, this runs as you, not as root.
+-d makes it a daemon, so it drops into the background and you get your
+shell prompt right away.
+The next test is
+echo hello world >/etc/jupiter/fifo
+It should say hello world.
+
+Now, for the first time, you can pick up the keyboard on your new pi
+and test out the adapted computer.
+You don't have to be on ssh any more.
+Type some commands and listen to the output.
+Hit some keys that are bound to speech functions, and read lines, words, characters.
+
+More coming.
