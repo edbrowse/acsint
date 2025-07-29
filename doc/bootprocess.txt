@@ -43,7 +43,7 @@ so you don't have to manage them with the GUI.
 C) If you have a talking computer, and you downloaded the image and put it
 on the card yourself, then perhaps you can mount it and put some files
 on the boot partition.
-In this path you might not need any sighted help at all!
+That saves a few steps for Bob.
 
 B and C assume you can mount an ext4 partition.
 Windows can't do that.
@@ -53,8 +53,8 @@ There are some linux emulators under Windows and these work pretty well,
 but that's a lot of work just to go down path C.
 If neither you nor Bob has a linux computer, I recommend path A.
 
-When you bring up Raspbian for the first time,
-it will ask you to make a user account; you should do this.
+When Bob brings up Raspbian for the first time,
+it will ask him to make a user account; he should do this.
 You can't work 100% as root.
 One slip of the finger and there goes /bin.  Oops!
 Tell Bob your login and password, probably the one you use
@@ -71,6 +71,7 @@ You can try something like
 echo "your_login:$(openssl passwd -6 -stdin)" > userconf.txt
 and type your password, and put that file on the /boot partition of the micro
 SD card before its first boot.
+Now Bob will be able to skip that step.
 Once your user account is created, you can safely remove /boot/userconf.txt,
 if the pi hasn't already done so.
 
@@ -79,7 +80,7 @@ this user account has administrative privileges.
 That means you will be able to use sudo, and perform root commands. You will need this;
 if you can never be superuser, then the computer is practically useless.
 
-At startup, the pi may ask you for the root password.
+At first boot, the pi may ask Bob for the root password.
 Some linux distributions do this, some don't.
 If prompted, ask Bob to type it in for you.
 If not, you can do without it for a while, thanks to sudo,
@@ -126,8 +127,8 @@ root=PARTUUID=6c1463a0-02
 
 Some devices have unique numbers on them, the way each car has a VIN.
 Ethernet chips for example, or wifi chips, have a mac address.
-This is used by the dhcp server to hand out the same ip address to that card,
-whenever if requests a connection.
+This is used by the dhcp server to hand out the same ip address to that card
+whenever it requests a connection.
 They are also used by routers in certain intranet configurations.
 Port forwarding for example.
 Disks, and other storage devices, also have a unique number.
@@ -166,7 +167,7 @@ The slightest bug brought down the entire operating system.
 No debug log, no print statements, just crash!
 Figure out what went wrong out of thin air, make a change, rebuild the kernel,
 reinstall the kernel, reboot, and try again.
-I can't describe how difficult that was.
+I can't describe how difficult that was!
 And yet, speakup went down the same path.
 That two people on earth tried to do this is amazing -
 like saying two people with no connection to each other both climbed Mount everest on hands and knees.
@@ -205,12 +206,12 @@ But it's a good idea to have your wifi country code correct from the start.
 So this is a change you, or Bob, might want to make in /boot/cmdline.txt,
 either before you put the card in the pi, or after the fact.
 
-The next thing you need to do is enable ssh.
+The next thing Bob needs to do for you, is enable ssh.
 This will allow you to connect your talking computer to the pi,
 whence you can take over, and Bob can go to lunch.
 From the terminal, it is
 systemctl enable ssh.service
-and if you want it right now rather then upon the next reboot,
+and if you want it right now rather than upon the next reboot,
 systemctl start ssh.service
 But of course you aren't at a terminal.
 Bob is looking at a graphical interface.
@@ -224,8 +225,8 @@ Put an empty file called ssh.txt
 on the /boot partition of the micro SD card, to enable sshd on first boot.
 You can verify that the service is active through the GUI,
 or systemctl | fgrep ssh
-I believe it is safe to remove /boot/ssh.txt at this point;
-the ssh service has been enabled.
+It is safe to remove /boot/ssh.txt at this point;
+although your pi has probably done so already.
 
 The easiest way to connect the new pi to your existing talking machine is over ethernet.
 Put them both on the same hub or the same router.
@@ -242,17 +243,18 @@ All text based.
 No GUI, not even a screen. Sweet!
 But that method went out the window with bookworm.
 
-Bob can set up wifi from the GUI.
+Well, Bob can set up wifi from the GUI.
 If he hasn't done that, and you are on by ethernet, and you want wifi instead,
 there are several methods, again depending on the version of Raspbian.
 cat /etc/os-release for  your Raspbian version.
 One way that always works is raspi-config.
 This is a screen program. It's not graphical, but it is screen based.
 You have to switch jupiter over to screen mode.
+(speakup is already screen mode, as is every other adapter.)
 Use the up down left right keys to move the cursor around,
 and hit return to make a selection.
 It is manageable.
-Naturally I prefer a command line solution, if possible.
+Naturally I prefer a command line solution.
 
 Note that raspi-config expects you to type in the ssid perfectly,
 it does not present a menu of choices.
@@ -270,7 +272,7 @@ Again, some of the ssids are duplicated.
 nmcli -g in-use,ssid,security device wifi
 
 nmcli is an alternative to raspi-config.
-It can be a powerful tool for making wifi connections.
+It can be a powerful tool for managing wifi connections.
 After all, cli means command line interface.
 
 nmcli device wifi connect my_ssid password my_Password [name my_nickname]
@@ -307,8 +309,9 @@ Run ipsearch >i1 before you boot up the pi, then ipsearch >i2 afterward.
 diff i1 i2 should give you the address of the pi.
 There's a chance other devices will come and go between
 the two scans, but it's unlikely.
-Edit /etc/hosts and associate the ip address with a convenient name for your pi.
-Now ssh pi_name should get you in.
+Edit /etc/hosts and associate the ip address with a convenient nickname for your pi.
+(This has no connection to the hostname.)
+Now ssh nickname should get you in.
 ssh will ask about adding to the known hosts etc, just say yes.
 
 At this point you are talking to the new pi over your network.
@@ -316,6 +319,9 @@ There are several things you may want to do, no matter what adapter you are usin
 The first is an exchange of rsa keys.
 You will be doing a lot of logging in, scp, even rsync,
 to copy your personal files from the old computer to the new.
+(Note: my comcast router does not allow telnet, rcp, or any insecure protocols,
+even though it all takes place within my living room;
+so I have to use ssh and the protocols that operate over ssh.)
 You don't want to type in your password every time.
 Go into your .ssh directory.
 Do you have id_rsa and id_rsa.pub?
@@ -330,9 +336,12 @@ You can copy the latter onto the former, or create a symbolic link.
 Now you should be able to log in, or scp files, from either machine to the other,
 without the hassle of passwords. Nice.
 
-Remember that Bob provided a name for your pi.
+Remember that Bob provided a hostname for your pi.
 If the name is not to your liking, edit /etc/hostname.
 The new name takes effect after reboot.
+My three pis are named Eric Carmen, WallyBryson, and Dave Smalley.
+Do you see the pattern?
+In /etc/hosts they are eric, wally, and dave - convenient nicknames.
 
 Set the root password,
 sudo passwd
@@ -381,7 +390,7 @@ As my old boss use to say,
 Another important line in this file is XKBOPTIONS.
 I set mine to ctrl:nocaps
 This causes the caps lock to act like a third control key.
-(speakup modules can interfere with this, but I'll talk about that later.)
+(speakup modules can interfere with this behavior, I'll talk about that later.)
 I use control keys for speech functions about 20 times a minute,
 and it would be a serious impairment if I had to reach all the way down to
 Tierra del Fuego every time I wanted to activate control.
@@ -440,7 +449,8 @@ You have to use the git protocol.
 Now go back into .git/config and notice that one line has been added.
 pushurl = git@github.com:edbrowse/acsint.git
 I could have done that myself using the editor,
-and in fact I sometimes do.
+and in fact I often do.
+Just as I manage ~/.gitconfig with the editor.
 
 To complete the github handshake, you have to give them your public key.
 This is .ssh/id_rsa.pub, as described earlier.
@@ -473,7 +483,7 @@ If you don't do this, jupiter and speakup modules might glom onto the same keys,
 with ambiguous results.
 Either might speak, or maybe both; it could be confusing.
 I have only known one person who ran both at the same time, successfully.
-It wasn't me, so I can't say too much more about that.
+It wasn't me, so I can't say much more about that.
 
 I am especially odd in that I run jupiter with an external hardware synthesizer,
 and I don't think anybody else does that any more.
