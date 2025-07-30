@@ -622,13 +622,12 @@ sudo apt install libao-dev
 
 sudo make install
 
-this also installs injkey.
-You can read more about injkey in music+speech.txt.
-If there are any other users on your computer, this is a serious security risk!
-You should remove injkey from /usr/local/bin and even from this jupiter directory.
-Since you have root access, I assume this is your private computer,
-and you don't have to worry about other users
-accessing your files or issuing commands in your name.
+This installs jupiter in /usr/local/bin.
+If there are other users on your computer, injkey can be a security risk.
+(You can read more about injkey in music+speech.txt.)
+thus there is a separate target to install it.
+
+sudo make injkey_install
 
 Next, jupiter needs a speech synthesizer.
 If you are using a hardware synth then attach it to your computer.

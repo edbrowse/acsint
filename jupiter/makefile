@@ -30,11 +30,14 @@ jupiter : $(OBJS)
 clean :
 	rm -f $(OBJS) jupiter injkey
 
-install : jupiter injkey
+install : jupiter
 	install -d ${bindir}
 	install jupiter ${bindir}
+
+injkey_install: injkey
+	install -d ${bindir}
 	install injkey ${bindir}
-	chmod 4755 ${binder}/injkey
+	chmod 4755 ${bindir}/injkey
 
 uninstall :
 	rm -f ${bindir}/jupiter
