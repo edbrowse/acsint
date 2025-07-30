@@ -362,8 +362,26 @@ Edit /etc/hosts and associate the ip address with a convenient nickname for your
 Now ssh nickname should get you in.
 ssh will ask about adding to the known hosts etc, just say yes.
 
-At this point you are talking to the new pi over your network.
-There are several things you may want to do, no matter what adapter you are using.
+Note that your new pi over ethernet will have a different ip address from your new pi over wifi.
+This is not surprising; the ethernet chip and the wifi chip have different mac addresses.
+The router will assign them different ip addresses, as per the dhcp protocol.
+Some conventions can be helpful here.
+Let's say my new pi's name is Eric Carmen.
+Within /etc/hosts, eric designates the ip address over ethernet,
+while ericw, with a w at the end, designates the ip address over wifi.
+Use ssh eric over ethernet, and ssh ericw over wifi.
+
+Then there are functions with a similar nomenclature in .bashrc.
+This function syncs up a directory tree with its counterpart on eric,
+over ethernet. Append w for the same function over wifi.
+
+function synceric {
+if [ $# = 0 ] ; then echo "missing arguments" ; return ; fi
+rsync -avX --delete-after $1 eklhad@eric:/home/eklhad
+}
+
+all right - you have found your new pi on the network, and are talking to it over ssh.
+There are several things you want to do, no matter what adapter you are using.
 The first is an exchange of rsa keys.
 You will be doing a lot of logging in, scp, even rsync,
 to copy your personal files from the old computer to the new.
@@ -390,6 +408,7 @@ The new name takes effect after reboot.
 My three pis are named Eric Carmen, Wally Bryson, and Dave Smalley.
 Can you spot the pattern?
 In /etc/hosts they are eric, wally, and dave - convenient nicknames.
+Or ericw, wallyw, and davew, over wifi.
 
 Set the root password,
 sudo passwd
