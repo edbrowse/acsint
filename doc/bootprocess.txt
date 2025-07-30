@@ -5,7 +5,8 @@ You can use one to configure the other.
 If you don't, then you will need a bit more help from your sighted friend, (I'll call him Bob),
 but it is still manageable.
 
-Attach an sd card to your computer.
+Attach a pi-compatible sd card to your computer,
+probably via a usb card reader.
 It's ok if the sd card has no filesystem on it; it could be fresh from the factory.
 Even if it does have a filesystem on it, you're going to overwrite it.
 No need to mount it or look inside.
@@ -38,12 +39,13 @@ country, time zone, name of the computer, etc.
 B) Before he puts it into a pi, ask Bob to mount the sd card as a drive,
 so he can put some important files under /boot.
 These will cause the first boot to set up some good things for you,
-so you don't have to manage them with the GUI.
+so Bob doesn't have to manage them with the GUI.
 
 C) If you have a talking computer, and you downloaded the image and put it
 on the card yourself, then perhaps you can mount it and put some files
 on the boot partition.
-That saves a few steps for Bob.
+That saves a few steps for Bob,
+just as it did in path B.
 
 B and C assume you can mount an ext4 partition.
 Windows can't do that.
@@ -73,7 +75,7 @@ and type your password, and put that file on the /boot partition of the micro
 SD card before its first boot.
 Now Bob will be able to skip that step.
 Once your user account is created, you can safely remove /boot/userconf.txt,
-if the pi hasn't already done so.
+although the pi has probably done this for you.
 
 Whether created interactively, or by /boot/userconf.txt,
 this user account has administrative privileges.
@@ -128,7 +130,7 @@ root=PARTUUID=6c1463a0-02
 Some devices have unique numbers on them, the way each car has a VIN.
 Ethernet chips for example, or wifi chips, have a mac address.
 This is used by the dhcp server to hand out the same ip address to that card
-whenever it requests a connection.
+consistently, whenever it requests a connection.
 They are also used by routers in certain intranet configurations.
 Port forwarding for example.
 Disks, and other storage devices, also have a unique number.
@@ -225,7 +227,7 @@ Put an empty file called ssh.txt
 on the /boot partition of the micro SD card, to enable sshd on first boot.
 You can verify that the service is active through the GUI,
 or systemctl | fgrep ssh
-It is safe to remove /boot/ssh.txt at this point;
+It is safe to remove /boot/ssh.txt at this point,
 although your pi has probably done so already.
 
 The easiest way to connect the new pi to your existing talking machine is over ethernet.
@@ -236,8 +238,7 @@ Or - you can set up wifi on the pi.
 We already talked about the wifi country code.
 Unfortunately the wifi mechanisms vary widely from buster, to bullseye, to bookworm,
 and none of them are particularly intuitive.
-Ironically, things have gotten more difficult over the past few years.
-Everything use to be in a wpa file under /etc, and that was easy peasy.
+In buster, everything was in a wpa file under /etc, and that was easy peasy.
 Put all your networks there, uncomment the one you want to connect to, and reboot.
 All text based.
 No GUI, not even a screen. Sweet!
@@ -371,7 +372,7 @@ Within /etc/hosts, eric designates the ip address over ethernet,
 while ericw, with a w at the end, designates the ip address over wifi.
 Use ssh eric over ethernet, and ssh ericw over wifi.
 
-Then there are functions with a similar nomenclature in .bashrc.
+Then there are functions with a similar nomenclature in my .bashrc.
 This function syncs up a directory tree with its counterpart on eric,
 over ethernet. Append w for the same function over wifi.
 
@@ -379,6 +380,9 @@ function synceric {
 if [ $# = 0 ] ; then echo "missing arguments" ; return ; fi
 rsync -avX --delete-after $1 eklhad@eric:/home/eklhad
 }
+
+Of course, if you never use ethernet, and use wifi exclusively,
+then you don't need these conventions.
 
 all right - you have found your new pi on the network, and are talking to it over ssh.
 There are several things you want to do, no matter what adapter you are using.
@@ -434,8 +438,7 @@ You can switch between the consoles by alt-f1 through alt-f6
 Because Bob was originally in graphical mode, there are several files
 in your home directory that you didn't create. Like Desktop.
 remove these if you like.
-But if you ever type startx to go back to graphical, under your account,
-these files will reappear.
+But if you ever type startx to go back to graphical, these files will reappear.
 
 If you run text based, like I do, you probably have a .bash_login
 and .bashrc that customize the shell just the way you like it.
@@ -447,6 +450,7 @@ You may want to remove .profile; you're not using it any more.
 When you log in for real, not over ssh, is your keyboard not as you expect?
 Keys like " @ # \ are they in the wrong place?
 It's hard to tell at this point, because your computer isn't talking yet.
+You are still on ssh.
 You'll find out eventually, and in the meantime,
 let's check some important files.
 Check /etc/default/keyboard.
@@ -619,7 +623,7 @@ without any speech or braille.
 
 Unfortunately, the raspberry pi has no toggle speaker,
 so this module doesn't do anything.
-That is somewhat of a disappointment,
+That is somewhat of a disappointment to me,
 but the pi has so many wonderful advantages that I'm willing to live with it.
 Or more accurately, live without it.
 
