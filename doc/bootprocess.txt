@@ -276,35 +276,77 @@ It can be a powerful tool for managing wifi connections.
 After all, cli means command line interface.
 In general, the iw and nmcli commands will not work properly unless run as root.
 In the following, "name home", optional, gives a nickname to this wifi connection, your home.
-You can give short names to other wifi networks,
+You can give short names to other wifi networks as well,
 at your friend's house, your daughter's house,
 your local McDonalds, etc.
 
 nmcli device wifi connect my_ssid password my_Password name home
 
+It is easiest to set a nickname upon first connect,
+then you can refer to nicknames thereafter.
+
+nmcli connection up home
+nmcli connection down home
+
 By including the security field in the nmcli scan,
 nmcli tells us which sids are public, wep, or wpa2.
-You can connect to a public ssid by:
+You can connect to a public ssid by either iw or nmcli,
+but for consistency I recommend nmcli.
+The latter puts it in your database of connections,
+with a handy nickname.
 
-iw dev wlan0 connect [network SSID]
+iw dev wlan0 connect public_ssid
 iw dev wlan0 disconnect # when done
 nmcli device wifi connect public_ssid name McDonalds
+nmcli connection down McDonalds # when done
 
 wep security is easy, but hardly ever used.
 Wireless lans tend to be public or wpa2.
 Just for informational purposes, here is the syntax for wep.
 
-iw dev wlan0 connect [network SSID] key 0:[WEP key]
-nmcli device wifi connect my_ssid password my_Password
+iw dev wlan0 connect network_ssid key 0:[WEP key]
+nmcli device wifi connect network_ssid password my_Password # as before
 
 Unfortunately wpa2 is more complicated,
 and the iw tool isn't sufficient.
 For now let's say Bob set it up for you, or you used raspi-config,
 or you used nmcli as shown above.
 
-Put your pi on your network, over ethernet, or through wifi.
-If on ethernet, you can set up wifi later.
-How do you find it?
+There is obviously some sort of connection database, but where is it?
+Answer: /etc/NetworkManager/system-connections
+There is one file per connection, and it's text based, and easy to read and understand.
+It's a good idea to review the changes after each nmcli command,
+so you can see exactly what it did.
+If you feel brave, you can edit the file yourself, then nmcli connection reload.
+But you have to know what you're doing.
+I would only use the editor to change the password, or some other simple insitu update.
+
+Suppose I didn't set a nickname at first connect, but wish I had.
+The name of the connection is, by default, the ssid, which can be long and awkward.
+I can issue these three commands, but when the second brings up the new connection,
+and displaces the old, it could terminate my ssh session.
+I can always ssh back in so that's not a show stopper.
+
+nmcli connection clone original_name new_name # copy
+nmcli connection up new_name # displaces the old, only one connection over wlan0
+nmcli connection delete original_name
+
+But there is a one line command that is simpler
+and won't drop your ssh session.
+
+nmcli connection modify original_name connection.id new_name
+
+Oddly enough, this does not rename the file, only changes the id inside.
+You can mv original_name new_name for consistency if you like;
+the names of the files don't seem to matter, only what's inside.
+
+nmcli accepts unambiguous short versions of its arguments.
+Thus nmcli con mod is the same as nmcli connection modify
+
+Now, put your pi on your network, over ethernet, or through wifi.
+If on ethernet, you can set up wifi later,
+using the instructions given above.
+How do you find your pi?
 What is its ip address?
 I have this alias in my .bashrc.
 route -n to see if this subnet is valid for you.
@@ -385,6 +427,9 @@ You may want to remove .profile; you're not using it any more.
 
 When you log in for real, not over ssh, is your keyboard not as you expect?
 Keys like " @ # \ are they in the wrong place?
+It's hard to tell at this point, because your computer isn't talking yet.
+You'll find out eventually, and in the meantime,
+let's check some important files.
 Check /etc/default/keyboard.
 In particular look for XKBLAYOUT.
 Make sure it has the two letter country code you expect.
@@ -401,6 +446,7 @@ I use control keys for speech functions about 20 times a minute,
 and it would be a serious impairment if I had to reach all the way down to
 Tierra del Fuego every time I wanted to activate control.
 apparently I am not alone in this preference, since they made an option for this.
+You have to reboot for these keyboard changes to take effect.
 
 There are 6 consoles by default. That's not nearly enough.
 I have to have 12, some people want 24.
@@ -419,7 +465,7 @@ Here is a command to bring in all the rest.
 for i in 2 3 4 5 6 7 8 9 10 11 12 ; do systemctl enable getty@tty$i.service ; done
 After the next reboot, all 12 consoles will be available.
 
-There is probably a message that appears after each login.
+There is probably a message that appears at each login, even over ssh.
 A legal disclaimer of some sort.
 This is in /etc/motd  which means message of the day.
 This feature was part of the original unix in the late 1970's.
@@ -481,8 +527,8 @@ I was confused as well, for quite some time.
 
 If you want to run jupiter in combination with espeakup, you must also run
 apt install espeakup, because you need that program.
-But you don't want or need all the other machinery,
-so you must run
+But you don't want or need all the other speakup machinery,
+so you must run:
 systemctl disable speakup.service ; rmmod speakup speakup_software
 If you don't do this, jupiter and speakup modules might glom onto the same keys,
 with ambiguous results.
@@ -649,4 +695,6 @@ Now you know what to do. Reboot and see if the computer says "Jupiter ready".
 Log in, type some commands, review the output,
 and tune the config file to your liking.
 This will be an ongoing process.
+Even 20 years later, I still make a change now and then,
+to see if that dovetails better with my work flow.
 
