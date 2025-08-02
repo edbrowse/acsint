@@ -5,20 +5,20 @@ You can use one to configure the other.
 If you don't, then you will need a bit more help from your sighted friend, (I'll call him Bob),
 but it is still manageable.
 
-Attach a pi-compatible sd card to your computer,
+Attach a pi-compatible SD card to your computer,
 probably via a usb card reader.
-It's ok if the sd card has no filesystem on it; it could be fresh from the factory.
+It's ok if the SD card has no filesystem on it; it could be fresh from the factory.
 Even if it does have a filesystem on it, you're going to overwrite it.
 No need to mount it or look inside.
 Download a Raspberry pi image, whatever version you prefer,
-probably the latest version, and copy it onto the sd card.
+probably the latest version, and copy it onto the SD card.
 This is an image copy, /bin/dd under unix.
 Probably some kind of drag and drop in Windows; I don't know anything about Windows.
 At this point you could put it into a pi and start it up,
 but there might be other useful things you can do first.
 
 If you don't have a talking computer,
-then Bob will copy the boot image onto the sd card for you.
+then Bob will copy the boot image onto the SD card for you.
 It's not difficult, and it doesn't take long.
 I have a talking computer and still I have my friend do it for me,
 because he can do it faster than me and that's all there is to it.
@@ -35,8 +35,9 @@ In any case, Bob will start the process for you.
 Raspbian comes up on screen, no adapters, no speech,
 and asks some very simple questions:
 country, time zone, name of the computer, etc.
+Bob will fill all these things in for you.
 
-B) Before he puts it into a pi, ask Bob to mount the sd card as a drive,
+B) Before Bob puts this SD card into a pi, ask him to mount it as a drive,
 so he can put some important files under /boot.
 These will cause the first boot to set up some good things for you,
 so Bob doesn't have to manage them with the GUI.
@@ -112,7 +113,8 @@ root commands to issue, then a superuser session is more convenient.
 
 Speaking of rescue mode, there is an interesting parameter in another
 important file under /boot.
-Have a look at /boot/cmdline.txt, or /boot/firmware/cmdline.txt
+Have a look at /boot/cmdline.txt, or /boot/firmware/cmdline.txt.
+(You can check this even before first boot.)
 This will become important later, when we setup wifi.
 This contains options passed to the kernel at boot time.
 There are typically more options as linux advances, but at minimum you should see:
@@ -129,11 +131,11 @@ root=PARTUUID=6c1463a0-02
 
 Some devices have unique numbers on them, the way each car has a VIN.
 Ethernet chips for example, or wifi chips, have a mac address.
-This is used by the dhcp server to hand out the same ip address to that card
+This is used by the dhcp server to hand out the same ip address to that device
 consistently, whenever it requests a connection.
 They are also used by routers in certain intranet configurations.
 Port forwarding for example.
-Disks, and other storage devices, also have a unique number.
+Disks and other storage devices also have a unique number.
 It is called a uuid.
 This was not always the case.
 In the 1990's, /etc/fstab looked quite different, simpler in fact, than it looks today.
@@ -148,7 +150,7 @@ In my fstab, and probably yours, / is mounted on a disk by uuid, partition 1,
 and /boot is mounted on a disk of the same uuid, partition 2.
 Obviously your uuid will not be the same as mine.
 
-We see why Bob can set up the sd card on his pi, then hand you the card
+We see why Bob can set up the SD card on his pi, then hand you the card
 to place in your own pi.
 The uuid is part of the card, and does not change as he hands it to you.
 
@@ -198,6 +200,8 @@ cfg80211.ieee80211_regdom=US
 This parameter may or may not be in cmdline.txt.
 If it is missing, you can add it at the end.
 If it is there, but the country code is wrong, you can change it.
+Even before first boot.
+
 When I set up wifi on my new pi, it was working, all was well,
 and yet the country code was AD, for Andora.
 Obviously I don't live in Andora - and yet it worked. I was rather surprised.
@@ -248,17 +252,13 @@ Well, Bob can set up wifi from the GUI.
 If he hasn't done that, and you are on by ethernet, and you want wifi instead,
 there are several methods, again depending on the version of Raspbian.
 cat /etc/os-release for  your Raspbian version.
-One way that always works is raspi-config.
-This is a screen program. It's not graphical, but it is screen based.
-You have to switch jupiter over to screen mode.
-(speakup is already screen mode, as is every other adapter.)
-Use the up down left right keys to move the cursor around,
-and hit return to make a selection.
-It is manageable.
-Naturally I prefer a command line solution.
 
-Note that raspi-config expects you to type in the ssid perfectly,
-it does not present a menu of choices.
+In recent versions of raspbian, nmcli will come to your rescue.
+(Remember that cli means command line interface.)
+iw is a lower level command, and sometimes that works, but nmcli is more powerful.
+I will refer to both when it makes sense to do so.
+
+Using either tool, you will need to know the ssid of your wifi connection.
 That's fine if you're home and you know your own networks, but not if you're travelling.
 Thus the first step is obtaining a list of ssids.
 iw scan will do this for you, but it generates a deluge of incomprehensible output.
@@ -267,24 +267,23 @@ You need to filter it, like this.
 iw dev wlan0 scan | grep '[^A-Z]SSID: *[^ ]'
 
 Even this will duplicate some of the ssids, but at least it fits on one screen.
-If you have nmcli installed it can also produce a scan, without the need for a filter.
+nmcli also produces a scan, without the need for a filter.
 Again, some of the ssids are duplicated.
 
-nmcli -g in-use,ssid,security device wifi
+nmcli -g ssid,security device wifi
 
-nmcli is an alternative to raspi-config.
-It can be a powerful tool for managing wifi connections.
-After all, cli means command line interface.
-In general, the iw and nmcli commands will not work properly unless run as root.
-In the following, "name home", optional, gives a nickname to this wifi connection, your home.
+Note, these iw and nmcli commands will not work properly unless run as root.
+
+In the following, "name home", (optional), gives a nickname to the wifi connection,
+which I assume is the one in your home.
 You can give short names to other wifi networks as well,
 at your friend's house, your daughter's house,
 your local McDonalds, etc.
 
 nmcli device wifi connect my_ssid password my_Password name home
 
-It is easiest to set a nickname upon first connect,
-then you can refer to nicknames thereafter.
+It is best to set a nickname on first connect,
+then you can refer to this nickname thereafter.
 
 nmcli connection up home
 nmcli connection down home
@@ -293,8 +292,7 @@ By including the security field in the nmcli scan,
 nmcli tells us which sids are public, wep, or wpa2.
 You can connect to a public ssid by either iw or nmcli,
 but for consistency I recommend nmcli.
-The latter puts it in your database of connections,
-with a handy nickname.
+The latter puts it in your database of connections with a handy nickname.
 
 iw dev wlan0 connect public_ssid
 iw dev wlan0 disconnect # when done
@@ -320,7 +318,7 @@ It's a good idea to review the changes after each nmcli command,
 so you can see exactly what it did.
 If you feel brave, you can edit the file yourself, then nmcli connection reload.
 But you have to know what you're doing.
-I would only use the editor to change the password, or some other simple insitu update.
+I only use the editor to change the password, or some other simple insitu update.
 
 Suppose I didn't set a nickname at first connect, but wish I had.
 The name of the connection is, by default, the ssid, which can be long and awkward.
@@ -332,14 +330,13 @@ nmcli connection clone original_name new_name # copy
 nmcli connection up new_name # displaces the old, only one connection over wlan0
 nmcli connection delete original_name
 
-But there is a one line command that is simpler
-and won't drop your ssh session.
+But there is a one line command that is simpler and won't drop your ssh session.
 
 nmcli connection modify original_name connection.id new_name
 
 Oddly enough, this does not rename the file, only changes the id inside.
-You can mv original_name new_name for consistency if you like;
-the names of the files don't seem to matter, only what's inside.
+You can mv original_name new_name for consistency if you like.
+The names of the files don't seem to matter, only what's inside.
 
 nmcli accepts unambiguous short versions of its arguments.
 Thus nmcli con mod is the same as nmcli connection modify
@@ -519,7 +516,7 @@ If you ever need to push, then enter a command like this.
 git remote set-url --push origin 'git@github.com:edbrowse/acsint.git'
 
 Note that the protocol has changed.
-You can push via an https url but it won't work properly.
+You can try to push through an https url, but it won't work properly.
 You have to use the git protocol.
 Now go back into .git/config and notice that one line has been added.
 pushurl = git@github.com:edbrowse/acsint.git
@@ -573,7 +570,7 @@ but let's include them here, in a more concise, step-by-step format.
 cd drivers
 ./keyconfigure </dev/tty1
 
-This is a perl program that prepares the source file acsint.c,
+This is a perl program that prepares the source file acsint.c
 according to your keyboard layout.
 If you change your keyboard layout, you have to go back to this point and start again.
 Though I don't expect you'll ever need to do that.
@@ -587,6 +584,7 @@ make
 
 If certain linux header files are missing, then you don't have kernel headers installed.
 apt install kernel-headers
+At this point the modules should compile.
 
 sudo make modules_install
 
@@ -703,7 +701,8 @@ Hit some keys that are bound to speech functions, and read lines, words, and cha
 
 If this is satisfactory, edit or create the file /etc/rc.local.
 Make sure it is executable.
-Yours, based on espeakup, might look something like this.
+Mine uses the DoubleTalk external speech synthesizer on the serial port.
+Yours, based on espeakup, might look like this.
 the devices mentioned herein should exist by udev.
 
 # Grant me access to the audio devices, control through timer
