@@ -36,8 +36,8 @@ It's a minor maintenance every few years.
 Here is the syntax that works on Raspbian 12 bookworm.
 Your mileage may vary.
 
-sysrq|amixer -q set master 3%-
-scroll|amixer -q set master 3%+
+sysrq|amixer -q set Master 3%-
+scroll|amixer -q set Master 3%+
 
 A couple of aliases in .bashrc can read and set the volume.
 
@@ -74,8 +74,8 @@ and then you can control the overall volume.
 
 +f1 decvol
 +f2 incvol
-sysrq|amixer -q set master 3%-
-scroll|amixer -q set master 3%+
+sysrq|amixer -q set Master 3%-
+scroll|amixer -q set Master 3%+
 
 Here is my rc.local file that launches jupiter under my user account eklhad.
 the devices mentioned herein should exist by udev.
@@ -110,8 +110,8 @@ wherein mpg123 would pause and restart upon signal SIGUSR1.
 So all I had to do was killall -s10 mpg123.
 That rounds out the three keys.
 
-sysrq|amixer -q set master 3%-
-scroll|amixer -q set master 3%+
+sysrq|amixer -q set Master 3%-
+scroll|amixer -q set Master 3%+
 pause|killall -s10 mpg123
 
 Unfortunately this feature broke as of Raspbian 12 bookworm.
@@ -133,8 +133,8 @@ This has obvious security risks; so you should only do this
 if this is your personal computer, with no other users.
 With that in mind, here are the three hot keys.
 
-sysrq|amixer -q set master 3%-
-scroll|amixer -q set master 3%+
+sysrq|amixer -q set Master 3%-
+scroll|amixer -q set Master 3%+
 pause|/usr/local/bin/injkey 11 ' '
 
 This assumes console 11 is devoted to music;
