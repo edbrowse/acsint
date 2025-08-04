@@ -212,7 +212,15 @@ But it's a good idea to have your wifi country code correct from the start.
 So this is a change you, or Bob, might want to make in /boot/cmdline.txt,
 either before you put the card in the pi, or after the fact.
 
-The next thing Bob needs to do for you, is enable ssh.
+The iw command displays and sets the country code, and is i'm sure the approved method.
+
+iw reg get
+iw reg set US
+
+That said, iw reg set doesn't work for me.
+I had to edit /boot/firmware/cmdline.txt.
+
+The next thing Bob needs to do for you is enable ssh.
 This will allow you to connect your talking computer to the pi,
 whence you can take over, and Bob can go to lunch.
 From the terminal, it is
@@ -287,8 +295,10 @@ then you can refer to this nickname thereafter.
 
 nmcli connection up home
 nmcli connection down home
+       nmcli connection modify home connection.autoconnect (yes|no)
+nmcli connection show home # lots of output piped through more
 
-By including the security field in the nmcli scan,
+By including the security field in the nmcli -g scan,
 nmcli tells us which sids are public, wep, or wpa2.
 You can connect to a public ssid by either iw or nmcli,
 but for consistency I recommend nmcli.
@@ -314,8 +324,9 @@ or you used nmcli as shown above.
 There is obviously some sort of connection database, but where is it?
 Answer: /etc/NetworkManager/system-connections
 There is one file per connection, and it's text based, and easy to read and understand.
+These files are permission 600, as they should be, since they contain wifi passwords.
 It's a good idea to review the changes after each nmcli command,
-so you can see exactly what it did.
+so you can see exactly what happened.
 If you feel brave, you can edit the file yourself, then nmcli connection reload.
 But you have to know what you're doing.
 I only use the editor to change the password, or some other simple insitu update.
