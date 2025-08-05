@@ -79,7 +79,9 @@ scroll|amixer -q set Master 3%+
 
 Here is my rc.local file that launches jupiter under my user account eklhad.
 the devices mentioned herein should exist by udev.
+The first line has to be this or it won't run.
 
+#!/bin/sh -e
 # Grant me access to the audio devices, control through timer
 chmod 666 /dev/snd/[c-t]*
 chmod 666 /dev/acsint /dev/vcsa

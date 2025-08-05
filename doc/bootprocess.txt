@@ -191,7 +191,7 @@ but Bob can attach a monitor and perhaps the two of you, working together,
 can get the computer back on its feet.
 I have given some thought to adding speech to rescue mode,
 perhaps connecting the rescue target to the rc.local target,
-in the case of jupiter, or to speakup.service in the case of speakup.
+in the case of jupiter, or to espeakup.service in the case of speakup.
 This is difficult to test, and I'm a bit over my head here.
 Perhaps you can help me with this one.
 
@@ -549,8 +549,8 @@ using the espeak-ng library.
 Note that it does not use espeak, you don't even need that, it uses espeak-ng,
 which is brought in by dependency.
 The installation does some things under the covers by triggers.
-It installs two modules, speakup and speakup_software,
-and it enables speakup.service.
+It installs two modules, speakup and speakup_soft,
+and it enables espeakup.service.
 These modules intercept keystrokes and can be intrusive.
 That is why this package is never installed by default.
 The casual debian user would have no clue what was happening.
@@ -560,7 +560,7 @@ If you want to run jupiter in combination with espeakup, you must also run
 apt install espeakup, because you need that program.
 But you don't want or need all the other speakup machinery,
 so you must run:
-systemctl disable speakup.service ; rmmod speakup speakup_software
+systemctl disable espeakup.service ; rmmod speakup speakup_soft
 If you don't do this, jupiter and speakup modules might glom onto the same keys,
 with ambiguous results.
 Either might speak, or maybe both; it could be confusing.
@@ -673,8 +673,9 @@ We already talked about installing espeakup,
 and the need to move its modules and services out of the way.
 
 apt install espeakup
-systemctl disable speakup.service
-rmmod speakup speakup_software
+systemctl stop espeakup.service
+systemctl disable espeakup.service
+rmmod speakup speakup_soft
 
 Before you connect it to jupiter, test espeakup directly.
 Run it as user, not root.
@@ -715,7 +716,9 @@ Make sure it is executable.
 Mine uses the DoubleTalk external speech synthesizer on the serial port.
 Yours, based on espeakup, might look like this.
 the devices mentioned herein should exist by udev.
+The first line has to be this or it won't run.
 
+#!/bin/sh -e
 # Grant me access to the audio devices, control through timer
 chmod 666 /dev/snd/[c-t]*
 chmod 666 /dev/acsint /dev/vcsa
