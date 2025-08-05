@@ -124,7 +124,7 @@ If not, there is another way.
 
 There is a lovely ioctl function that injects keystrokes into another terminal.
 I wrote a program to take advantage of this function;
-it is injkey.c (inject key) in this directory.
+it is injkey.c (inject key) in the jupiter directory.
 It's very short; feel free to read it.
 make will compile it, and make install will install it.
 The program is setuid root, because ironically, it has to run as root.

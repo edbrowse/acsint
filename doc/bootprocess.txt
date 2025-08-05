@@ -16,6 +16,7 @@ This is an image copy, /bin/dd under unix.
 Probably some kind of drag and drop in Windows; I don't know anything about Windows.
 At this point you could put it into a pi and start it up,
 but there might be other useful things you can do first.
+See the paths A B and C below.
 
 If you don't have a talking computer,
 then Bob will copy the boot image onto the SD card for you.
@@ -78,7 +79,7 @@ Now Bob will be able to skip that step.
 Once your user account is created, you can safely remove /boot/userconf.txt,
 although the pi has probably done this for you.
 
-Whether created interactively, or by /boot/userconf.txt,
+Whether created interactively by Bob, or by /boot/userconf.txt,
 this user account has administrative privileges.
 That means you will be able to use sudo, and perform root commands. You will need this;
 if you can never be superuser, then the computer is practically useless.
@@ -97,6 +98,7 @@ This is when it switches to rescue mode - but if there is no root password,
 then that option is off the table.
 Your computer is inaccessible, permanently!
 Bob has no advantage here, his eyes do not help you get in.
+
 We can assume your pi won't crash for a while,
 but at some point you need to run
 sudo passwd
@@ -132,7 +134,7 @@ root=PARTUUID=6c1463a0-02
 Some devices have unique numbers on them, the way each car has a VIN.
 Ethernet chips for example, or wifi chips, have a mac address.
 This is used by the dhcp server to hand out the same ip address to that device
-consistently, whenever it requests a connection.
+consistently whenever it requests a connection.
 They are also used by routers in certain intranet configurations.
 Port forwarding for example.
 Disks and other storage devices also have a unique number.
@@ -168,7 +170,7 @@ The screen is asking you to log in as root and run fsck, but you don't know that
 That is why, among other reasons, jupiter was originally embedded in the linux kernel.
 All that software in the kernel, using the kernel functions (which are quite different from libc.a).
 The slightest bug brought down the entire operating system.
-No debug log, no print statements, just crash!
+No debug log, no print statements, no core dump for gdb, just crash!
 Figure out what went wrong out of thin air, make a change, rebuild the kernel,
 reinstall the kernel, reboot, and try again.
 I can't describe how difficult that was!
@@ -217,7 +219,7 @@ The iw command displays and sets the country code, and is i'm sure the approved 
 iw reg get
 iw reg set US
 
-That said, iw reg set doesn't work for me.
+That said, iw reg set didn't work for me.
 I had to edit /boot/firmware/cmdline.txt.
 
 The next thing Bob needs to do for you is enable ssh.
@@ -306,11 +308,11 @@ you may need to do this.
 nmcli radio wifi on
 
 Now the nmcli scan should work.
-
 Reboot again, to make sure everything sticks.
-Hopefully rfkill shows unblocked, and iwconfig shows the device, and iw scan works, and nmcli scan works.
-Perhaps we can take the next step and connect to your home wifi.
-As you've noticed, linux wifi can be a friggin nightmare!
+Hopefully rfkill shows unblocked, and iwconfig shows the device, and iw scan works, and nmcli scan works,
+and wpa_supplicant.service is running.
+Now we can take the next step and connect to your home wifi.
+As you can see, linux wifi can be a friggin nightmare!
 
 In the following, "name home", (optional), gives a nickname to the wifi connection,
 which I assume is the one in your home.
@@ -359,7 +361,7 @@ It's a good idea to review the changes after each nmcli command,
 so you can see exactly what happened.
 If you feel brave, you can edit the file yourself, then nmcli connection reload.
 But you have to know what you're doing.
-I only use the editor to change the password, or some other simple insitu update.
+I would only use the editor to change the password, or some other simple insitu update.
 
 Suppose I didn't set a nickname at first connect, but wish I had.
 The name of the connection is, by default, the ssid, which can be long and awkward.
@@ -387,6 +389,7 @@ If on ethernet, you can set up wifi later,
 using the instructions given above.
 I highly recommend this course of action;
 you want access to your new computer before you start wrangling wifi.
+
 How do you find your pi?
 What is its ip address?
 I have this alias in my .bashrc.
@@ -398,7 +401,7 @@ Run ipsearch >i1 before you boot up the pi, then ipsearch >i2 afterward.
 diff i1 i2 should give you the address of the pi.
 There's a chance other devices will come and go between
 the two scans, but it's unlikely.
-Edit /etc/hosts and associate the ip address with a convenient nickname for your pi.
+Edit /etc/hosts and associate the ip address with a convenient nickname for your new pi.
 (This has no connection to the hostname.)
 Now ssh nickname should get you in.
 ssh will ask about adding to the known hosts etc, just say yes.
@@ -466,7 +469,7 @@ as discussed earlier.
 Use su to test it, then exit to get back to your user account.
 
 You may want to run in text mode, rather than in graphical mode.
-You can't tell the difference over ssh, but it matters when you log in.
+You can't tell the difference over ssh, but it matters when you log in at the keyboard.
 In the 1990's these were called run level 3 and run level 5.
 Today we use systemctl.
 You can determine the run mode by
@@ -481,10 +484,10 @@ That's all there is to it.
 The other consoles remain in text mode.
 You can switch between the consoles by alt-f1 through alt-f6
 
-Because Bob was originally in graphical mode, there are several files
+Because Bob was originally in graphical mode, there are several directories
 in your home directory that you didn't create. Like Desktop.
 remove these if you like.
-But if you ever type startx to go back to graphical, these files will reappear.
+But if you ever type startx to go back to graphical, these directories will reappear.
 
 If you run text based, like I do, you probably have a .bash_login
 and .bashrc that customize the shell just the way you like it.
@@ -579,6 +582,10 @@ You can limp along without it, but you'll be entering your password over and ove
 every time you do something with github, and it's exhausting.
 With keys in place, and urls set up properly, you can get pull and git push
 all day long, and there's no trouble.
+
+There's a convenient option on git commit, it's -a.
+Commit all the changes You made.
+You don't have to git add every file that you changed, then git commit.
 
 If you want to run speakup, you will need to
 apt install espeakup
@@ -733,6 +740,7 @@ that exists than to start from scratch.
 So edit the file and put the speech commands where you want them on the keyboard.
 
 Now you can bravely try the whole system.
+You're still doing all this over ssh.
 
 jupiter -d esp "|espeakup -a 2>/dev/null"
 
