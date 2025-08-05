@@ -281,6 +281,36 @@ Again, some of the ssids are duplicated.
 nmcli -g ssid,security device wifi
 
 Note, these iw and nmcli commands will not work properly unless run as root.
+If the iw scan, (the lower level command), yields error -100, then the wireless device is not up.
+Check with ifconfig.
+If wlan0 is missing, or lacks the "up running" attributes seen on the other interfaces, try this.
+
+ifconfig wlan0 up
+
+If this yields the error "Operation not permitted due to RF-kill",
+then run rfkill, and note that wlan is soft blocked.
+Unblock with this command, then run rfkill again to verify.
+
+rfkill unblock wifi
+rfkill
+ifconfig wlan0 up
+ifconfig
+iwconfig
+
+These commands should succeed, and wlan0 should be present and up and running.
+The iw scan should work now, but the nmcli scan might still come up empty.
+If that is the case, it is possible that Bob didn't enable wifi in one of the startup GUI screens.
+That could be the cause of all the trouble.
+you may need to do this.
+
+nmcli radio wifi on
+
+Now the nmcli scan should work.
+
+Reboot again, to make sure everything sticks.
+Hopefully rfkill shows unblocked, and iwconfig shows the device, and iw scan works, and nmcli scan works.
+Perhaps we can take the next step and connect to your home wifi.
+As you've noticed, linux wifi can be a friggin nightmare!
 
 In the following, "name home", (optional), gives a nickname to the wifi connection,
 which I assume is the one in your home.
