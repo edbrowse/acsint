@@ -385,12 +385,14 @@ Thus nmcli con mod is the same as nmcli connection modify
 Now, put your pi on your network, over ethernet, or through wifi.
 If on ethernet, you can set up wifi later,
 using the instructions given above.
+I highly recommend this course of action;
+you want access to your new computer before you start wrangling wifi.
 How do you find your pi?
 What is its ip address?
 I have this alias in my .bashrc.
 route -n to see if this subnet is valid for you.
 
-alias ipsearch="nmap -sn 10.0.0.0/24"
+alias ipsearch="nmap -sn 10.0.0.0/24 | sed '/^Host/d'"
 
 Run ipsearch >i1 before you boot up the pi, then ipsearch >i2 afterward.
 diff i1 i2 should give you the address of the pi.
@@ -402,11 +404,16 @@ Now ssh nickname should get you in.
 ssh will ask about adding to the known hosts etc, just say yes.
 
 Note that your new pi over ethernet will have a different ip address from your new pi over wifi.
-This is not surprising; the ethernet chip and the wifi chip have different mac addresses.
-The router will assign them different ip addresses, as per the dhcp protocol.
+This is not surprising; the ethernet chip and the wifi chip have different mac addresses,
+hence the router will assign them different ip addresses, as per the dhcp protocol.
+If you are in by ssh over ethernet, or your pi is already talking, and you then set up wifi,
+you don't have to use the ipsearch trick to find the new wifi ip address.
+Use hostname -I.
+
 Some conventions can be helpful here.
 Let's say my new pi's name is Eric Carmen.
-Within /etc/hosts, eric designates the ip address over ethernet,
+Within /etc/hosts, eric (a convenient short nickname)
+designates the ip address over ethernet,
 while ericw, with a w at the end, designates the ip address over wifi.
 Use ssh eric over ethernet, and ssh ericw over wifi.
 
@@ -420,6 +427,7 @@ rsync -avX --delete-after $1 eklhad@eric:/home/eklhad
 }
 
 Of course, if you never use ethernet, and use wifi exclusively,
+as Bob has set up for you from the start,
 then you don't need these conventions.
 
 all right - you have found your new pi on the network, and are talking to it over ssh.
