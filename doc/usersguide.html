@@ -112,7 +112,7 @@ Jupiter doesn't see the output, and certainly can't read it to you.
 Instead, Jupiter was written for people who spend most of their time at run level 3,
 logged into a text based console.
 Furthermore, it is most effective when combined with command line programs such as bash,
-fdisk, mpg123, ed, and of course edbrowse.
+ls, ssh, mpg123, ed, and of course edbrowse.
 
 <p>
 The tty buffers are maintained per console -
@@ -125,12 +125,14 @@ the output of all your sessions will intermix in the tty buffer,
 and the result will be very confusing.
 I therefore recommend 12 or 24 virtual text-based consoles
 to manage your parallel sessions.
+See bootprocess.txt in this directory to set up these virtual consoles, as they are not there by default.
 
 <h2 id=lang>Other languages</h2>
 
 <p>
 The buffer stores tty output in unicode, which is compatible with every language on Earth.
-Thus, in theory, Jupiter could be modified to support any language.
+Thus, in theory, Jupiter could be modified to support any language,
+provided your speech synthesizer does the same.
 At present it supports English, German, and Brazilian Portuguese.
 If you are interested in other languages, or if you can help in this effort, please let me know.
 You don't have to be a programmer;
@@ -202,9 +204,9 @@ For example:
 sudo echo acsint &gt; /etc/modules-load.d/access.conf
 
 <p>
-There is no harm in installing and running ttyclicks and acsint, whether you use Jupiter or not.
-They do not interfere with Speakup, or other adapters, or other running programs.
-So just let them run all the time.
+complete build and installation instructions can be found in bootprocess.txt
+
+
 <p>
 You'll notice that ttyclicks
 generates clicks as output is sent to the screen.
@@ -246,6 +248,7 @@ I don't want to run these clicks through anybody's sound card.
 There are too many points of failure along that path.
 Instead, I use the in-built toggle speaker at port 0x61.
 Not all computers have this speaker, but most do.
+Unfortunately the Raspberry pi does not, and that is now my preferred computer.
 
 <p>
 Other programs, outside of the linux kernel, can also take advantage of
@@ -257,11 +260,9 @@ and select a target, if I want something other than the default.
 Beyond this, it tells me that the machine has gotten to grub successfully,
 and is not stuck in bios for some bizarre reason.
 Thus a multi-boot system becomes practical.
-It is difficult to overstate the importance of this little in-built speaker
-for the blind user.
 
 <p>
-This module might not click and chirp if you are in X.
+This module will not click and chirp if you are in X.
 It responds to text characters that pass through the standard tty,
 and as mentioned earlier, X bypasses this channel.
 Even the terminal emulator running under a desktop still runs through X,
@@ -295,10 +296,6 @@ when a program generates a lot of output.
 For a time I tried to patch the kernel to obviate this,
 but that became impractical.
 
-<p>
-The acsint module has an optional parameter, major=n, to set the major number of the device driver.
-If a major number is not specified, then acsint registers a character device with major number 10 and a minor number that is chosen dynamically.
-
 <h2 id=install>Installation</h2>
 
 <p>
@@ -323,6 +320,9 @@ If you want to use the sample config file as your default config file,
 copy it to /etc/jupiter/start.cfg:
 <br>
 sudo cp sample.cfg /etc/jupiter/start.cfg
+
+<p>
+Again, more complete instructions can be found in bootprocess.txt.
 
 <h2 id=options>Command-line options</h2>
 
@@ -418,11 +418,6 @@ in this case English, as pronounced in the United States,
 using the male voice klatt4.
 Finally the -a option tells espeakup to operate through a pipe,
 as required by Jupiter.
-If the version of espeakup in your distribution doesn't support the -a option,
-you can fetch the espeakup source from github and compile it yourself.
-
-<p>
-git clone https://github.com/williamh/espeakup
 
 <p>
 You can test your system by:
@@ -434,7 +429,7 @@ echo "hello world" | espeakup -V en-us -a
 
 <p>
 The easiest way to get the system to run Jupiter
-while booting the system is to include the command to run Jupiter in the /etc/rc.local file.
+at boot time is to include the command to run Jupiter in the /etc/rc.local file.
 For example, if you installed Jupiter to /usr/bin/local/jupiter,
 and you want to use espeakup, the /etc/rc.local file might contain:
 <br>
@@ -688,46 +683,26 @@ This can be changed using the -c option.
 The syntax and semantics of the config file will be described later.
 
 <p>
-You can have many different config files in /etc/jupiter,
-tailored to specific applications.
-These can be loaded at run time.
-You can type in the name of a file to load, or preset a key to load a given config file.
+The config file can also be loaded at runtime,
+so that you don't have to restart Jupiter.
+After the reload key is pressed,
+you can type in the name of a file to load, or preset the key to load a given config file.
 If an entered or preset filename does not begin with a slash, it is taken relative to /etc/jupiter.
 This is different from the -c option,
 where the filename is taken relative to the current directory.
-If you have 4 different config files in /etc/jupiter,
-I'll call them foo1 through foo4,
-and if you want the 4 function keys on the right to load these 4 files,
-then your bindings will look like this.
+Here is my key chord for the reload function,
+an unlikely combination, control alt plus, since I don't exercise this very often.
 
 <p>
-F9 reload foo1
-<br>
-F10 reload foo2
-<br>
-F11 reload foo3
-<br>
-F12 reload foo4
-
-<p>
-These four bindings should be the same in every config file, so you can switch between them in a consistent manner.
-Of course other keys will differ from one config file to another, in their placement and functionality;
-else why would you have different config files in the first place?
-Key bindings will be described later, after I have presented the atomic speech commands.
-
-<p>
-Configurations run per console,
-as you would expect with different applications running under different consoles.
-When you switch consoles, Jupiter uses the key bindings last associated with that console,
-i.e. the config file last loaded under that console.
-However, any macros you have set for the purposes of cut&amp;paste are retained.
-See the mark1 and mark2 functions below.
-Thus you can copy a string from one console to another, from one application to another.
+@^#+ reload start.cfg
 
 <p>
 A config file can include another, like #include in C.
-Thus common configurations, like your replacement dictionary, can be written once
-and pulled into every config file,like this.
+Thus a section like
+your replacement dictionary
+can be maintained in its own file.
+The same for key bindings, emojis, etc.
+Here is the include syntax.
 
 <p>
 &lt;&lt; dictionary
@@ -755,7 +730,7 @@ then read the line before to see what directory you were in,
 then read the line after to review the computer's response,
 exactly as it took place
 some two hours ago (assuming not a lot of output between then and now).
-Other screen readers refer to this roaming about as "screen review".
+Other screen readers refer to this roaming about as "screen review mode".
 Fair enough, but a bit misleading if you are in linear mode,
 for then you are reading text out of the tty buffer and not off the screen.
 
@@ -1149,8 +1124,8 @@ Reload a config file.
 The name of the file is entered at the keyboard,
 and is taken relative to /etc/jupiter, unless it begins with a slash.
 Issue this command if you have made a change to your config file,
-or you want to use another configuration
-that is better suited to your application.
+or you want to use a different configuration
+file.
 If the file cannot be found, or is unreadable,
 Jupiter sounds the error bell and retains the preexisting configuration.
 
@@ -1372,7 +1347,7 @@ A key can also simulate a modifier combination, such as #0 +r@, for shift and ri
 <p><li>
 Bind a key to a macro.
 <p>
-If you follow a key with &lt;, the rest of the line is text, to send to standard input.
+If you follow a key with &lt;, the rest of the line is text to send to standard input.
 Include \n to send a newline.
 Include \\ to send a literal backslash.
 \ followed by anything else is a literal backslash, as in a\b.
@@ -1383,7 +1358,9 @@ Include \\ to send a literal backslash.
 <p>
 If you follow a key with |, the rest of the line is a system command to execute.
 <p>
-scroll|amixer -q set Headphone 105+
+scroll|amixer -q set Master 3%+
+<p>
+See music+speech.txt for more of these system commands.
 
 <p><li>
 Set the pronunciation of a punctuation mark.
@@ -1398,7 +1375,7 @@ The syntax is the punctuation mark, whitespace, and the word or words to say.
 The words can be international, in utf8.
 However the punctuation mark must be in ascii.
 To set the pronunciation of a high unicode,
-you must specify the unicode in hex or in decimal.
+specify the unicode in hex or in decimal.
 Set alpha beta gamma like this.
 
 <p>
@@ -1522,4 +1499,3 @@ with any questions.
 <a href=#top>Back to top</a>
 
 </body>
-</html>
