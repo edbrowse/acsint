@@ -697,18 +697,29 @@ an unlikely combination, control alt plus, since I don't exercise this very ofte
 @^#+ reload start.cfg
 
 <p>
+If you wish, each console can be associated with a separate config file.
+Jupiter uses the start config file unless you indicate otherwise.
+It is possible to build a specialized config file, to run in console 9 for example, where you might be running an application that requires the function keys or control keys.
+You could move the speech functions out of the way, and this customized keyboard layout would take effect every time you switch to console 9.
+The association is made through the reload command.
+While in console 9, you could activate `reload console9.cfg', for example.
+I have never used this feature in 40 years and I don't think I ever will.
+My muscle memory strikes keys quickly and automatically, to move about in the buffer and read text,
+and it would be quite derailed if the key assignments changed from console to console.
+I document the feature here simply because it exists, and it works.
+If you don't do anything special, all consoles will use the start config file, and all will be well.
+
+<p>
 A config file can include another, like #include in C.
-Thus a section like
-your replacement dictionary
+Thus a section like your replacement dictionary
 can be maintained in its own file.
-The same for key bindings, emojis, etc.
+You could write your emoji pronunciation section once, and include it in multiple config files,
+if you choose to exercise that capability.
+Again, these include files are taken relative to /etc/jupiter.
 Here is the include syntax.
 
 <p>
-&lt;&lt; dictionary
-
-<p>
-Again these files are taken relative to /etc/jupiter.
+&lt;&lt; emojis
 
 <h2 id=rc>The reading cursor and atomic commands</h2>
 

@@ -489,9 +489,10 @@ in your home directory that you didn't create. Like Desktop.
 remove these if you like.
 But if you ever type startx to go back to graphical, these directories will reappear.
 
-If you run text based, like I do, you probably have a .bash_login
-and .bashrc that customize the shell just the way you like it.
-Copy these over to the new pi.
+If you run text based, like I do, you probably have a .bash_login and .bashrc
+that customize the shell just the way you like it.
+Like PS1='$ ' instead of that long drawn-out prompt that takes forever to say.
+Copy these files over to the new pi.
 scp .bash_login .bashrc newmachine:
 You don't have to reboot for these to take effect, simply log out and log back in again.
 You may want to remove .profile; you're not using it any more.
