@@ -795,7 +795,7 @@ You really need edbrowse to function in this environment.
 With this in mind, here is a brief step-by-step to install edbrowse.
 This is, for me, a critical part of getting a fresh Raspberry pi up and running,
 so I think it reasonably belongs here.
-In fact you may want to do this much earlier, perhaps as soon as you have an ssh connection.
+In fact, you may want to do this much earlier, perhaps as soon as you have an ssh connection.
 Configuring the far computer without edbrowse can be awkward.
 
 First, you need a directory under your home directory for programs.
@@ -834,4 +834,23 @@ alias e="/home/eklhad/bin/edbrowse"
 
 I can type e filename to edit a file, from the shell or within edbrowse,
 the syntax is the same.
+
+Yes, there is sudo make install, which puts edbrowse in /usr/local/bin,
+a traditional location.
+I don't do that because I sometimes compile and test and compile and test in rapid succession,
+and I don't want to install with each iteration.
+I always execute the latest, with debug prints and all.
+That's probably my bias as a developer.
+You may want to stick with the traditional install,
+and then put this alias in .bashrc.
+
+alias e="/usr/local/bin/edbrowse"
+
+I am not so cavalier when it comes to jupiter.
+If I always run the latest all the time, and I make a change that breaks speech,
+then the computer is not talking,
+and even a reboot will execute the same broken program, so I am screwed.
+Thus I retain the traditional distinction between the local copy of jupiter
+that I just built, that is in test mode,
+and the one that I installed, that I know works.
 
