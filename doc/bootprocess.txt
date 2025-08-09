@@ -132,7 +132,7 @@ Let's look at a couple of these parameters.
 root=PARTUUID=6c1463a0-02
 
 Some devices have unique numbers on them, the way each car has a VIN.
-Ethernet chips for example, or wifi chips, have a mac address.
+Ethernet chips for example, or wifi chips, have a 48-bit mac address.
 This is used by the dhcp server to hand out the same ip address to that device
 consistently whenever it requests a connection.
 They are also used by routers in certain intranet configurations.
@@ -186,6 +186,7 @@ The fsck.repair=yes parameter tells the kernel to run fsck on its own,
 without human intervention,
 fix the disk errors if possible, and come up running.
 The services launch, the computer speaks, and you don't even know anything was amiss.
+
 This isn't an iron-clad guarantee though.
 Some errors cannot be fixed automatically, and then linux has to go into rescue mode.
 At that point you probably don't have speech,
@@ -223,7 +224,7 @@ That said, iw reg set didn't work for me.
 I had to edit /boot/firmware/cmdline.txt.
 
 The next thing Bob needs to do for you is enable ssh.
-This will allow you to connect your talking computer to the pi,
+This will allow you to connect your already-talking computer to the new pi,
 whence you can take over, and Bob can go to lunch.
 From the terminal, it is
 systemctl enable ssh.service
@@ -242,14 +243,13 @@ on the /boot partition of the micro SD card, to enable sshd on first boot.
 You can verify that the service is active through the GUI,
 or systemctl | fgrep ssh
 It is safe to remove /boot/ssh.txt at this point,
-although your pi has probably done so already.
+although your pi has probably done it for you.
 
 The easiest way to connect the new pi to your existing talking machine is over ethernet.
 Put them both on the same hub or the same router.
 (You can connect the two machines directly but that requires a crossover cable,
 which most people don't have in their house.)
 Or - you can set up wifi on the pi.
-We already talked about the wifi country code.
 Unfortunately the wifi mechanisms vary widely from buster, to bullseye, to bookworm,
 and none of them are particularly intuitive.
 In buster, everything was in a wpa file under /etc, and that was easy peasy.
@@ -434,6 +434,8 @@ as Bob has set up for you from the start,
 then you don't need these conventions.
 
 all right - you have found your new pi on the network, and are talking to it over ssh.
+What's next?
+
 There are several things you want to do, no matter what adapter you are using.
 The first is an exchange of rsa keys.
 You will be doing a lot of logging in, scp, even rsync,
@@ -517,7 +519,7 @@ This causes the caps lock to act like a third control key.
 (speakup modules can interfere with this behavior, I'll talk about that later.)
 I use control keys for speech functions about 20 times a minute,
 and it would be a serious impairment if I had to reach all the way down to
-Tierra del Fuego every time I wanted to activate control.
+Tierra del Fuego every time I wanted to activate control mode.
 apparently I am not alone in this preference, since they made an option for this.
 You have to reboot for these keyboard changes to take effect.
 
@@ -779,4 +781,57 @@ and tune the config file to your liking.
 This will be an ongoing process.
 Even 20 years later, I still make a change now and then,
 to see if that dovetails better with my work flow.
+
+edbrowse is a sister project within this organization, and you probably
+found edbrowse first, then landed here by curiosity.
+edbrowse and jupiter were designed to work together, to provide a line oriented experience.
+However, hundreds of people use edbrowse, without an adapter (some sighted people find it useful),
+or with a different screen reader, and that's fine by me.
+However, the converse is probably not true.
+If you use jupiter, you almost have to have edbrowse.
+This is a linear adapter and it forces you into a command line mode;
+in fact it is rather procrustean.
+You really need edbrowse to function in this environment.
+With this in mind, here is a brief step-by-step to install edbrowse.
+This is, for me, a critical part of getting a fresh Raspberry pi up and running,
+so I think it reasonably belongs here.
+In fact you may want to do this much earlier, perhaps as soon as you have an ssh connection.
+Configuring the far computer without edbrowse can be awkward.
+
+First, you need a directory under your home directory for programs.
+In a modern computer this would be your folder of applications, or Apps.
+That concept was unheard of in 1995, so I called my directory progs, for programs.
+It is brief, and doesn't have any annoying capital letters or spaces.
+Thus all my working software is in /home/eklhad/progs.
+You may choose a different directory of course.
+
+When you cloned acsint from github, did you put it in progs, or a similar location?
+If not, perhaps you can simply move it.
+I don't know - I've never tried.
+It's probably best to clone projects into their intended location.
+So - I'll assume acsint is cloned in the progs directory, and you want to do the same for edbrowse.
+
+cd progs
+git clone https://github.com/edbrowse/edbrowse.wiki
+cd edbrowse.wiki
+# everybody has permission to contribute to the wiki
+git remote set-url --push origin 'git@github.com:edbrowse/edbrowse.wiki.git'
+cd ..
+git clone https://github.com/bellard/quickjs
+cd quickjs ; make
+# If you get a lot of atomic undefines:   make EXTRA_LIBS=-latomic
+cd ..
+git clone https://github.com/edbrowse/edbrowse
+sudo apt install libreadline-dev libpcre2-dev libcurl4-openssl-dev libssl-dev
+sudo apt install unixodbc unixodbc-dev libsqliteodbc
+cd edbrowse/src ; make
+ln -s `pwd`/edbrowse ~/bin # put edbrowse in your path
+
+And that should just work.
+I have a handy alias in .bashrc:
+
+alias e="/home/eklhad/bin/edbrowse"
+
+I can type e filename to edit a file, from the shell or within edbrowse,
+the syntax is the same.
 
