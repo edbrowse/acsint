@@ -10,8 +10,10 @@
 
 int main(int argc, char **argv)
 {
+const char *s;
 if(argc != 3) {
-fprintf(stderr, "Usage: injkey console_number character\n");
+fprintf(stderr, "Usage: injkey console_number string\n");
+fprintf(stderr, "Use 0 to queue up characters in the current tty.\n");
 exit(1);
 }
 char ttybuf[20];
@@ -22,9 +24,11 @@ perror("cannot open tty");
 exit(2);
 }
 setuid(geteuid());
-if(ioctl(fd, TIOCSTI, argv[2])) {
+for(s = argv[2]; *s; ++s) {
+if(ioctl(fd, TIOCSTI, s)) {
 perror("cannot inject character into the tty\n");
 exit(3);
+}
 }
 close(fd);
 exit(0);
