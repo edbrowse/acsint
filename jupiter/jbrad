@@ -59,6 +59,17 @@ $buffermax = 5;
 # To do this, you must compile and install the injkey program.
 # Please read about injkey in music+speech.txt.
 
+# need to grab the current tty number for injkey.
+# This number may be assumed / hard coded in your hot keys,
+# but that doesn't mean I need to hard code it here.
+$ttynum = 0;
+if(open T, "tty|") {
+$ttynum = <T>;
+chomp $ttynum;
+$ttynum =~ s/.*tty//;
+close T;
+}
+
 $artistThreshold = 40;
 $songThreshold = 500;
 $longThreshold = 3000;  # about a week
@@ -295,7 +306,7 @@ last unless --$showlist;
 push @buffer, $song;
 shift @buffer if $#buffer >= $buffermax;
 $bl = $#buffer + 1;
-if($bl > 1 && -x $injkey) {
+if($bl > 1 && -x $injkey && $ttynum =~ /^[1-9][0-9]*$/) {
 $cmd = $player;
 $injstring = "";
 for(my $i = 0; $i < $bl; ++$i) {
@@ -303,8 +314,12 @@ $cmd .= " $songdir/" . $buffer[$i];
 $injstring .= 'f' if $i;
 }
 # system is a blocking call to run the player, so we have to inject
-# the keys into the tty first.
-system "$injkey 0 $injstring";
+# the keys into the tty first. But the tty is cooked,
+# and echos, because mpg123 -c hasn't gotten a hold of it yet.
+# I use the -e option so it doesn't echo, and clutter the output with f's.
+# f's queue up in cooked mode, mpg123 switches to raw mode but that's no trouble,
+# if reads the f's and now we are playing the last song.
+system "$injkey -e $ttynum $injstring";
 system $cmd;
 } else {
 system "$player $songdir/$song";
