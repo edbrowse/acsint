@@ -37,10 +37,11 @@
 # with lower case. Also, the suffix -.mp3 is not played.
 # If there is one song on an album that just doesn't thrill you, yet you want
 # to keep it because it completes the album, but it doesn't really fit
-# the radio format, then designate it with -.mp3.
+# your radio format, like Revolution Number 9 on the White Album,
+# then designate it with -.mp3.
 # Conversely, a song that ends in +.mp3 is one you really like,
-# and it will be played more often.
-# My Russian Sailors Dance, for example.
+# a hit if you will, and it will be played more often.
+# My Russian Sailors Dance for example.
 
 $songdir = "/songs";
 # Change these to the genres that you want.
@@ -70,9 +71,23 @@ $ttynum =~ s/.*tty//;
 close T;
 }
 
+$home = $ENV{"HOME"};
+defined $home and length $home or
+die '$HOME is not defined in the environment - I don\'t know how to find your .radiolist file.';
+$radiolist = "$home/.radiolist";
+$longThreshold = 3000;
+
+# This program logs the songs played, as radio stations are required to do.
+# If the log exceeds 3000 it is cut back, so it won't grow forever.
+# This isn't a very important feature. It can sate your curiosity on what
+# was played while you were gone, or fell asleep.
+# Also, upon restart, jbrad uses this log to determine the songs that were
+# recently played. Thus if you shut down and restart, you won't hear the same
+# song you just heard before.  .radiolist provides the continuity.
+# There is no redirection here; it has to be ~/.radiolist
+
 $artistThreshold = 40;
 $songThreshold = 500;
-$longThreshold = 3000;  # about a week
 
 use IO::Handle;
 
@@ -86,11 +101,6 @@ $genre = $chunks[0];
 ($artist, $song) = split '-', $chunks[1];
 return $genre, $artist, $song;
 }
-
-$home = $ENV{"HOME"};
-defined $home and length $home or
-die '$HOME is not defined in the environment - I don\'t know how to find your .radiolist file.';
-$radiolist = "$home/.radiolist";
 
 $showlist = 0;
 if($#ARGV == 0 && $ARGV[0] =~ /^\d+$/) {
