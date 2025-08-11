@@ -1,0 +1,315 @@
+#!/usr/bin/perl -w
+
+# Written and maintained by: Karl Dahlke eklhad@gmail.com http://www.eklhad.net
+
+# jbrad is a program to play songs somewhat at random,
+# like a combined jukebox radio.
+# This can be run in the background, like a song daemon,
+# but then you'll don't have control over mpg123. Better to run it
+# in the foreground on one of your 12 consoles. In my case console 11.
+# Now the keys can skip around in the song, or even quit the song if perhaps
+# you don't like it, whence this program selects the next song at random.
+# Each song tries to be different from the one before, by artist,
+# and even by genre.  I like variety in my music.
+# I don't mind jumping from the Carpenters to Rush.
+# All songs should be in /songs/*/*.mp3 - A rigid file structure.
+# Each directory under /songs corresponds to a genre.
+# I have folders pop1 through pop4, for popular music in increasing intensity.
+# pop1 has the Carpenters and pop4 has Rush.
+# Also jazz, chamber, symphony, oldy, musicals, comedy, country, etc.
+# The iport folder is used to gather songs wherein I would not want
+# the entire genre to run on my virtual radio. Example would be classical.
+# I don't want to stop between songs to hear the entire Beethoven's Ninth
+# Symphony,  but I'm happy to listen to Gliere's Russian Sailor's Dance,
+# which is only a  couple minutes long, like a song, and is quite lovely.
+# So I create symbolic links from these scattered songs in other genres into
+# the import directory, whence this program will play them in amongst the other
+# songs. It just thinks "import" is another genre.
+# cd /songs ; ln -s ../symphony/Gliere-RussianSailorsDance+.mp3 import
+# As per the arrangement and format of files,
+# you might wish this program was more accommodating.
+# A typical directory structure has genre, then artist, then album, then songs,
+# but I don't handlel that at this time. It has to be flattened
+# as described above, for use by jbrad.
+# The filename of a song must begin with a capital letter to be played.
+# Thus an entire batch of songs can be removed from consideration by starting
+# with lower case. Also, the suffix -.mp3 is not played.
+# If there is one song on an album that just doesn't thrill you, yet you want
+# to keep it because it completes the album, but it doesn't really fit
+# the radio format, then designate it with -.mp3.
+# Conversely, a song that ends in +.mp3 is one you really like,
+# and it will be played more often.
+# My Russian Sailors Dance, for example.
+
+$songdir = "/songs";
+# Change these to the genres that you want.
+@subdirs = ( "country", "jazz", "musicals", "oldy", "pop1", "pop2", "pop3", "pop4", "import" );
+$player = "mpg123 -q -C";
+$injkey = "/usr/local/bin/injkey";
+@buffer = ();
+$buffermax = 5;
+
+# Under normal circumstance, this program selects a song at random, plays it,
+# selects the next song, plays it, and so on.
+# Thus mpg123 has only one argument. There is no way to back up.
+# We can exit mpg123 by typing q or f, and thence move on to the next song,
+# but no backup feature. So I created one.
+# The buffer array holds the last few songs played, and buffermax is the
+# length of the buffer, thus the number of songs that we can back up through.
+# To do this, you must compile and install the injkey program.
+# Please read about injkey in music+speech.txt.
+
+$artistThreshold = 40;
+$songThreshold = 500;
+$longThreshold = 3000;  # about a week
+
+use IO::Handle;
+
+# Cut a filename into genre, group, and song.
+sub fileCut($)
+{
+my $f = shift;
+my($genre, $artist, $song);
+my @chunks = split '/', $f;
+$genre = $chunks[0];
+($artist, $song) = split '-', $chunks[1];
+return $genre, $artist, $song;
+}
+
+$home = $ENV{"HOME"};
+defined $home and length $home or
+die '$HOME is not defined in the environment - I don\'t know how to find your .radiolist file.';
+$radiolist = "$home/.radiolist";
+
+$showlist = 0;
+if($#ARGV == 0 && $ARGV[0] =~ /^\d+$/) {
+$showlist = $ARGV[0];
+pop @ARGV;
+}
+
+if($#ARGV != -1) {
+print "usage:  jbrad [count]\n";
+exit 1;
+}
+
+# Gather history from the radiolist file
+$#history = -1;
+if(open FH, $radiolist) {
+@history = <FH>;
+# Remember, these things have their newlines on.
+close FH;
+}
+
+if($#history >= $longThreshold) {
+my $excess = $#history - $longThreshold + 1;
+my ($f, $i, $n);
+truncate $radiolist, 0 or die "Could not write to $radiolist";
+# If we can truncate, we should be able to write.
+open FH, ">$radiolist";
+foreach $i (1..$longThreshold) {
+$n = $excess + $i - 1;
+$f = $history[$n];
+print FH $f;
+$history[$i-1] = $f;
+}
+close FH;
+$#history = $longThreshold-1;
+}
+
+# Chop off the newlines
+chomp @history;
+
+# build master list of all songs
+@songlist = ();
+foreach my $dir (@subdirs) {
+-d "$songdir/$dir" or
+die "$songdir/$dir is not a directory.";
+my @list1 = glob "$songdir/$dir/[A-Z0-9]*[!-=].mp3";
+push @songlist, @list1;
+}
+print $#songlist+1; print " songs in our library\n";
+
+# Get rid of songdir from the master list.
+foreach my $f (@songlist) {
+$f =~ s,^$songdir/,,o;
+}
+
+# Create a list of songs with recent songs and artists stripped.
+# Use perl's associative memory to remember recent songs and artists.
+%recentsongs = ();
+%recentartists = ();
+%playedsongs = ();
+if($#history >= 0) {
+my ($start, $end, $i, $f, $genre, $artist);
+$end = $#history;
+foreach $i (0..$end) {
+++$playedsongs{$history[$i]};
+}
+$start = $end + 1 - $songThreshold;
+$start = 0 if $start < 0;
+foreach $i ($start..$end) {
+++$recentsongs{$history[$i]};
+}
+$start = $end + 1 - $artistThreshold;
+$start = 0 if $start < 0;
+foreach $i ($start..$end) {
+$f = $history[$i];
+($genre, $artist) = fileCut $f;
+++$recentartists{$artist};
+}
+}  # something in the history
+
+sub availableSongs()
+{
+my ($f, $genre, $artist);
+$#striplist = -1;
+foreach $f (@songlist) {
+next if $recentsongs{$f};
+($genre, $artist) = fileCut $f;
+next if $recentartists{$artist};
+push @striplist, $f;
+}
+if(!$showlist) {
+print $#striplist+1; print " songs to choose from\n";
+}
+}
+
+# Remove songs from the last genre, unless that wouldn't leave anything.
+sub differentGenre()
+{
+if($#history >= 0) {
+my ($f, $lg1, $lg2, $genre, $end, @glist);
+$end = $#history;
+($lg1) = fileCut $history[$end];
+$lg2 = $lg1;
+if($end > 0) {
+($lg2) = fileCut $history[$end-1];
+}
+$#glist = -1;
+my $lg1cnt = 0;
+my $lg2cnt = 0;
+foreach $f (@striplist) {
+($genre) = fileCut $f;
+++$lg1cnt if $lg1 eq $genre;
+++$lg2cnt if $lg2 eq $genre and $lg2 ne $lg1;
+push @glist, $genre;
+}
+my $remove1 = 0;
+my $remove2 = 0;
+$remove1 = 1 if $lg1cnt < $#striplist+1;
+$remove2 = 1 if $lg1 ne $lg2 and $lg1cnt + $lg2cnt < $#striplist+1;
+if($remove1 + $remove2) {
+my $j = 0;
+foreach my $i (0..$#striplist) {
+$genre = $glist[$i];
+next if $remove1 and $genre eq $lg1;
+next if $remove2 and $genre eq $lg2;
+$f = $striplist[$i];
+$striplist[$j] = $f;
+++$j;
+}
+$#striplist = $j - 1;
+}  # something to remove
+}
+if(!$showlist) {
+print $#striplist+1; print " songs after genre\n";
+}
+}  # differentGenre
+
+# Select a song at random from the stripped down list.
+# Give extra weight to hits.
+# Take away from songs that have been played in the past week.
+sub selectSong()
+{
+my ($f, $level, @songindex);
+$level = 0;
+$#songindex = -1;
+foreach $f (@striplist) {
+push @songindex, $level;
+my $incr = 2;
+$incr += 2 if $f =~ m/\+\.mp3$/;
+$incr -= $playedsongs{$f} if defined $playedsongs{$f};
+$incr = 1 if $incr <= 0;
+$level += $incr;
+}
+push @songindex, $level;
+my $goal = int rand $level;
+my ($i, $l, $r);  # binary search
+$l = -1, $r = $#songindex;
+while($r - $l > 1) {
+$i = ($l+$r+1) / 2;
+if($songindex[$i] <= $goal and $songindex[$i+1] > $goal) {
+return $striplist[$i];
+}
+if($songindex[$i] > $goal) {
+$r = $i;
+} else {
+$l = $i;
+}
+}
+die "binary search failed.";
+}
+
+sub logSong($)
+{
+my $f = shift;
+if(open FH, ">>$radiolist") {
+print FH "$f\n";
+close FH;
+}
+my ($genre, $artist, $n);
+push @history, $f;
+++$playedsongs{$f};
+++$recentsongs{$f};
+($genre, $artist) = fileCut $f;
+++$recentartists{$artist};
+$n = $#history - $artistThreshold;
+if($n >= 0) {
+$f = $history[$n];
+($genre, $artist) = fileCut $f;
+--$recentartists{$artist};
+}
+$n = $#history - $songThreshold;
+if($n >= 0) {
+$f = $history[$n];
+--$recentsongs{$f};
+}
+$n = $#history - $longThreshold;
+if($n >= 0) {
+$f = $history[$n];
+--$playedsongs{$f};
+}
+shift @history if $#history == $longThreshold;
+}
+
+# Loop playing songs, or generating playlist.
+while(1) {
+availableSongs();
+differentGenre();
+my $song = selectSong();
+logSong($song);
+print "$song\n";
+if($showlist) {
+last unless --$showlist;
+} else {
+push @buffer, $song;
+shift @buffer if $#buffer >= $buffermax;
+$bl = $#buffer + 1;
+if($bl > 1 && -x $injkey) {
+$cmd = $player;
+$injstring = "";
+for(my $i = 0; $i < $bl; ++$i) {
+$cmd .= " $songdir/" . $buffer[$i];
+$injstring .= 'f' if $i;
+}
+# system is a blocking call to run the player, so we have to inject
+# the keys into the tty first.
+system "$injkey 0 $injstring";
+system $cmd;
+} else {
+system "$player $songdir/$song";
+}
+}
+}
+
+exit 0;

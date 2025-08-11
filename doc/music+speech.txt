@@ -155,7 +155,22 @@ k110|/usr/local/bin/injkey 11 d
 k102|/usr/local/bin/injkey 11 b
 k104|/usr/local/bin/injkey 11 f
 
-This is not limited to mpg123.
+The "previous song" command only works if you are playing an album,
+or a set of songs as arguments to mpg123.
+In other words, mpg123 has to have a song to back up to.
+If it is on the first song, or there is only one song as argument, it starts that song again.
+Thus the backup key isn't meaningful for a song provider that plays songs at random.
+It executes mpg123 on each song in turn, one argument, and there is no way to back up.
+You can however go forward, because the f key ends the list,
+and mpg123 exits, whence your song server selects the next song.
+Desiring the backup feature, I made an enhancement to my jbrad program,
+found in the jupiter directory.
+It remembers the last 5 songs that it played and hands them to mpg123 as arguments,
+then it jumps to the last song, the new song, by feeding f's to the program through injkey.
+Now the backup key works, through the last 5 songs anyways.
+This is not vital to anyone's existence, it was primarily a fun programming exercise.
+
+The hot keys, vectoring through injkey, are not limited to mpg123.
 If you prefer mpv, you can write hot keys to control that program instead.
 Just read the man page to see what keys elicit what responses.
 
