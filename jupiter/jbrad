@@ -3,7 +3,8 @@
 # Written and maintained by: Karl Dahlke eklhad@gmail.com http://www.eklhad.net
 
 # jbrad is a program to play songs somewhat at random,
-# like a combined jukebox radio.
+# like a combined jukebox radio, with blessedly no commercials.
+# And it only plays your songs, so it only plays songs you like.
 # This can be run in the background, like a song daemon,
 # but then you'll don't have control over mpg123. Better to run it
 # in the foreground on one of your 12 consoles. In my case console 11.
@@ -24,13 +25,13 @@
 # which is only a  couple minutes long, like a song, and is quite lovely.
 # So I create symbolic links from these scattered songs in other genres into
 # the import directory, whence this program will play them in amongst the other
-# songs. It just thinks "import" is another genre.
+# songs. It just thinks import is another genre.
 # cd /songs ; ln -s ../symphony/Gliere-RussianSailorsDance+.mp3 import
-# As per the arrangement and format of files,
+# Regarding the arrangement and format of files,
 # you might wish this program was more accommodating.
 # A typical directory structure has genre, then artist, then album, then songs,
 # but I don't handlel that at this time. It has to be flattened
-# as described above, for use by jbrad.
+# as described above. Song directory, genre, mp3 files.
 # The filename of a song must begin with a capital letter to be played.
 # Thus an entire batch of songs can be removed from consideration by starting
 # with lower case. Also, the suffix -.mp3 is not played.
@@ -58,8 +59,7 @@ $buffermax = 5;
 # length of the buffer, thus the number of songs that we can back up through.
 # To do this, you must compile and install the injkey program.
 # Please read about injkey in music+speech.txt.
-
-# need to grab the current tty number for injkey.
+# Here we need to grab the current tty number for injkey.
 # This number may be assumed / hard coded in your hot keys,
 # but that doesn't mean I need to hard code it here.
 $ttynum = 0;

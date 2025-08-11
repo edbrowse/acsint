@@ -303,16 +303,18 @@ These commands should succeed, and wlan0 should be present and up and running.
 The iw scan should work now, but the nmcli scan might still come up empty.
 If that is the case, it is possible that Bob didn't enable wifi in one of the startup GUI screens.
 That could be the cause of all the trouble.
-you may need to do this.
+Check by running `nmcli radio wifi'.
+This will report enabled or disabled;
+if it says disabled, then you better turn it on and perhaps reboot.
 
 nmcli radio wifi on
+nmcli radio wifi
+reboot
 
-Now the nmcli scan should work.
-Reboot again, to make sure everything sticks.
-Hopefully rfkill shows unblocked, and iwconfig shows the device, and iw scan works, and nmcli scan works,
+Now, with a little bit of bloomin luck, rfkill shows unblocked,
+and iwconfig shows the device, and iw scan works, and nmcli scan works,
 and wpa_supplicant.service is running.
-Now we can take the next step and connect to your home wifi.
-As you can see, linux wifi can be a friggin nightmare!
+Let's take the next step and connect to your home wifi.
 
 In the following, "name home", (optional), gives a nickname to the wifi connection,
 which I assume is the one in your home.
