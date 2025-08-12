@@ -631,7 +631,7 @@ Just to be clear, you are still on the new pi over ssh, because it isn't talking
 But you need to hear espeakup on the new pi, along with speech from your
 previously adapted computer.
 So you'll need an extra set of headphones or speakers.
-Plug the headphones into the new pi, then over ssh, type espeakup.
+Plug the headphones into the new pi, then type espeakup over ssh.
 You probably have to be you, not root, for reasons that are described in music+speech.txt.
 Now type things in, anything you want.
 When in the course of human events it becomes necessary for one people...
@@ -667,7 +667,7 @@ The command to try is now:
 espeakup -a <jungle
 
 The -a option tells espeakup to honor and return index markers.
-As it speaks the words on the new pi, it prints the 7 index markers, A through G.
+As it speaks the words on the new pi, it prints the 7 index markers A through G.
 Note that the marker numbers are the ascii codes for A through G.
 In a perfect world, each index marker appears just after espeakup has spoken
 the corresponding word. However there are some delays.
@@ -696,7 +696,7 @@ because nobody has reported it.
 
 Now that espeakup is validated, let's build the jupiter linear adapter.
 Make and install procedures are described in the users guide,
-but I'll include them here, in a more concise, step-by-step format.
+but I'll include them here, in a more concise, step-by-step fashion.
 Let's say you are already in progs/acsint.
 
 cd drivers

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script prints the artist, album, and song currently playing.
 # It injects l into the console running mpg123, which will print the list.
@@ -72,8 +72,20 @@ ii=`id3info "$v"`
 artist=`echo "$ii" | sed -e '/^=== TPE1 (Lead performer/!d' -e 's/.*(s)): //'`
 album=`echo "$ii" | sed -e '/^=== TALB (Album/!d' -e 's/.*title): //'`
 song=`echo "$ii" | sed -e '/^=== TIT2 (Title/!d' -e 's/.*description): //'`
+
+# If we have to revert to the filename, get rid of the directory.
+v=${v/*\//}
+
+# If there are any id3 tags at all, we ought to have the artist.
 if [ -z "$artist" ]
-then echo "mp3 file contains no information about the song" >$out
+then
+# in print mode, just print the filename and hope it is helpful.
+# Your adapter will read it the way you wrote it, with artist and song name etc.
+if [ $2 = p ]
+then echo "$v" >$out
+exit 0
+fi
+echo "mp3 file contains no information about the song" >$out
 exit 1
 else
 echo "artist, $artist$end" >$out
