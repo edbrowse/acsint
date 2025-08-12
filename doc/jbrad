@@ -27,7 +27,9 @@
 # the import directory, whence this program will play them in amongst the other
 # songs. It just thinks import is another genre.
 # cd /songs ; ln -s ../symphony/Gliere-RussianSailorsDance+.mp3 import
-# Regarding the arrangement and format of files,
+# (Hard links would probably work just as well in this situation,
+# and there can't be any "broken links".)
+# Regarding the arrangement and format of the files,
 # you might wish this program was more accommodating.
 # A typical directory structure has genre, then artist, then album, then songs,
 # but I don't handlel that at this time. It has to be flattened

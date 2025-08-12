@@ -164,7 +164,7 @@ It executes mpg123 on each song in turn, one argument, and there is no way to ba
 You can however go forward, because the f key ends the list,
 and mpg123 exits, whence your song server selects the next song.
 Desiring the backup feature, I made an enhancement to my jbrad program,
-found in the jupiter directory.
+found in this directory.
 It remembers the last 5 songs that it played and hands them to mpg123 as arguments,
 then it jumps to the last song, the new song, by feeding f's to the program through injkey.
 Now the backup key works, through the last 5 songs anyways.
