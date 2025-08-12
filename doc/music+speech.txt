@@ -170,6 +170,10 @@ then it jumps to the last song, the new song, by feeding f's to the program thro
 Now the backup key works, through the last 5 songs anyways.
 This is not vital to anyone's existence, it was primarily a fun programming exercise.
 
+Another hot key could print or speak artist, album, and song.
+k107|/usr/local/bin/artist 11 p
+See the artist shell script in this directory.
+
 The hot keys, vectoring through injkey, are not limited to mpg123.
 If you prefer mpv, you can write hot keys to control that program instead.
 Just read the man page to see what keys elicit what responses.

@@ -1,0 +1,88 @@
+#!/bin/sh
+
+# This script prints the artist, album, and song currently playing.
+# It injects l into the console running mpg123, which will print the list.
+# Then it scrapes the screen for > which is the current song.
+# Then it runs id3info on that song and scrapes the output.
+# Finally it sends the information directly to the speech synthesizer,
+# argument t for talk,
+# or to the foreground console where you are,
+# argument p for print.
+# There are tradeoffs here.
+# Talking doesn't clutter the screen with output, since you are probably
+# somewhere else, and working on something else.
+# On the other hand, the id3 tags can be obtuse, and you may want to review them
+# in some detail using your screen reader.
+# One of my songs has artist: Seger, Bob, and the Silver Bullet Band
+# you wish it said Bob Seger and the Silver Bullet Band but it doesn't.
+# That might be unclear if it just flies through your synthesizer.
+# You have to decide which mode is better for you.
+
+# If this script runs as you, not root, you need read access to /dev/vcsxx,
+# and for printing, write access to /dev/tty0. This is not the default.
+# Put chmod commands into /etc/rc.local
+
+# It is possible to miss the song if it has rolled off the screen.
+# Say I am playing all 27 Mozart piano concertos, 3 movements each,
+# and I am still near the beginning. The song currently playing won't be on screen.
+# But that is rare.
+# This script is typically used in combination with jbrad,
+# perhaps from a hot key, and in that context, mpg123 has at most 5 arguments,
+# 5 songs that it might print in response to the l command.
+# The current song is sure to be on screen.
+
+if [ $# != 2 -o "$2" != t -a "$2" != p ]
+then echo "usage artist console-number t|p"
+exit 1
+fi
+
+if [ $2 = p ]
+then
+if [ ! -w /dev/tty0 ]
+then echo "cannot write to /dev/tty0"
+exit 1
+fi
+out=/dev/tty0
+else
+out=/etc/jupiter/fifo
+fi
+
+screen=/dev/vcs$1
+if [ ! -r $screen ]
+then echo "canot reed the screen" >$out
+exit 1
+fi
+
+injkey $1 l
+sleep 1 # we have to give mpg123 time to print out its list
+
+v=`sed <$screen -e '/ > /!d' -e 's/.* > //' -e 's/ .*//'`
+if [ -z "$v" ]
+then echo "song is not found on screen" >$out
+exit 1
+fi
+if [ ! -r "$v" ]
+then echo "no file corresponding to the current song" >$out
+exit 1
+fi
+
+ii=`id3info "$v"`
+artist=`echo "$ii" | sed -e '/^=== TPE1 (Lead performer/!d' -e 's/.*(s)): //'`
+album=`echo "$ii" | sed -e '/^=== TALB (Album/!d' -e 's/.*title): //'`
+song=`echo "$ii" | sed -e '/^=== TIT2 (Title/!d' -e 's/.*description): //'`
+if [ -z "$artist" ]
+then echo "mp3 file contains no information about the song" >$out
+exit 1
+else
+echo "artist, $artist" >$out
+if [ $2 = t ]; then sleep 2; fi
+fi
+if [ ! -z "$album" ]
+then echo "album, $album" >$out
+if [ $2 = t ]; then sleep 2; fi
+fi
+if [ ! -z "$song" ]
+then echo "song, $song" >$out
+fi
+
+exit 0
