@@ -43,8 +43,10 @@ then echo "cannot write to /dev/tty0"
 exit 1
 fi
 out=/dev/tty0
+end=""
 else
 out=/etc/jupiter/fifo
+end=","
 fi
 
 screen=/dev/vcs$1
@@ -74,15 +76,13 @@ if [ -z "$artist" ]
 then echo "mp3 file contains no information about the song" >$out
 exit 1
 else
-echo "artist, $artist" >$out
-if [ $2 = t ]; then sleep 2; fi
+echo "artist, $artist$end" >$out
 fi
 if [ ! -z "$album" ]
-then echo "album, $album" >$out
-if [ $2 = t ]; then sleep 2; fi
+then echo "album, $album$end" >$out
 fi
 if [ ! -z "$song" ]
-then echo "song, $song" >$out
+then echo "song, $song$end" >$out
 fi
 
 exit 0
