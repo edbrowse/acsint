@@ -625,8 +625,79 @@ in case my hardware synth fails, or I am travelling.
 My synthesizer, which was quite compact in the 1990's,
 is three times the size of my pi, and requires another outlet.
 
+Before we build jupiter, or run speakup or any other adapter for that matter,
+let's test espeakup on its own. And let's test it with index markers too.
+Just to be clear, you are still on the new pi over ssh, because it isn't talking yet.
+But you need to hear espeakup on the new pi, along with speech from your
+previously adapted computer.
+So you'll need an extra set of headphones or speakers.
+Plug the headphones into the new pi, then over ssh, type espeakup.
+You probably have to be you, not root, for reasons that are described in music+speech.txt.
+Now type things in, anything you want.
+When in the course of human events it becomes necessary for one people...
+You should hear the words you type, after each return,
+since the tty is still in cooked mode.
+Note, the only way to break out of espeakup is by control c.
+EOF won't do it.
+
+If you don't hear anything, put both headphones on your ears and listen carefully;
+the volume may be turned down low.
+Use the amixer command to set the volume to 70%.
+This will probably work but not guaranteed.
+amixer -q set Master 70%
+Now try again, the words should be clear and audible.
+
+Now that it's talking, lets try some index markers.
+These are markers that we send to espeakup in the train of speech,
+and it returns them back to us as the words are spoken.
+This provides real-time information on what it is speaking.
+Every adapter needs this to track speech.
+When you hit stop, whatever key that might be,
+you want to be on the word it was just speaking, and the only way to accomplish
+that is through index markers.
+So have this file at the ready.
+It has index markers built in.
+I call it jungle.
+
+Why don't you write me<mark name="65"> I'm out in the jungle<mark name="66"> I'm hungry<mark name="67"> to hear you;<mark name="68">
+Send me a card<mark name="69"> I am waiting so hard<mark name="70"> to be near you.<mark name="71">
+
+The command to try is now:
+
+espeakup -a <jungle
+
+The -a option tells espeakup to honor and return index markers.
+As it speaks the words on the new pi, it prints the 7 index markers, A through G.
+Note that the marker numbers are the ascii codes for A through G.
+In a perfect world, each index marker appears just after espeakup has spoken
+the corresponding word. However there are some delays.
+The letter goes through the far tty, then over ssh, then through your tty,
+then your adapter takes a fraction of a second to recognize it
+and speak it as a new character on screen.
+So the markers might seem just a bit late but they should be pretty close.
+If they all come streaming out at the beginning, that is a bug from the buster time period.
+Hopefully that is fixed by the time you read this.
+Hit ^c to break out, and try the test again, and again.
+If you have a sighted friend, he will see the letters in sync with the words,
+without the delay of your screen reader.
+
+My DoubleTalk also returns these index markers, along with the other hardware
+synthesizers on the market.
+They are necessary for every adapted computer.
+
+There is an interesting bug in espeakup, stil there as of bookworm.
+In the jungle file, change the semicolon to a period.
+That's what it's suppose to be anyways.
+Now run the jungle test again.
+The D marker does not appear. It goes right from C to E.
+I don't know what kind of corner case induces this bug,
+but I guess it doesn't cause too much trouble in adapted computers,
+because nobody has reported it.
+
+Now that espeakup is validated, let's build the jupiter linear adapter.
 Make and install procedures are described in the users guide,
-but let's include them here, in a more concise, step-by-step format.
+but I'll include them here, in a more concise, step-by-step format.
+Let's say you are already in progs/acsint.
 
 cd drivers
 ./keyconfigure </dev/tty1
