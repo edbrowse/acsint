@@ -85,7 +85,14 @@ if [ $2 = p ]
 then echo "$v" >$out
 exit 0
 fi
-echo "mp3 file contains no information about the song" >$out
+ echo "mp3 file contains no information about the song." >$out
+# Try to get at least artist from the filename. That's not great cause sometimes
+# I'll use shorthand. Like Babs for Barbra Streisand,
+# or Neil for Neil Diamond.
+artist=`echo "$v" | sed -e 's/-.*//' -e 's/\([a-z0-9]\)\([A-Z]\)/\1 \2/g'`
+if [ ! -z "$artist" ]
+then echo "file artist, $artist$end" >$out
+fi
 exit 1
 else
 echo "artist, $artist$end" >$out
