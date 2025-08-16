@@ -31,6 +31,17 @@
 # 5 songs that it might print in response to the l command.
 # The current song is sure to be on screen.
 
+# This script assumes songs are referenced by absolute path.
+# Thence id3info can get ahold of the corresponding mp3 files.
+# After all, I have no idea the current directory of mpg123,
+# so can't really bounce off of a relative path.
+# If I can't find the file to scrape, perhaps because you went into /songs/pop4
+# and used mpg123 *Lamb* to play the entire Lamb Lies Down album,
+# thus all paths are reltive,
+# if I can't find the file to scrape, and mode is p,
+# I print the filename. This should be an encoded version of group, album, song,
+# and it will probably serve.
+
 if [ $# != 2 -o "$2" != t -a "$2" != p ]
 then echo "usage artist console-number t|p"
 exit 1
@@ -64,7 +75,14 @@ then echo "song is not found on screen" >$out
 exit 1
 fi
 if [ ! -r "$v" ]
-then echo "no file corresponding to the current song" >$out
+then
+# in print mode, just print the filename and hope it is helpful.
+# Your adapter will read it the way you wrote it, with artist and song name etc.
+if [ $2 = p ]
+then echo "$v" >$out
+else
+echo "no file corresponding to the current song" >$out
+fi
 exit 1
 fi
 
@@ -79,8 +97,6 @@ v=${v/*\//}
 # If there are any id3 tags at all, we ought to have the artist.
 if [ -z "$artist" ]
 then
-# in print mode, just print the filename and hope it is helpful.
-# Your adapter will read it the way you wrote it, with artist and song name etc.
 if [ $2 = p ]
 then echo "$v" >$out
 exit 0
