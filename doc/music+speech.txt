@@ -149,6 +149,8 @@ jump to the next song, skip ahead or back, etc.
 As many hot keys as you care to dedicate to music -
 although these are no longer available for your speech functions or other capabilities.
 Remember to run mpg123 -q -C, for quiet mode and character response.
+Or use this alias.
+alias mplay="mpg123 -q -C"
 Here are three more keys assigned to previous song, restart song, next song.
 
 k110|/usr/local/bin/injkey 11 d
