@@ -159,7 +159,7 @@ k104|/usr/local/bin/injkey 11 f
 
 We would not need the injkey command if mpg123 --fifo worked.
 That is a superior approach in many ways, but I can't get it to work
-as of bookworm, so I am using injkey.
+as documented, so I am using injkey.
 
 Whether by injkey or --fifo,
 the "previous song" command, character d, only works if you are playing

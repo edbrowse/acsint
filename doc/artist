@@ -33,7 +33,7 @@
 
 # This script assumes songs are referenced by absolute path.
 # Thence id3info can get ahold of the corresponding mp3 files.
-# After all, I have no idea the current directory of mpg123,
+# After all, I do not know the current directory of mpg123,
 # so can't really bounce off of a relative path.
 # (It could be obtained from /proc I suppose, but that is more work.)
 # If I can't find the file to scrape, and mode is p,
