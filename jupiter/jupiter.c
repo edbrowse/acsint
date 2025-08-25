@@ -9,6 +9,7 @@ as articulated by the Free Software Foundation.
 
 #include <errno.h>
 #include <fcntl.h>
+#include <time.h>
 #include <signal.h>
 #include <unistd.h>
 #include <locale.h>
@@ -1645,6 +1646,7 @@ int main(int argc, char **argv)
 int i, port, onusb = 0;
 char serialdev[20];
 char *cmd = NULL;
+time_t now;
 int lastrow, lastcol;
 
 // remember the arg vector, before we start marching along.
@@ -1653,6 +1655,10 @@ argvector = argv;
 program_file = getenv("_");
 if (!program_file)
 	program_file = *argvector;
+
+// when daemon and then redirected to a log, this seems to be necessary
+setlinebuf(stdout);
+setlinebuf(stderr);
 
 selectLanguage();
 o = outwords + acs_lang;
@@ -1803,6 +1809,9 @@ signal(SIGQUIT, exitOnSignal);
 signal(SIGHUP, exitOnSignal);
 
 acs_scale(3000,600,-4,20);
+
+time(&now);
+printf("jupiter active %s", ctime(&now));
 
 /* Initialize the synthesizer. */
 if(synths[i].initstring)
