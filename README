@@ -22,7 +22,12 @@ If this patch is not accepted for any reason,
 then ttyclicks has to keep making its own sounds, which works,
 but is suboptimal.
 
-Finally the jupiter directory is my adapter, built upon the acsint system.
-It has its own README file and documentation.
+The jupiter directory is my adapter, built upon the acsint system.
+
+The doc directory has all the documentation.
+doc/bootprocess.txt describes the process of setting up a fresh instance of Raspbian,
+and much of this applies no matter what speech adapter you want to use.
+You may want to read this first, and follow the directions
+to build a talking raspberry pi, or any talking Linux machine.
 
 It's all GPL, so have fun with it.

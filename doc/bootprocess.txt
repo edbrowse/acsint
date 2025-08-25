@@ -409,11 +409,14 @@ Now ssh nickname should get you in.
 ssh will ask about adding to the known hosts etc, just say yes.
 
 Note that your new pi over ethernet will have a different ip address from your new pi over wifi.
-This is not surprising; the ethernet chip and the wifi chip have different mac addresses,
+This is not surprising; the ethernet chip and the wifi chip have different 48-bit mac addresses,
 hence the router will assign them different ip addresses, as per the dhcp protocol.
 If you are in by ssh over ethernet, or your pi is already talking, and you then set up wifi,
 you don't have to use the ipsearch trick to find the new wifi ip address.
-Use hostname -I.
+Use ifconfig.
+The eth0 paragraph gives the ip address over ethernet, if connected,
+and the wlan0 paragraph gives the ip address over wifi, if connected.
+The ether line shows the mac address, 6 bytes given in hex.
 
 Some conventions can be helpful here.
 Let's say my new pi's name is Eric Carmen.
@@ -549,7 +552,16 @@ This feature was part of the original unix in the late 1970's.
 You can get rid of the message by removing the file. That's it.
 
 There may be other actions upon login, that you do or do not want.
-Check the files under /etc/issue.d
+Check the files under /etc/issue.d.
+If you don't want them, then mv /etc/issue.d /etc/issue.old
+
+You will probably install dozens of packages as you go along;
+I know I do. If apt install generates a lot of http 404 errors,
+then apt is looking in the wrong place.
+It's a good idea to sync your new Raspbian instance with the
+package repositories by this command.
+
+apt-get update
 
 You will probably use git at some point; you probably did to clone this project.
 git has about 287 features, and I know how to use 12 of them.
@@ -602,12 +614,14 @@ The installation does some things under the covers by triggers.
 It installs two modules, speakup and speakup_soft,
 and it enables espeakup.service.
 These modules intercept keystrokes and can be intrusive.
+In particular, they glom onto the caps lock (now control) key, and the numpad.
 That is why this package is never installed by default.
 The casual debian user would have no clue what was happening.
 I was confused as well, for quite some time.
 
 If you want to run jupiter in combination with espeakup, you must also run
-apt install espeakup, because you need that program.
+apt install espeakup, just as a speakup user might,
+because jupiter needs espeakup as well.
 But you don't want or need all the other speakup machinery,
 so you must run:
 systemctl disable espeakup.service ; rmmod speakup speakup_soft
@@ -631,7 +645,7 @@ Just to be clear, you are still on the new pi over ssh, because it isn't talking
 But you need to hear espeakup on the new pi, along with speech from your
 previously adapted computer.
 So you'll need an extra set of headphones or speakers.
-Plug the headphones into the new pi, then type espeakup over ssh.
+Plug the headphones into the new pi, then type `espeakup -a' over ssh.
 You probably have to be you, not root, for reasons that are described in music+speech.txt.
 Now type things in, anything you want.
 When in the course of human events it becomes necessary for one people...
@@ -644,7 +658,9 @@ If you don't hear anything, put both headphones on your ears and listen carefull
 the volume may be turned down low.
 Use the amixer command to set the volume to 70%.
 This will probably work but not guaranteed.
+
 amixer -q set Master 70%
+
 Now try again, the words should be clear and audible.
 
 Now that it's talking, lets try some index markers.
@@ -792,6 +808,8 @@ Morelikely, you will be using a software synth.
 If so, you need to install it.
 We already talked about installing espeakup,
 and the need to move its modules and services out of the way.
+There are other software synthesizers, e.g. festival,
+although jupiter is not configured for those at this time.
 
 apt install espeakup
 systemctl stop espeakup.service
@@ -804,7 +822,7 @@ Run it as user, not root.
 espeakup -a
 
 Just type stuff in and listen to it talk in the speakers or headphones.
-Type control d or control c when done.
+Type control c when done.
 
 mkdir /etc/jupiter
 mkfifo /etc/jupiter/fifo
