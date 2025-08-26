@@ -748,8 +748,21 @@ Once is enough.
 Tell the system to load the acsint modules at boot time by putting
 the word acsint in a file in the directory /etc/modules-load.d.
 For example:
-sudo echo acsint > /etc/modules-load.d/access.conf
-reboot, and verify the modules are loaded by lsmod | fgrep acsint
+
+echo acsint > /etc/modules-load.d/access.conf
+
+You also need a udev rule so that /dev/acsint is born
+root:tty 660.
+And you need to be in the tty group.
+Now you can access /dev/acsint, /dev/vcsa, and several other salient devices.
+Also, use the id command to verify you are in the audio group,
+to access the sound card.
+
+usermod -a -G audio yourLogin
+echo 'KERNEL=="acsint", GROUP="tty", MODE="0660"' >/etc/udev/rules.d/acsint.rules
+
+reboot, and verify that the modules are loaded by lsmod | fgrep acsint.
+Verify that /dev/acsint exists, and is root:tty 660.
 
 There is no harm in running ttyclicks and acsint all the time,
 whether you use Jupiter or not. They do not interfere with Speakup,
@@ -859,7 +872,6 @@ Yours, based on espeakup, might look like this.
 The first line has to be this or it won't run.
 
 #!/bin/sh -e
-chmod 666 /dev/acsint
 # create debug file in my name
 touch /var/log/acslog ; chmod 666 /var/log/acslog
 su -c 'XDG_RUNTIME_DIR=/run/user/1000 /usr/local/bin/jupiter -d esp "|espeakup -a 2>/dev/null"' your_login

@@ -86,7 +86,6 @@ Here is my rc.local file that launches jupiter under my user account eklhad.
 The first line has to be this or it won't run.
 
 #!/bin/sh -e
-chmod 666 /dev/acsint
 # create debug file in my name
 touch /var/log/acslog ; chmod 666 /var/log/acslog
 # I use a hardware synth on the serial port through a usb serial converter.
