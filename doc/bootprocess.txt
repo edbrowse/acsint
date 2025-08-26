@@ -491,14 +491,21 @@ That's all there is to it.
 The other consoles remain in text mode.
 You can switch between the consoles by alt-f1 through alt-f6
 
+You can temporarily jump to another target, such as rescue, by:
+systemctl isolate rescue.target
+I haven't tried this feature.
+The command who -r tells you where you are, using the older,
+run level terminology.
+
 Because Bob was originally in graphical mode, there are several directories
 in your home directory that you didn't create. Like Desktop.
 remove these if you like.
-But if you ever type startx to go back to graphical, these directories will reappear.
+But if you ever type startx to go back to graphical, even on one console,
+these directories will reappear.
 
 If you run text based, like I do, you probably have a .bash_login and .bashrc
 that customize the shell just the way you like it.
-Like PS1='$ ' instead of that long drawn-out prompt that takes forever to say.
+Like PS1='$ ' instead of that long drawn-out prompt that takes forever to speak.
 Copy these files over to the new pi.
 scp .bash_login .bashrc newmachine:
 You don't have to reboot for these to take effect, simply log out and log back in again.
@@ -529,7 +536,7 @@ apparently I am not alone in this preference, since they made an option for this
 You have to reboot for these keyboard changes to take effect.
 
 There are 6 consoles by default. That's not nearly enough.
-I have to have 12, some people want 24.
+I have to have 12, and some people want 24.
 Edit /etc/default/console-setup and look for the line
 ACTIVE_CONSOLES
 It is a glob pattern indicating 6 consoles. Change it to this.
@@ -549,7 +556,7 @@ There is probably a message that appears at each login, even over ssh.
 A legal disclaimer of some sort.
 This is in /etc/motd  which means message of the day.
 This feature was part of the original unix in the late 1970's.
-You can get rid of the message by removing the file. That's it.
+You can get rid of the message by removing the file. That's all.
 
 There may be other actions upon login, that you do or do not want.
 Check the files under /etc/issue.d.
@@ -758,8 +765,10 @@ Now you can access /dev/acsint, /dev/vcsa, and several other salient devices.
 Also, use the id command to verify you are in the audio group,
 to access the sound card.
 
-usermod -a -G audio yourLogin
 echo 'KERNEL=="acsint", GROUP="tty", MODE="0660"' >/etc/udev/rules.d/acsint.rules
+id yourLogin
+usermod -a -G tty yourLogin
+usermod -a -G audio yourLogin # if necessary
 
 reboot, and verify that the modules are loaded by lsmod | fgrep acsint.
 Verify that /dev/acsint exists, and is root:tty 660.
