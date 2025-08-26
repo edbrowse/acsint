@@ -61,10 +61,15 @@ I use an external hardware synthesizer, but most people don't.
 Most people use a software synth, such as espeakup,
 so you have to have access to the sound card, else the computer remains silent.
 
-That is not a show stopper.
-It means root has to su to me when it launches jupiter,
-and I thence have to have permissions on all the devices.
-Now jupiter can speak through the sound card,
+By default, debian users belong to the audio group.
+Type id to see which groups you belong to.
+If you are not in the audio group, run this command.
+
+usermod -a -G audio yourLogin
+
+To run the adapter as me,
+root has to su to me when it launches jupiter,
+thence jupiter can speak through the sound card,
 and it can, in parallel, control the hot keys to raise and lower volume.
 
 Note that amixer controls over all volume,
@@ -78,17 +83,13 @@ sysrq|amixer -q set Master 3%-
 scroll|amixer -q set Master 3%+
 
 Here is my rc.local file that launches jupiter under my user account eklhad.
-the devices mentioned herein should exist by udev.
 The first line has to be this or it won't run.
 
 #!/bin/sh -e
-# Grant me access to the audio devices, control through timer
-chmod 666 /dev/snd/[c-t]*
-chmod 666 /dev/acsint /dev/vcsa
-# permission under /var/log, so I can debug
+chmod 666 /dev/acsint
+# create debug file in my name
 touch /var/log/acslog ; chmod 666 /var/log/acslog
 # I use a hardware synth on the serial port through a usb serial converter.
-chmod 666 /dev/ttyUSB0
 su -c "XDG_RUNTIME_DIR=/run/user/1000 /usr/local/bin/jupiter -d dbe u0 >/tmp/jupiter.log 2>&1" eklhad
 
 The XDG variable is important here.

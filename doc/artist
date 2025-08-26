@@ -20,7 +20,8 @@
 
 # If this script runs as you, not root, you need read access to /dev/vcsxx,
 # and for printing, write access to /dev/tty0. This is not the default.
-# Put chmod commands into /etc/rc.local
+# The easiest way to assure this is to put yourself into the tty group.
+# usermod -a -G tty yourLogin
 
 # It is possible to miss the song if it has rolled off the screen.
 # Say I am playing all 27 Mozart piano concertos, 3 movements each,

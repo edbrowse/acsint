@@ -855,14 +855,12 @@ If this is satisfactory, edit or create the file /etc/rc.local.
 Make sure it is executable.
 Mine uses the DoubleTalk external speech synthesizer on the serial port.
 Yours, based on espeakup, might look like this.
-the devices mentioned herein should exist by udev.
+/dev/acsint mentioned herein should exist by udev.
 The first line has to be this or it won't run.
 
 #!/bin/sh -e
-# Grant me access to the audio devices, control through timer
-chmod 666 /dev/snd/[c-t]*
-chmod 666 /dev/acsint /dev/vcsa
-# permission under /var/log, so I can debug
+chmod 666 /dev/acsint
+# create debug file in my name
 touch /var/log/acslog ; chmod 666 /var/log/acslog
 su -c 'XDG_RUNTIME_DIR=/run/user/1000 /usr/local/bin/jupiter -d esp "|espeakup -a 2>/dev/null"' your_login
 
