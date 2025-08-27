@@ -559,8 +559,8 @@ This feature was part of the original unix in the late 1970's.
 You can get rid of the message by removing the file. That's all.
 
 There may be other actions upon login, that you do or do not want.
-Check the files under /etc/issue.d.
-If you don't want them, then mv /etc/issue.d /etc/issue.old
+If you don't want to see them every time you log in, then
+touch ~/.hushlogin
 
 You will probably install dozens of packages as you go along;
 I know I do. If apt install generates a lot of http 404 errors,
@@ -569,6 +569,11 @@ It's a good idea to sync your new Raspbian instance with the
 package repositories by this command.
 
 apt-get update
+
+If you then want the latest of everything,
+which may or may not be on the image you downloaded, then run:
+
+apt upgrade
 
 You will probably use git at some point; you probably did to clone this project.
 git has about 287 features, and I know how to use 12 of them.
