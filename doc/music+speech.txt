@@ -161,6 +161,9 @@ We would not need the injkey command if mpg123 --fifo worked.
 That is a superior approach in many ways, but I can't get it to work
 as documented, so I am using injkey.
 
+Since I developed the "next song" button, I have become pickier in my music.
+“Nah. I'm not in the mood for that song right now. Next!”
+
 Whether by injkey or --fifo,
 the "previous song" command, character d, only works if you are playing
 an album, or a set of songs as arguments to mpg123.

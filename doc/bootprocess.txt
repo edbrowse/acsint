@@ -72,7 +72,7 @@ Create the file /boot/userconf.txt containing a line of the format
 <username>:<hashed password>
 This creates a user account with that username and password on first boot.
 You can try something like
-echo "your_login:$(openssl passwd -6 -stdin)" > userconf.txt
+echo "yourLogin:$(openssl passwd -6 -stdin)" > userconf.txt
 and type your password, and put that file on the /boot partition of the micro
 SD card before its first boot.
 Now Bob will be able to skip that step.
@@ -82,7 +82,7 @@ although the pi has probably done this for you.
 Whether created interactively by Bob, or by /boot/userconf.txt,
 this user account has administrative privileges.
 That means you will be able to use sudo, and perform root commands. You will need this;
-if you can never be superuser, then the computer is practically useless.
+if you can never be superuser, then the computer is useless.
 
 At first boot, the pi may ask Bob for the root password.
 Some linux distributions do this, some don't.
@@ -196,7 +196,6 @@ I have given some thought to adding speech to rescue mode,
 perhaps connecting the rescue target to the rc.local target,
 in the case of jupiter, or to espeakup.service in the case of speakup.
 This is difficult to test, and I'm a bit over my head here.
-Perhaps you can help me with this one.
 
 cfg80211.ieee80211_regdom=US
 
@@ -264,7 +263,7 @@ there are several methods, again depending on the version of Raspbian.
 cat /etc/os-release for  your Raspbian version.
 
 In recent versions of raspbian, nmcli will come to your rescue.
-(Remember that cli means command line interface.)
+(nmcli means network manager command line interface.)
 iw is a lower level command, and sometimes that works, but nmcli is more powerful.
 I will refer to both when it makes sense to do so.
 
@@ -360,7 +359,7 @@ Answer: /etc/NetworkManager/system-connections
 There is one file per connection, and it's text based, and easy to read and understand.
 These files are permission 600, as they should be, since they contain wifi passwords.
 It's a good idea to review the changes after each nmcli command,
-so you can see exactly what happened.
+so you can see what happened.
 If you feel brave, you can edit the file yourself, then nmcli connection reload.
 But you have to know what you're doing.
 I would only use the editor to change the password, or some other simple insitu update.
@@ -453,6 +452,7 @@ Go into your .ssh directory.
 Do you have id_rsa and id_rsa.pub?
 If yes then continue on to the next step.
 If no then use ssh_keygen with no arguments to generate them.
+Do not enter a password.
 
 Send the rsa files over to the new pi using scp.
 Put them in .ssh, mirroring the source machine.
@@ -493,7 +493,6 @@ You can switch between the consoles by alt-f1 through alt-f6
 
 You can temporarily jump to another target, such as rescue, by:
 systemctl isolate rescue.target
-I haven't tried this feature.
 The command who -r tells you where you are, using the older,
 run level terminology.
 
@@ -649,7 +648,7 @@ But I prefer it.
 Still I want to have espeakup at the ready,
 in case my hardware synth fails, or I am travelling.
 My synthesizer, which was quite compact in the 1990's,
-is three times the size of my pi, and requires another outlet.
+is three times the size of my pi, and requires another outlet, and a usb serial converter.
 
 Before we build jupiter, or run speakup or any other adapter for that matter,
 let's test espeakup on its own. And let's test it with index markers too.
@@ -660,7 +659,7 @@ So you'll need an extra set of headphones or speakers.
 Plug the headphones into the new pi, then type `espeakup -a' over ssh.
 You probably have to be you, not root, for reasons that are described in music+speech.txt.
 Now type things in, anything you want.
-When in the course of human events it becomes necessary for one people...
+“When in the course of human events it becomes necessary for one people…”
 You should hear the words you type, after each return,
 since the tty is still in cooked mode.
 Note, the only way to break out of espeakup is by control c.
@@ -777,13 +776,11 @@ usermod -a -G audio yourLogin # if necessary
 
 reboot, and verify that the modules are loaded by lsmod | fgrep acsint.
 Verify that /dev/acsint exists, and is root:tty 660.
+Verify that you are in the tty group by running id.
 
 There is no harm in running ttyclicks and acsint all the time,
 whether you use Jupiter or not. They do not interfere with Speakup,
 or other adapters, or other running programs.
-
-You should also verify that /dev/acsint exists.
-It should be created for you by udev when the acsint module is loaded.
 
 You'll notice that ttyclicks generates clicks as output is sent to the screen.
 This is exactly what it is suppose to do;
@@ -838,19 +835,6 @@ and the need to move its modules and services out of the way.
 There are other software synthesizers, e.g. festival,
 although jupiter is not configured for those at this time.
 
-apt install espeakup
-systemctl stop espeakup.service
-systemctl disable espeakup.service
-rmmod speakup speakup_soft
-
-Before you connect it to jupiter, test espeakup directly.
-Run it as user, not root.
-
-espeakup -a
-
-Just type stuff in and listen to it talk in the speakers or headphones.
-Type control c when done.
-
 mkdir /etc/jupiter
 mkfifo /etc/jupiter/fifo
 cp sample.cfg /etc/jupiter/start.cfg
@@ -863,14 +847,17 @@ So edit the file and put the speech commands where you want them on the keyboard
 Now you can bravely try the whole system.
 You're still doing all this over ssh.
 
-jupiter -d esp "|espeakup -a 2>/dev/null"
+jupiter -d esp "|espeakup -a 2"
 
 remember, this runs as you, not as root.
 -d makes it a daemon, so it drops into the background and you get your
 shell prompt right away.
 The next test is
+
 echo hello world >/etc/jupiter/fifo
-It should say hello world.
+
+It should say hello world through the headphones
+that you have plugged into the new pi.
 
 Now, for the first time, you can pick up the keyboard on your new pi
 and test the adapted computer.
@@ -882,13 +869,12 @@ If this is satisfactory, edit or create the file /etc/rc.local.
 Make sure it is executable.
 Mine uses the DoubleTalk external speech synthesizer on the serial port.
 Yours, based on espeakup, might look like this.
-/dev/acsint mentioned herein should exist by udev.
 The first line has to be this or it won't run.
 
 #!/bin/sh -e
 # create debug file in my name
 touch /var/log/acslog ; chmod 666 /var/log/acslog
-su -c 'XDG_RUNTIME_DIR=/run/user/1000 /usr/local/bin/jupiter -d esp "|espeakup -a 2>/dev/null"' your_login
+su -c 'XDG_RUNTIME_DIR=/run/user/1000 /usr/local/bin/jupiter -d esp "|espeakup -V en-us -a" >/tmp/jupiter.log 2>&1' yourLogin
 
 Now you know what to do. Reboot and see if the computer says "Jupiter ready".
 Log in, type some commands, review the output,
@@ -911,7 +897,7 @@ With this in mind, here is a brief step-by-step to install edbrowse.
 This is, for me, a critical part of getting a fresh Raspberry pi up and running,
 so I think it reasonably belongs here.
 In fact, you may want to do this much earlier, perhaps as soon as you have an ssh connection.
-Configuring the far computer will be easier with edbrowse at your command.
+Configuring the far computer will be easier with edbrowse at your hand.
 
 First, you need a directory under your home directory for programs.
 In a modern computer this would be your folder of applications, or Apps.
@@ -921,9 +907,9 @@ Thus all my working software is in /home/eklhad/progs.
 You may choose a different directory of course.
 
 When you cloned acsint from github, did you put it in progs, or a similar location?
-If not, perhaps you can simply move it.
+If not, perhaps you can move it.
 I don't know - I've never tried.
-It's probably best to clone projects into their intended location.
+It's probably best to clone projects into their intended locations.
 So - I'll assume acsint is cloned in the progs directory, and you want to do the same for edbrowse.
 
 cd progs
