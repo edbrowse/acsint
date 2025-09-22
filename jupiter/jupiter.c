@@ -1283,7 +1283,8 @@ if(support < 'a' || support > 'z') goto error_bell;
 acs_cursorsync();
 if(!acs_mb->cursor) goto error_bell;
 acs_mb->marks[support-'a'] = acs_mb->cursor;
-if(!quiet) acs_tone_onoff(0);
+if(soundsOn && !quiet) acs_tone_onoff(0);
+else acs_say_string(o->okword);
 break;
 
 case 44: /* jump to a preset marker */
@@ -1291,7 +1292,8 @@ if(support < 'a' || support > 'z') goto error_bell;
 if(!acs_mb->marks[support-'a']) goto error_bell;
 acs_mb->cursor = acs_mb->marks[support-'a'];
 acs_cursorset();
-if(!quiet) acs_tone_onoff(0);
+if(soundsOn && !quiet) acs_tone_onoff(0);
+else acs_say_string(o->okword);
 break;
 
 case 45: /* reexec */
