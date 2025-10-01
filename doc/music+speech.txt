@@ -186,5 +186,22 @@ See the artist shell script in this directory.
 
 The hot keys, vectoring through injkey, are not limited to mpg123.
 If you prefer mpv, you can write hot keys to control that program instead.
-Just read the man page to see what keys elicit what responses.
+Read the man page to see what keys elicit what responses.
 
+You might want to have music softly playing in the background, all the time.
+Consider this scenario, which has happened to me more than once.
+I am away from my computer for several hours, and when I return to it, it doesn't talk.
+I press certain keys and it doesn't read anything.
+Was there a kernel panic, or a power failure that lasted longer than my UPS could carry?
+No - because the music is still playing. The computer is still up and running.
+Next, I test the hot keys that control the music.
+Can I turn the volume up and down?
+If yes then the adapter is still running.
+If no then the adapter has crashed, and I need to restart it.
+It is a software program, and like any other program, a corner case can bring it down.
+On one occasion things were even stranger.
+I could control the music but still it wouldn't speak.
+I turned my sythesizer on and off, and still it wouldn't speak.
+Finally I unplugged the usb serial cable and plugged it back in.
+That did the trick.
+But it would have been much harder to debug without the music.
