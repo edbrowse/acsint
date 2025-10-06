@@ -201,7 +201,7 @@ If no then the adapter has crashed, and I need to restart it.
 It is a software program, and like any other program, a corner case can bring it down.
 On one occasion things were even stranger.
 I could control the music but still it wouldn't speak.
-I turned my sythesizer on and off, and still it wouldn't speak.
+I turned my synthesizer on and off, and still it wouldn't speak.
 Finally I unplugged the usb serial cable and plugged it back in.
 That did the trick.
 But it would have been much harder to debug without the music.

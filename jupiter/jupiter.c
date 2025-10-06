@@ -894,6 +894,22 @@ fclose(f);
 }
 
 /*********************************************************************
+continuous reading always stops upon any action.
+But individual words or characters can accumulate in buffers, and continue
+speaking, even though you might not want it to.
+Hold down the next-word key and you want it to read the words as you
+step along- each word should not clip the previous, but if you then move
+the cursor somewhere else or change volume or any such, it should
+stop the speech. A bit subjective perhaps.
+This is in its own function so you could control it by a flag if you wish.
+*********************************************************************/
+
+static void acs_act_shutup(void)
+{
+acs_shutup();
+}
+
+/*********************************************************************
 Execute the speech command.
 The argument is the command list, null-terminated.
 *********************************************************************/
@@ -948,7 +964,10 @@ if(cmdp->nonempty&1 && acs_mb->end == acs_mb->start) goto error_bound;
 		if(*cmdlist) support = *cmdlist++;
 else{
 acs_click();
-if(!soundsOn) acs_say_string(o->modeword);
+if(!soundsOn) {
+acs_act_shutup();
+acs_say_string(o->modeword);
+}
 if(acs_get1char(&support)) goto error_bell;
 }
 	}
@@ -980,6 +999,7 @@ if(!quiet) acs_click();
 		return;
 
 	case 1:
+acs_act_shutup();
 markleft = 0;
 if(screenMode) goto error_bell;
 acs_clearbuf();
@@ -988,17 +1008,22 @@ acs_cursorset();
 break;
 
 	case 2: /* locate visual cursor */
+acs_act_shutup();
 		if(!screenMode) break;
 acs_mb->cursor = acs_mb->v_cursor;
 acs_cursorset();
 ctrack = 1;
 		break;
 
-	case 3: acs_startbuf();
+	case 3:
+acs_act_shutup();
+acs_startbuf();
 //if(!(soundsOn|quiet)) acs_say_string(o->topword);
 break;
 
-	case 4: acs_endbuf();
+	case 4:
+acs_act_shutup();
+acs_endbuf();
 //if(!(soundsOn|quiet)) acs_say_string(o->bottomword);
 break;
 
@@ -1145,11 +1170,13 @@ if(rc == -2) goto error_bell;
 		break;
 
 	case 29: /* increase volume */
+acs_act_shutup();
 rc = acs_incvolume();
 t = o->louderword;
 goto speechparam;
 
 	case 30: /* decrease volume */
+acs_act_shutup();
 rc = acs_decvolume();
 t = o->softerword;
 goto speechparam;
@@ -1161,11 +1188,13 @@ t = o->setrateword;
 goto speechparam;
 
 	case 32: /* increase speed */
+acs_act_shutup();
 rc = acs_incspeed();
 t = o->fasterword;
 goto speechparam;
 
 	case 33: /* decrease speed */
+acs_act_shutup();
 rc = acs_decspeed();
 t = o->slowerword;
 goto speechparam;
@@ -1177,11 +1206,13 @@ t = o->setpitchword;
 goto speechparam;
 
 	case 35: /* increase pitch */
+acs_act_shutup();
 rc = acs_incpitch();
 t = o->higherword;
 goto speechparam;
 
 	case 36: /* decrease pitch */
+acs_act_shutup();
 rc = acs_decpitch();
 t = o->lowerword;
 goto speechparam;
@@ -1216,7 +1247,10 @@ acs_cursorsync();
 markleft = acs_mb->cursor;
 if(!quiet) {
 if(soundsOn) acs_tone_onoff(0);
-else acs_say_string(o->markword);
+else {
+acs_act_shutup();
+acs_say_string(o->markword);
+}
 }
 break;
 
@@ -1328,6 +1362,7 @@ if(cfglist[acs_fgc]) free(cfglist[acs_fgc]);
 cfglist[acs_fgc] = cloneString(suptext);
 if(!quiet) {
 acs_cr();
+acs_act_shutup();
 acs_say_string(o->reloadword);
 }
 acs_reset_configure();
@@ -1398,11 +1433,13 @@ t = o->setrangeword;
 goto speechparam;
 
 	case 55: /* increase pitch range */
+acs_act_shutup();
 rc = acs_incrange();
 t = o->widerword;
 goto speechparam;
 
 	case 56: /* decrease pitch range */
+acs_act_shutup();
 rc = acs_decrange();
 t = o->narrowerword;
 goto speechparam;
