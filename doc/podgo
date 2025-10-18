@@ -1,0 +1,35 @@
+# Get podcast as mp3 files.
+# apologies to the author; I can't find him to grant proper attribution.
+# The following url and email are no longer valid.
+# http://linc.homeunix.org:8080/scripts/bashpodder
+# linc.fessenden@gmail.com
+
+datadir=.podcast
+cd $HOME/$datadir
+rm -f temp.log
+touch pod.log
+# Read the pod.conf file and wget any url not already in the pod.log file:
+grep -v '^#' pod.conf |
+while read podcast
+do
+file=$(xsltproc parse_enclosure.xsl $podcast 2> /dev/null ||
+wget -q $podcast -O - | tr '\r' '\n' | tr \' \" |
+sed 's/<!--.*//' |
+sed -n 's/.*url="\([^"]*\)".*/\1/p')
+for url in $file
+do
+echo $url >> temp.log
+if [ "$1" != "-l" ] &&
+! fgrep "$url" pod.log > /dev/null
+then
+echo -n fetch' '
+echo $url | sed -e 's;^https*://;;' -e 's;/.*;;' -e 's/^www\.//' -e 's/\.com$//' -e 's/\.gov$//'
+wget -t 10 -U BashPodder -c -q -O `echo $url |
+sed -e 's;/;_;g' -e 's/^https*:__//' -e 's/^www\.//'` $url
+fi
+done
+done
+# Move dynamically created log file to permanent log file:
+cat pod.log >> temp.log
+sort -u temp.log > pod.log
+rm temp.log
