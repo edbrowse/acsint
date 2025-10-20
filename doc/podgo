@@ -4,12 +4,18 @@
 # http://linc.homeunix.org:8080/scripts/bashpodder
 # linc.fessenden@gmail.com
 
+# usage is podgo or podgo -l
+# -l option updates the log without fetching any files.
+# This is a good idea whenever you add a new source,
+# so you don't download hundreds of prior episodes that you may not want.
+
 datadir=.podcast
+# This directory should exist
 cd $HOME/$datadir
 rm -f temp.log
 touch pod.log
 # Read the pod.conf file and wget any url not already in the pod.log file:
-grep -v '^#' pod.conf |
+sed <pod.conf -e '/^#/d' -e '/^ *$/d' |
 while read podcast
 do
 file=$(xsltproc parse_enclosure.xsl $podcast 2> /dev/null ||

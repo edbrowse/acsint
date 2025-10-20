@@ -29,5 +29,8 @@ doc/bootprocess.txt describes the process of setting up a fresh instance of Rasp
 and much of this applies no matter what speech adapter you want to use.
 You may want to read this first, and follow the directions
 to build a talking raspberry pi, or any talking Linux machine.
+Other files in the doc directory help you set up music on your computer,
+along with hotkeys to play the songs.
+There is a script to fetch podcast files, which you can then play with mpg123 and your hotkeys.
 
 It's all GPL, so have fun with it.
