@@ -1,10 +1,10 @@
 This file documents hot keys for playing music on the Raspberry pi,
 though it is applicable to other platforms.
-And the hotkeys need not be jupiter based, you could use esekeyd for example,
+And the hot keys need not be jupiter based, you could use esekeyd for example,
 or write your own program in user space to intercept keystrokes and take action.
 
 It began in 2008 when we bought the mac, one of the best computers I ever owned,
-relative to the needs of my entire family.
+relative to the needs of my sighted family.
 Pricy - but it was easy to use,
 more intuitive than today's computers and cell phones, and it lasted a long time.
 The keyboard had three keys at the upper right, which have since become standard.
@@ -14,7 +14,7 @@ and still the music was always at your fingertips.
 The phone rings - just hit pause.
 someone comes in and wants to chat - lower the volume.
 You don't have to switch to another tab or change context.
-I wanted this capability on all my computers.
+I wanted this capability on my computers.
 
 jupiter's config file supports a pipe syntax to run a command.
 So the conceptual idea is:
@@ -176,7 +176,7 @@ and mpg123 exits, whence your song server selects the next song.
 Desiring the backup feature, I made an enhancement to my jbrad program,
 found in this directory.
 It remembers the last 5 songs that it played and hands them to mpg123 as arguments,
-then it jumps to the last song, the new song, by feeding f's to the program through injkey.
+then it jumps to the ultimate (current) song by feeding f's to the program through injkey.
 Now the backup key works, through the last 5 songs anyways.
 This is not vital to anyone's existence, it was primarily a fun programming exercise.
 
@@ -188,7 +188,7 @@ The hot keys, vectoring through injkey, are not limited to mpg123.
 If you prefer mpv, you can write hot keys to control that program instead.
 Read the man page to see what keys elicit what responses.
 
-You might want to have music softly playing in the background, all the time.
+You might want to have music softly playing in the background all the time.
 Consider this scenario, which has happened to me more than once.
 I am away from my computer for several hours, and when I return to it, it doesn't talk.
 I press certain keys and it doesn't read anything.
@@ -205,3 +205,9 @@ I turned my synthesizer on and off, and still it wouldn't speak.
 Finally I unplugged the usb serial cable and plugged it back in.
 That did the trick.
 But it would have been much harder to debug without the music.
+
+In a perfect world, a podcast episode is contained in a local mp3 file,
+whence you can use mpg123 and all the hot keys that you have set up.
+The podgo script, in this directory, fetches podcast episodes as mp3 files,
+according to your sources, which you place in pod.conf.
+See the script, and sample-pod.conf, for more information.
