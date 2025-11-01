@@ -188,6 +188,38 @@ The hot keys, vectoring through injkey, are not limited to mpg123.
 If you prefer mpv, you can write hot keys to control that program instead.
 Read the man page to see what keys elicit what responses.
 
+mpv has a nice feature that mpg123 lacks.
+The bracket keys increase and decrease speed, without changing pitch.
+This is a difficult mathematical transform, and they do it well.
+Obviously you don't want to listen to music this way,
+but it can be helpful if your podcast is a bit slow, and you want to move it along.
+If you want mpv to emulate mpg123 in other respects, then do the following.
+Create the directory $HOME/.config/mpv
+Within that directory, create mpv.conf, containing:
+
+no-video
+really-quiet
+
+Create input.conf, containing:
+
+1 seek 0 absolute-percent
+2 seek 10 absolute-percent
+3 seek 20 absolute-percent
+4 seek 30 absolute-percent
+5 seek 40 absolute-percent
+6 seek 50 absolute-percent
+7 seek 60 absolute-percent
+8 seek 70 absolute-percent
+9 seek 80 absolute-percent
+0 seek 90 absolute-percent
+, seek -0.5 relative
+. seek +0.5 relative
+; seek -2.0 relative
+: seek +2.0 relative
+b seek 0 absolute-percent
+d playlist-prev
+f playlist-next
+
 You might want to have music softly playing in the background all the time.
 Consider this scenario, which has happened to me more than once.
 I am away from my computer for several hours, and when I return to it, it doesn't talk.
@@ -207,7 +239,7 @@ That did the trick.
 But it would have been much harder to debug without the music.
 
 In a perfect world, a podcast episode is contained in a local mp3 file,
-whence you can use mpg123 and all the hot keys that you have set up.
+whence you can use mpg123 or mpv, and all the hot keys that you have set up.
 The podgo script, in this directory, fetches podcast episodes as mp3 files,
 according to your sources, which you place in pod.conf.
 See the script, and sample-pod.conf, for more information.
