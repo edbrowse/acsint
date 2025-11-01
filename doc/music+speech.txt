@@ -220,6 +220,13 @@ b seek 0 absolute-percent
 d playlist-prev
 f playlist-next
 
+On my pi, mpv has micropauses, while mpg123 is smoother.
+Most people wouldn't notice, or care,
+but as a music afficionado, i prefer mpg123 for music.
+Thus jbrad invokes that program.
+mpv plays my podcasts, wherein I can increase speed as much as 50%,
+and assimilate the material faster.
+
 You might want to have music softly playing in the background all the time.
 Consider this scenario, which has happened to me more than once.
 I am away from my computer for several hours, and when I return to it, it doesn't talk.
