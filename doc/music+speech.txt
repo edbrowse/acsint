@@ -219,6 +219,12 @@ Create input.conf, containing:
 b seek 0 absolute-percent
 d playlist-prev
 f playlist-next
+l show-text "> ${filename}"
+
+The l command doesn't work; you have to change really-quiet to quiet so mpv
+will display something, and even then I can't seem to find it on the screen.
+Other than that, it's a faithful simulation,
+thence the hot keys you have set up for mpg123 will also work interchangeably with mpv.
 
 On my pi, mpv has micropauses, while mpg123 is smoother.
 Most people wouldn't notice, or care,
