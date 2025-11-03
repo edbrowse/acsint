@@ -193,6 +193,8 @@ The bracket keys increase and decrease speed, without changing pitch.
 This is a difficult mathematical transform, and they do it well.
 Obviously you don't want to listen to music this way,
 but it can be helpful if your podcast is a bit slow, and you want to move it along.
+In other words, your Science Quickly podcast can be even quicker.
+
 If you want mpv to emulate mpg123 in other respects, then do the following.
 Create the directory $HOME/.config/mpv
 Within that directory, create mpv.conf, containing:
@@ -232,6 +234,11 @@ but as a music afficionado, i prefer mpg123 for music.
 Thus jbrad invokes that program.
 mpv plays my podcasts, wherein I can increase speed as much as 50%,
 and assimilate the material faster.
+
+edbrowse users: you may have set up a plugin to play mp3 files using mpg123.
+If so, you can make another plugin with the bogus suffix mpv, and player mpv.
+In a directory of mp3 files that are perhaps podcasts, perhaps e-books, you can now play one of these files by g.mpv.
+Or, perhaps your mp3 plugin already uses mpv, whence g will suffice.
 
 You might want to have music softly playing in the background all the time.
 Consider this scenario, which has happened to me more than once.
