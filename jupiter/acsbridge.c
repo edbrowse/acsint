@@ -1629,6 +1629,26 @@ static const char *lengthword[] = {
 	" dĺžka ",
 };
 
+static char stopChars[8];
+int acs_setStopChars(const char *s)
+{
+int j = 0;
+char c;
+static const char ok[] = "`~!@#$%^&*()-_=+[]{};:',.<>/?\\|";
+while(c = *s++) {
+if(!strchr(ok, c)) { stopChars[j] = 0; return 1; }
+if(j == sizeof(stopChars) - 1) { stopChars[j] = 0; return 2; }
+stopChars[j++] = c;
+}
+stopChars[j] = 0;
+return 0;
+}
+int acs_stopAt(unsigned int u)
+{
+if(u >= 0x80) return 0;
+return strchr(stopChars, (char)u) ? 1 : 0;
+}
+
 int acs_getsentence(unsigned int *dest, int destlen, acs_ofs_type *offsets, int prop)
 {
 const unsigned int *s;
@@ -1683,7 +1703,8 @@ spaces = 1;
 continue;
 }
 
-if(c == '\n' || c == '\7') {
+if(c == '\n' || c == '\7' ||
+(prop&ACS_GS_STOPLINE && acs_stopAt(c))) {
 alnum = 0;
 if(t > dest && t[-1] == ' ') --t;
 if(prop&ACS_GS_ONEWORD) {

@@ -86,7 +86,7 @@ static const struct cmd speechcommands[] = {
 	{"last complete line","lcline",1,1},
 	{"mark start", "mark1",1,3},
 	{"mark end", "mark2",1,3, 0, 1},
-	{"obsolete", "x@y`"},
+	{"set delimiter","delim",0,0,0,2},
 	{"label", "label",1,3, 0, 1},
 	{"jump", "jump",1, 1, 0, 1},
 	{"restart the adapter","reexec",0,0,1},
@@ -707,28 +707,32 @@ tp_in->offset[0] = 0;
 acs_getsentence(tp_in->buf+1, 120, tp_in->offset+1, gsprop);
 
 if(!tp_in->buf[1]) {
-/* Empty sentence, nothing else to read. */
+// Empty sentence, nothing else to read.
 acs_log("empty done\n");
 acs_rb = 0;
 return;
 }
 
 first = tp_in->buf[1];
-if(first == '\n' || first == '\7') {
-/* starts out with newline or bell, which is usually associated with a sound */
-/* This will swoop/beep with clicks on, or say the word newline or bell with clicks off */
+if(first == '\n' || first == '\7' ||
+(oneLine && acs_stopAt(first))) {
+// starts out with newline or bell, which is usually associated with a sound,
+// or a stop character.
 speakChar(tp_in->buf[1], 1, soundsOn, 0);
 
-if(oneLine && first == '\n') {
+if(oneLine && (first == '\n' || acs_stopAt(first))) {
+if(first == '\n')
 acs_log("newline done\n");
+else
+acs_log("stop %c done\n", first);
 acs_rb = 0;
 return;
 }
 
-/* Find the next token/offset, which should be the next character */
+// Find the next token/offset, which should be the next character
 for(i=2; !tp_in->offset[i]; ++i)  ;
 acs_rb->cursor += tp_in->offset[i];
-/* but don't leave it there if you have run off the end of the buffer */
+// but don't leave it there if you have run off the end of the buffer
 if(acs_rb->cursor >= acs_rb->end) {
 acs_rb->cursor = acs_rb->end-1;
 acs_log("eof done\n");
@@ -736,8 +740,7 @@ acs_rb = 0;
 return;
 }
 
-/* The following line is bad if there are ten thousand bells, no way to interrupt */
-/* I'll deal with that case later. */
+// The following line is bad if there are ten thousand bells, no way to interrupt
 goto top;
 }
 
@@ -776,9 +779,12 @@ prepTTS();
  * If newline wasn't already present in the input, this has been
  * set for you by prepTTS. */
 for(end=tp_out->buf+1; *end; ++end)
-if(*end == '\n' || *end == '\7') break;
-*end = 0;
+if(*end == '\n' || *end == '\7' ||
+oneLine && acs_stopAt(*end))
+break;
 tp_out->len = end - tp_out->buf;
+acs_log("cut at %x length %d\n", *end, tp_out->len);
+*end = 0;
 
 /* An artificial newline, inserted by prepTTS to denote a sentence boundary,
  * won't have an offset.  In that case we need to grab the next one. */
@@ -1302,7 +1308,7 @@ else acs_say_string(o->cutword);
 return;
 
 #if 0
-	case 42: /* set echo */
+	case xx: // set echo
 		if(support < '0' || support > '4') goto error_bell;
 echoMode = support - '0';
 		if(input && !*cmdlist) {
@@ -1312,7 +1318,16 @@ acs_say_string(echoWords[echoMode]);
 		break;
 #endif
 
-case 43: /* set a marker in the tty buffer */
+	case 42: // set delimiters
+n = acs_setStopChars(suptext);
+if(n == 1) goto error_bell;
+if(n == 2) goto error_bound;
+if(*cmdlist) break; // more to do
+if(soundsOn && !quiet) acs_cr();
+			acs_say_string(o->okword);
+break;
+
+case 43: // set a label in the tty buffer
 if(support < 'a' || support > 'z') goto error_bell;
 acs_cursorsync();
 if(!acs_mb->cursor) goto error_bell;
@@ -1321,7 +1336,7 @@ if(soundsOn && !quiet) acs_tone_onoff(0);
 else acs_say_string(o->okword);
 break;
 
-case 44: /* jump to a preset marker */
+case 44: // jump to a preset label
 if(support < 'a' || support > 'z') goto error_bell;
 if(!acs_mb->marks[support-'a']) goto error_bell;
 acs_mb->cursor = acs_mb->marks[support-'a'];
@@ -1330,7 +1345,7 @@ if(soundsOn && !quiet) acs_tone_onoff(0);
 else acs_say_string(o->okword);
 break;
 
-case 45: /* reexec */
+case 45: // reexec
 acs_buzz();
 acs_sy_close();
 acs_close();
@@ -1354,7 +1369,7 @@ execvp(program_file, argvector);
 puts("\7\7\7");
 exit(1);
 
-case 46: /* reload config file */
+case 46: // reload config file
 if(!*suptext) goto error_bell;
 etcjup(suptext);
 if(access(jfile, 4)) goto error_bell;
