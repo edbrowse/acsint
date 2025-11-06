@@ -661,6 +661,7 @@ acs_shutup();
 
 #define readNextMark acs_rb->marks[27]
 
+static unsigned int priorStop;
 static void
 readNextPart(void)
 {
@@ -670,15 +671,16 @@ unsigned int *end; /* the end of the sentence */
 unsigned int first; /* first character of the sentence */
 static int flip = 1; /* flip between two ranges of numbers */
 
-acs_refresh(); /* whether we need to or not */
-/* on console switch acs_rb could drop to 0 */
-	if(!acs_rb) return;
+acs_refresh(); // whether we need to or not
+// on console switch acs_rb could drop to 0
+	if(!acs_rb) { priorStop = 0; return; }
 
 if(readNextMark) {
 /* could be past the buffer */
 if(readNextMark >= acs_rb->end) {
 readNextMark = 0;
 acs_rb = 0;
+priorStop = 0;
 return;
 }
 acs_rb->cursor = readNextMark;
@@ -690,6 +692,7 @@ if(!acs_rb->cursor) {
 if(soundsOn) acs_buzz();
 else acs_say_string(o->overflowword);
 acs_rb = 0;
+priorStop = 0;
 return;
 }
 
@@ -710,6 +713,7 @@ if(!tp_in->buf[1]) {
 // Empty sentence, nothing else to read.
 acs_log("empty done\n");
 acs_rb = 0;
+priorStop = 0;
 return;
 }
 
@@ -718,7 +722,9 @@ if(first == '\n' || first == '\7' ||
 (oneLine && acs_stopAt(first))) {
 // starts out with newline or bell, which is usually associated with a sound,
 // or a stop character.
-speakChar(tp_in->buf[1], 1, soundsOn, 0);
+if(first != priorStop)
+speakChar(first, 1, soundsOn, 0);
+priorStop = 0;
 
 if(oneLine && (first == '\n' || acs_stopAt(first))) {
 if(first == '\n')
@@ -743,6 +749,8 @@ return;
 // The following line is bad if there are ten thousand bells, no way to interrupt
 goto top;
 }
+
+priorStop = 0;
 
 if(jdebug) {
 char *w = acs_uni2utf8(tp_in->buf+1);
@@ -779,20 +787,35 @@ prepTTS();
  * If newline wasn't already present in the input, this has been
  * set for you by prepTTS. */
 for(end=tp_out->buf+1; *end; ++end)
-if(*end == '\n' || *end == '\7' ||
-oneLine && acs_stopAt(*end))
+if(*end == '\n' || *end == '\7')
 break;
 tp_out->len = end - tp_out->buf;
 acs_log("cut at %x length %d\n", *end, tp_out->len);
 *end = 0;
 
-/* An artificial newline, inserted by prepTTS to denote a sentence boundary,
- * won't have an offset.  In that case we need to grab the next one. */
+// An artificial newline, inserted by prepTTS to denote a sentence boundary,
+//won't have an offset.  In that case we need to grab the next one.
 i = tp_out->len;
 while(!tp_out->offset[i]) ++i;
+if(i > tp_out->len) {
 tp_out->offset[tp_out->len] = tp_out->offset[i];
+acs_log("ofset ahead from %d to %d %d\n", tp_out->len, i, tp_out->offset[tp_out->len]);
+}
 
+acs_log("readNextMart %d\n", tp_out->offset[tp_out->len]);
 readNextMark = acs_rb->cursor + tp_out->offset[tp_out->len];
+
+if(oneLine && stopChars[0]) {
+for(i = tp_in->len - 1; i >= 0; --i)
+if(tp_in->offset[i]) break;
+unsigned p = tp_in->buf[i];
+if(i && acs_stopAt( p)) {
+acs_log("set back to %c at %d\n", p, tp_in->offset[i]);
+priorStop = p;
+readNextMark = acs_rb->cursor + tp_in->offset[i];
+}
+}
+
 //flip = 51 - flip;
 acs_say_indexed(tp_out->buf+1, tp_out->offset+1, flip);
 }

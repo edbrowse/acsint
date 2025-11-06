@@ -1134,6 +1134,7 @@ I'm going with unsigned short just to be safe.
 typedef unsigned short acs_ofs_type;
 
 int acs_setStopChars(const char *s);
+extern char stopChars[];
 int acs_stopAt(unsigned u);
 int acs_getsentence(unsigned int *dest, int destlen,
 		acs_ofs_type *offsets, int properties);

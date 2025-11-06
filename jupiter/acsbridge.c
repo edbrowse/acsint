@@ -1629,7 +1629,7 @@ static const char *lengthword[] = {
 	" dĺžka ",
 };
 
-static char stopChars[8];
+char stopChars[8];
 int acs_setStopChars(const char *s)
 {
 int j = 0;
