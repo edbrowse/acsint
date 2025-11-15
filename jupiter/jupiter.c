@@ -599,7 +599,10 @@ case 's': markleft = 0; p = &screenMode; break;
 	case 'l': p = &tp_readLiteral; break;
 	case 'm': p = &tp_numStyle; break;
 case 'i': p = &keyInterrupt; break;
-	default: acs_bell(); return;
+	default:
+if(soundsOn) 		acs_bell();
+else acs_say_string(o->errorword);
+return;
 } // switch
 
 	if(action == 0) *p = 0;
@@ -917,7 +920,8 @@ fclose(f);
 notelist[2*j] = 0;
 acs_notes(notelist);
 } else {
-acs_bell();
+if(soundsOn) 		acs_bell();
+else acs_say_string(o->errorword);
 fclose(f);
 }
 }
@@ -1571,8 +1575,10 @@ interrupt();
 // special execute now code
 if(msg[0] == ':' && msg[1] == ':') {
 rc = cfg_syntax(msg+2);
-if(rc) acs_bell();
-else runSpeechCommand(0, msg+2);
+if(rc) {
+if(soundsOn) 		acs_bell();
+else acs_say_string(o->errorword);
+} else runSpeechCommand(0, msg+2);
 } else acs_say_string(msg);
 }
 
