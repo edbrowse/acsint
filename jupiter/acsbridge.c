@@ -860,7 +860,7 @@ static void swallow_key_h(int key, int ss, int leds)
 {
 char keychar;
 
-if(key > KEY_SPACE) goto bad;
+if(key >= 240) goto bad;
 if(ss&ACS_SS_ALT) goto bad;
 if(ss&ACS_SS_CTRL) {
 if(key != KEY_H) goto bad;
@@ -947,9 +947,9 @@ int key, state;
 char keychar;
 *p = 0;
 if(acs_get1key(&key, &state)) return -1;
-if(key > KEY_SPACE ||
+if(key >= 240 ||
 state&(ACS_SS_ALT|ACS_SS_CTRL)) return -1;
-// This only works on a qwerty layout; not sure how to fix this.
+// make sure layout.c is correct for your keyboard
 keychar = (state&ACS_SS_SHIFT) ? uppercode_s[key] : lowercode_s[key];
 if(!isalnum(keychar)) return -1;
 *p = keychar;
