@@ -15,8 +15,6 @@ as articulated by the Free Software Foundation.
 #include <locale.h>
 #include <pthread.h>
 
-#include <linux/vt.h>
-
 #include "tp.h"
 
 #define stringEqual !strcmp
@@ -808,7 +806,7 @@ acs_log("ofset ahead from %d to %d %d\n", tp_out->len, i, tp_out->offset[tp_out-
 acs_log("readNextMart %d\n", tp_out->offset[tp_out->len]);
 readNextMark = acs_rb->cursor + tp_out->offset[tp_out->len];
 
-if(oneLine && stopChars[0]) {
+if(oneLine && stopChars[acs_fgc][0]) {
 for(i = tp_in->len - 1; i >= 0; --i)
 if(tp_in->offset[i]) break;
 unsigned p = tp_in->buf[i];

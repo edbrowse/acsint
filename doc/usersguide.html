@@ -867,6 +867,15 @@ This is meant to read the last line of output, just before the prompt.
 In screen mode the cursor is at the start of the second to last line,
 assuming the last line is a prompt.
 
+<p><dt>delim:
+<dd>
+Set one or more delimiters, to stop reading if in oneline mode.
+Reading always stops at the end of a line, but it can stop at any ascii punctuation mark.
+| is a common delimiter, as it separates fields in a table.
+Up to 7 different delimiters are allowed.
+|` stops reading at either pipe or backtick.
+These delimiters are set per console.
+
 <p><dt>colnum:
 <dd>
 Read the current column number.

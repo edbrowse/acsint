@@ -19,8 +19,6 @@ and declared in acsbridge.h.
 #include <sys/select.h>
 #include <sys/sysmacros.h>
 
-#include <linux/vt.h>
-
 #include "acsbridge.h"
 
 #define stringEqual !strcmp
@@ -1629,24 +1627,25 @@ static const char *lengthword[] = {
 	" dĺžka ",
 };
 
-char stopChars[8];
+char stopChars[MAX_NR_CONSOLES+1][8];
 int acs_setStopChars(const char *s)
 {
 int j = 0;
 char c;
 static const char ok[] = "`~!@#$%^&*()-_=+[]{};:',.<>/?\\|";
+char *p = stopChars[acs_fgc];
 while(c = *s++) {
-if(!strchr(ok, c)) { stopChars[j] = 0; return 1; }
-if(j == sizeof(stopChars) - 1) { stopChars[j] = 0; return 2; }
-stopChars[j++] = c;
+if(!strchr(ok, c)) { p[j] = 0; return 1; }
+if(j == 7) { p[j] = 0; return 2; }
+p[j++] = c;
 }
-stopChars[j] = 0;
+p[j] = 0;
 return 0;
 }
 int acs_stopAt(unsigned int u)
 {
 if(u >= 0x80) return 0;
-return strchr(stopChars, (char)u) ? 1 : 0;
+return strchr(stopChars[acs_fgc], (char)u) ? 1 : 0;
 }
 
 int acs_getsentence(unsigned int *dest, int destlen, acs_ofs_type *offsets, int prop)
