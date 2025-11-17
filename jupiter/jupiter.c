@@ -951,7 +951,7 @@ static void runSpeechCommand(int input, const char *cmdlist)
 {
 	const struct cmd *cmdp;
 	char suptext[SUPPORTLEN]; /* supporting text */
-static 	char lasttext[SUPPORTLEN]; /* supporting text */
+static 	char lasttext[MAX_NR_CONSOLES+1][SUPPORTLEN]; /* supporting text */
 	char support; /* supporting character */
 	int i, n;
 	int asword, asword2, quiet, rc, gsprop;
@@ -1173,8 +1173,8 @@ cmd_resume = cmdlist;
 	case 26: asword = 1; /* search backwards */
 	case 27: /* search forward */
 		if(*suptext)
-			strcpy(lasttext, suptext);
-else strcpy(suptext, lasttext);
+			strcpy(lasttext[acs_fgc], suptext);
+else strcpy(suptext, lasttext[acs_fgc]);
 		if(!*suptext) goto error_bell;
 		if(!acs_bufsearch(suptext, asword, oneLine)) goto error_bound;
 if(*cmdlist) break; // more to do
