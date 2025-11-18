@@ -979,6 +979,13 @@ If you are at the start of the buffer you might issue this command, then type th
 That's rather silly, since there is already a start of buffer command, but I present it as an example.
 Then jump t will take you back to this location.
 This is primarily used in linear mode, where you may want to mark several locations in your tty buffer.
+It can be used in screen mode, but the labels are not guaranteed to stick if more output is generated and the screen scrolls.
+It only makes sense if the screen is static.
+
+<p>
+Note, all labels go away if you switch between line mode and screen mode.
+They have no validity in this new context.
+Perhaps they should return if you switch back, but this is not implemented.
 
 <p><dt>jump:
 <dd>

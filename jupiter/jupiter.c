@@ -591,7 +591,10 @@ static int save_postprocess;
 	case 'a': p = &autoRead; break;
 	case '1': p = &oneLine; break;
 	case 'o': p = &overrideSignals; break;
-case 's': markleft = 0; p = &screenMode; break;
+case 's':
+memset(acs_mb->marks, 0, sizeof(int*)*28);
+p = &screenMode;
+break;
 	case 'c': p = &cc_buffer; break;
 	case 'd': p = &jdebug; break;
 	case 'l': p = &tp_readLiteral; break;
