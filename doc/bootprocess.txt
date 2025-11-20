@@ -903,7 +903,7 @@ sudo apt install edbrowse
 
 Debian has packaged edbrowse for quite some time,
 and raspbian is downstream from debian.
-The distributed version is probably good enough for a quick start.
+The distributed version is probably good enough to get you started.
 but if you want the latest, if you want to follow our
 features and bug fixes as they happen:
 
@@ -930,6 +930,7 @@ git clone https://github.com/quickjs-ng/quickjs
 cd quickjs 
 sudo apt install cmake
 make
+sudo make install
 cd ..
 git clone https://github.com/edbrowse/edbrowse
 sudo apt install libreadline-dev libpcre2-dev libcurl4-openssl-dev libssl-dev
