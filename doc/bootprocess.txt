@@ -899,7 +899,15 @@ so I think it reasonably belongs here.
 In fact, you may want to do this much earlier, perhaps as soon as you have an ssh connection.
 Configuring the far computer will be easier with edbrowse at your hand.
 
-First, you need a directory under your home directory for programs.
+sudo apt install edbrowse
+
+Debian has packaged edbrowse for quite some time,
+and raspbian is downstream from debian.
+The distributed version is probably good enough for a quick start.
+but if you want the latest, if you want to follow our
+features and bug fixes as they happen:
+
+You need a directory under your home directory for programs.
 In a modern computer this would be your folder of applications, or Apps.
 That concept was unheard of in 1995, so I called my directory progs, for programs.
 It is brief, and doesn't have any annoying capital letters or spaces.
@@ -918,14 +926,16 @@ cd edbrowse.wiki
 # everybody has permission to contribute to the wiki
 git remote set-url --push origin 'git@github.com:edbrowse/edbrowse.wiki.git'
 cd ..
-git clone https://github.com/bellard/quickjs
-cd quickjs ; make
-# If you get a lot of atomic undefines:   make EXTRA_LIBS=-latomic
+git clone https://github.com/quickjs-ng/quickjs
+cd quickjs 
+sudo apt install cmake
+make
 cd ..
 git clone https://github.com/edbrowse/edbrowse
 sudo apt install libreadline-dev libpcre2-dev libcurl4-openssl-dev libssl-dev
 sudo apt install unixodbc unixodbc-dev libsqliteodbc
-cd edbrowse/src ; make
+cd edbrowse/src 
+make
 sudo make install
 
 And that should just work.
