@@ -43,12 +43,12 @@ enum acs_command {
 	ACS_PRINTK,
 };
 
-/* Here is a bound; you can't capture keys at or beyond this point. */
-#define ACS_NUM_KEYS 128
+// Here is a bound; you can't capture keys at or beyond this point.
+#define ACS_NUM_KEYS 256
 
-/* Symbolic constants for the keys are in input.h */
+// Symbolic constants for the keys are in input.h
 
-/* Symbolic constants for the led states are in kd.h */
+// Symbolic constants for the led states are in kd.h
 
 /* Symbolic constants for the shift states are derived from keyboard.h,
  * but I turn them into bits for you.
