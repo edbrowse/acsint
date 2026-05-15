@@ -1420,7 +1420,6 @@ Return 1 on overflow.
 Pass back the updated pointer, just after the input token.
 *********************************************************************/
 
-static char predollar;
 static int expandAlphaNumeric(unsigned int **sp)
 {
 	unsigned int c, d, e, f;
@@ -1438,13 +1437,6 @@ char ndc = " ..,."[acs_lang]; // number decimal character
 
 	c = *start;
 	if(acs_isalpha(c)) goto alphaToken;
-
-if(predollar) {
-// this should only happen when numStyle is 0 and we have seen
-// $ already, and determined that the number following is a monitary amount.
-if(appendChar('$')) goto overflow;
-predollar = 0;
-}
 
 	/* Check for 1st 2nd etc. */
 	d = start[-1];
@@ -2090,9 +2082,10 @@ do_punct:
 		break;
 
 	case '$':
+		if(!tp_numStyle) goto do_punct;
 		/* This logic decides whether to read the word dollar.
 		 * It is applicable only when tp_readLiteral is 1.
-		 * Supress the word "dollar" if we're starting a money amount.
+		 * Suppress the word "dollar" if we're starting a money amount.
 		 * Unfortunately this logic mirrors the logic in
 		 * expandAlphaNumeric, which also decides whether a number
 		 * is money or not.
@@ -2102,12 +2095,8 @@ do_punct:
 		if(e == '.' && acs_isdigit(end[1]) && acs_isdigit(end[2]) &&
 		!acs_isalnum(end[3])) {
 			end += 3;
-			if(tp_numStyle) {
 			if(appendMoney(1, 0,
 			atoiLength(end-2, 2), end+3)) goto overflow;
-			} else {
-		if(appendAsIs(s, end)) goto overflow;
-			}
 			break;
 		}
 		if(!acs_isdigit(e)) goto nomoney;
@@ -2117,7 +2106,6 @@ do_punct:
 		if(len > 3) goto nomoney; // $3456
 		if(len > 1) break; // $34 or $345
 // now looks like $3 and something, could be a parameter
-		if(!tp_numStyle) predollar = 1;
 		if(!tp_readLiteral) break;
 		if(*t == '.' && acs_isdigit(t[1])) break; // $3.5
 		/* Check for comma formatting. */
@@ -2128,7 +2116,6 @@ do_punct:
 		if(!acs_isdigit(t[1])) break;
 // $345,678,digits
 nomoney:
-		predollar = 0;
 		if(tp_readLiteral) goto do_punct;
 		break;
 
