@@ -1354,7 +1354,7 @@ static const char suftab[] = "s   es  ies ing ing ing d   ed  ed  ied 's  'll ";
  * Anything 's or 'll is handled in tpxlate.c
  * Which suffixes drop e or y when appended? */
 static const char sufdrop[] = "  y  e   y  ";
-/* Which suffixes double the final consonent, as in dropped. */
+/* Which suffixes double the final consonant, as in dropped. */
 static const char sufdouble[] = {
 	0,0,0,0,1,0,0,1,0,0,0,0};
 	unsigned int *t;

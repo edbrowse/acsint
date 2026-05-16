@@ -551,7 +551,7 @@ so we wouldn't want to ascify the buffer.
 static void ascify(void)
 {
 	unsigned int *s, *end_s;
-	unsigned int  c;
+	unsigned int c;
 
 	s =tp_in->buf + 1;
 	end_s = tp_in->buf + tp_in->len;
@@ -651,7 +651,7 @@ shortPhrase[l++] = ' ';
 shortPhrase[l++] = hexbuf[i];
 }
 shortPhrase[l] = 0;
-			t =  shortPhrase;
+			t = shortPhrase;
 		goto copy_t;
 }
 
@@ -721,7 +721,7 @@ static int wordInList(const char * const *list, const unsigned int *s, int s_len
 	for(i=0; (x = *list); ++list, ++i) {
 		if((len = acs_substring_mix(x, s)) < 0) continue;
 		if(!s_len || s_len == len) return i;
-	} /* loop over words  in list */
+	} /* loop over words in list */
 
 	return -1;
 }
@@ -1367,17 +1367,17 @@ i = isWord3(s);
 if(i >= 0) return i;
 }
 
-	/* are there too many leading consonents? */
-  return 1;
+	/* are there too many leading consonants? */
+	return 1;
 	/* We'll cut you some slack on McGruff. */
 	if(acs_tolower(*s) == 'm' && acs_tolower(s[1]) == 'c')
 		c1 -= 2, s += 2;
-// can't start with 5 consonents.
+// can't start with 5 consonants.
 	if(c1 > 4) return 0;
 	if(c1 > 2) {
 		if(wordInList(c1 == 3 ? icc3 : icc4, s, 0) < 0) return 0;
 
-		/* special case, lots of consonents and only one vowel. */
+		/* special case, lots of consonants and only one vowel. */
 		if(acs_substring_mix((char*)"strength", s) > 0) return 1;
 	}
 
@@ -2099,24 +2099,23 @@ do_punct:
 			atoiLength(end-2, 2), end+3)) goto overflow;
 			break;
 		}
-		if(!acs_isdigit(e)) goto nomoney;
+		if(!acs_isdigit(e)) goto do_punct;
 // now $3, but could be a positional parameter
 		for(t=end+1; acs_isdigit(*t); ++t)  ;
 		len = t - end;
-		if(len > 3) goto nomoney; // $3456
+		if(len > 3) goto do_punct; // $3456
 		if(len > 1) break; // $34 or $345
 // now looks like $3 and something, could be a parameter
 		if(!tp_readLiteral) break;
 		if(*t == '.' && acs_isdigit(t[1])) break; // $3.5
 		/* Check for comma formatting. */
-		if(*t != ',') goto nomoney;
+		if(*t != ',') goto do_punct;
 		for((s = ++t); acs_isdigit(*t); ++t)  ;
-		if(t-s != 3) goto nomoney;
+		if(t-s != 3) goto do_punct;
 		if(*t != ',') break;
 		if(!acs_isdigit(t[1])) break;
 // $345,678,digits
-nomoney:
-		if(tp_readLiteral) goto do_punct;
+		goto do_punct;
 		break;
 
 	case '.':
